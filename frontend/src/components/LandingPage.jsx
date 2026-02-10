@@ -128,14 +128,12 @@ const LandingPage = () => {
                             <div className="space-y-4">
                                 <div className="flex justify-end">
                                     <div className="bg-blue-600/10 text-blue-600 px-4 py-2 rounded-2xl rounded-br-none text-sm font-medium">
-                                        When is my next BIT 4104 lecture?
+                                        tell me more about kca university
                                     </div>
                                 </div>
                                 <div className="flex justify-start">
                                     <div className="bg-bg-primary border border-border-primary p-4 rounded-2xl rounded-bl-none text-sm text-text-primary">
-                                        <p className="font-bold mb-1">BIT 4104: Software Quality Assurance</p>
-                                        <p>Your next lecture is scheduled for **Tuesday, Feb 11th** from **11:00 AM to 1:00 PM** in **Room 204 (Main Campus)**.</p>
-                                        <p className="mt-2 text-xs text-text-secondary">Source: Faculty of Technology TT-v2.pdf</p>
+                                        <p>KCA University is a creative business and technology university with a mission to train employable and market-driven graduates for sustainable economic development. The university values professionalism, integrity, innovation, community, and equity.</p>
                                     </div>
                                 </div>
                             </div>
