@@ -2,8 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { chatWithAgentStream } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import Settings from "./Settings";
-import UserProfile from "./UserProfile";
+import Sidebar from "./Sidebar";
 import kcaLogo from "../assets/kca-logo.png";
 
 const ChatInterface = () => {
@@ -38,6 +37,17 @@ const ChatInterface = () => {
         navigator.clipboard.writeText(text);
     };
 
+    // Helper to format conversation history for API
+    const getConversationHistory = () => {
+        // Get all completed messages (not streaming), exclude the current user message being sent
+        return messages
+            .filter(msg => !msg.isStreaming && msg.content.trim())
+            .map(msg => ({
+                role: msg.role === "user" ? "user" : "assistant",
+                content: msg.content
+            }));
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
@@ -47,6 +57,9 @@ const ChatInterface = () => {
             content: input,
             timestamp: new Date()
         };
+        
+        // Get history before adding the new user message
+        const conversationHistory = getConversationHistory();
         
         // Clear streaming ref and add user message
         streamingContentRef.current = "";
@@ -99,7 +112,9 @@ const ChatInterface = () => {
                     setIsLoading(false);
                     // Remove the streaming message on error
                     setMessages((prev) => prev.filter((msg) => !msg.isStreaming));
-                }
+                },
+                // Pass conversation history
+                conversationHistory
             );
         } catch (err) {
             setError("Failed to get response. Please try again.");
@@ -143,29 +158,27 @@ const ChatInterface = () => {
     };
 
     return (
-        <div className={`flex flex-col h-screen bg-bg-primary transition-colors duration-300 ${isPremium ? 'premium-glow' : ''}`}>
-            {/* Header */}
-            <div className={`bg-bg-secondary/80 backdrop-blur-md shadow-sm border-b border-border-primary p-4 z-10`}>
-                <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div className={`flex h-screen bg-bg-primary transition-colors duration-300 ${isPremium ? 'premium-glow' : ''}`}>
+            {/* Left Sidebar */}
+            <Sidebar />
+
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col h-full overflow-hidden">
+                {/* Header */}
+                <div className={`bg-bg-secondary/80 backdrop-blur-md shadow-sm border-b border-border-primary p-4 z-10 flex-shrink-0`}>
                     <div className="flex items-center gap-3">
-                        <img src={kcaLogo} alt="KCA University Logo" className="w-10 h-10 object-contain" />
+                        <img src={kcaLogo} alt="KCA University Logo" className="w-10 h-10 object-contain rounded-full border-2 border-border-primary" />
                         <div>
-                            <h1 className={`text-2xl font-bold ${isPremium ? 'premium-gradient-text' : 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'}`}>
+                            <h1 className={`text-xl font-bold ${isPremium ? 'premium-gradient-text' : 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'}`}>
                                 KCA Connect AI
                             </h1>
                             <p className={`text-sm text-text-secondary`}>Your intelligent university assistant</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <Settings />
-                        <div className="h-8 w-px bg-border-primary hidden sm:block"></div>
-                        <UserProfile />
-                    </div>
                 </div>
-            </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-4 py-6 w-full scrollbar-thin scrollbar-thumb-accent-primary scrollbar-track-transparent">
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto px-4 py-6 w-full scrollbar-thin scrollbar-thumb-accent-primary scrollbar-track-transparent">
                 <div className="max-w-4xl mx-auto space-y-4">
                     {messages.map((msg, index) => (
                         <div
@@ -261,9 +274,9 @@ const ChatInterface = () => {
                     </button>
                 </form>
             </div>
+            </div>
         </div>
     );
 };
 
 export default ChatInterface;
-

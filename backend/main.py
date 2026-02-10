@@ -1,6 +1,7 @@
 import os
 from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel
+from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from app.services.rag_service import rag_service
@@ -52,8 +53,13 @@ async def get_current_user(authorization: str = Header(None)):
         logger.error(f"Auth error during verification: {e}")
         raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
 
+class Message(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
 class ChatRequest(BaseModel):
     message: str
+    history: Optional[List[Message]] = []
 
 class ChatResponse(BaseModel):
     response: str
@@ -101,7 +107,10 @@ def chat(request: ChatRequest, user=Depends(get_current_user)):
             
         logger.info(f"Authenticated user {user.email} (ID: {user.id}) queried: {msg_snippet}")
         
-        answer = rag_service.get_answer(request.message)
+        # Convert history to dict format for the RAG service
+        history_dicts = [msg.model_dump() for msg in request.history] if request.history else []
+        
+        answer = rag_service.get_answer(request.message, history=history_dicts)
         logger.info(f"Generated response for user {user.id}")
         
         return ChatResponse(response=answer)
@@ -114,7 +123,7 @@ def chat(request: ChatRequest, user=Depends(get_current_user)):
             detail=f"An error occurred while processing your request: {str(e)}"
         )
 
-async def stream_answer_generator(message: str, user):
+async def stream_answer_generator(message: str, user, history=None):
     """Generator function for streaming responses"""
     try:
         msg_snippet = str(message)
@@ -122,7 +131,7 @@ async def stream_answer_generator(message: str, user):
             msg_snippet = msg_snippet[:100] + "..."
         logger.info(f"Streaming response for user {user.id} - query: {msg_snippet}")
         
-        async for chunk in rag_service.get_answer_stream(message):
+        async for chunk in rag_service.get_answer_stream(message, history=history):
             yield f"data: {chunk}\n\n"
         
         yield "data: [DONE]\n\n"
@@ -131,14 +140,21 @@ async def stream_answer_generator(message: str, user):
         yield f"data: ERROR: I encountered an error while processing your question. Please try again later.\n\n"
 
 @app.get("/chat/stream")
-async def chat_stream(message: str, user=Depends(get_current_user)):
+async def chat_stream(message: str, history: str = "[]", user=Depends(get_current_user)):
     """Streaming chat endpoint using Server-Sent Events (SSE)"""
     try:
         if not message or not message.strip():
             raise HTTPException(status_code=400, detail="Message cannot be empty")
         
+        # Parse history from JSON string
+        import json
+        try:
+            history_list = json.loads(history) if history else []
+        except json.JSONDecodeError:
+            history_list = []
+        
         return StreamingResponse(
-            stream_answer_generator(message, user),
+            stream_answer_generator(message, user, history=history_list),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",

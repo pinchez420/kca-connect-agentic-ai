@@ -7,6 +7,7 @@ from qdrant_client import QdrantClient
 from app.core.config import settings
 import logging
 import asyncio
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +24,21 @@ class RagService:
         self.llm = self._initialize_llm()
 
         # Create custom prompt template
-        self.system_prompt = """You are a helpful AI assistant for KCA University. Use the following context to answer the student's question. 
-If you cannot find the answer in the context, say so honestly and suggest they contact the university administration.
+        self.system_prompt = """You are a helpful AI assistant for KCA University. Use the following context and conversation history to answer the student's question.
 
-Context:
+Context from documents:
 {context}
 
-Question: {question}"""
+Conversation History:
+{history}
+
+Current Question: {question}
+
+Instructions:
+1. Use the context above to provide accurate information about KCA University
+2. If the question refers to previous topics (using words like "it", "its", "they", "them", "this", "that"), use the conversation history to understand what is being referred to
+3. If you cannot find the answer in the context, say so honestly and suggest they contact the university administration
+4. Always maintain context from the conversation history when answering follow-up questions"""
 
     def _initialize_llm(self):
         """Initialize the preferred LLM based on configuration and availability"""
@@ -97,13 +106,132 @@ Question: {question}"""
             logger.error(f"Error checking relevance: {e}")
             return False
 
-    def get_answer(self, query: str):
-        """Get answer using RAG pipeline"""
+    def _extract_key_topics(self, text: str) -> list:
+        """Extract key topics/entities from text that might be referenced later"""
+        # Common KCA-related keywords to look for
+        kca_keywords = [
+            "kca", "kca university", "university", "admission", "admissions",
+            "course", "courses", "program", "programs", "degree", "degrees",
+            "fee", "fees", "tuition", "payment", "scholarship", "scholarships",
+            "exam", "exams", "examination", "timetable", "schedule", "semester",
+            "student", "students", "faculty", "department", "school", "institute",
+            "campus", "library", "hostel", "accommodation", "graduation", "alumni"
+        ]
+        
+        text_lower = text.lower()
+        found_topics = []
+        
+        for keyword in kca_keywords:
+            if keyword in text_lower:
+                found_topics.append(keyword)
+        
+        return found_topics
+
+    def _contextualize_query(self, query: str, history: list) -> str:
+        """Enhance query with context from conversation history"""
+        if not history or len(history) == 0:
+            return query
+        
+        # Check if query contains ambiguous references
+        ambiguous_patterns = [
+            r'\bit\b', r'\bits\b', r'\bthey\b', r'\bthem\b', r'\btheir\b',
+            r'\bthis\b', r'\bthat\b', r'\bthese\b', r'\bthose\b',
+            r'\bhe\b', r'\bshe\b', r'\bhim\b', r'\bher\b',
+            r'\bhere\b', r'\bthere\b', r'\bthe\b',  # "the university", "the course"
+        ]
+        
+        has_ambiguous_reference = any(re.search(pattern, query, re.IGNORECASE) for pattern in ambiguous_patterns)
+        
+        # Also check for very short queries (likely follow-ups)
+        is_short_query = len(query.split()) <= 3
+        
+        if not has_ambiguous_reference and not is_short_query:
+            return query
+        
+        # Build context from history
+        context_parts = []
+        recent_history = history[-4:]  # Use last 4 messages for context
+        
+        for msg in recent_history:
+            role = msg.get('role', 'user')
+            content = msg.get('content', '')
+            if content.strip():
+                context_parts.append(f"{role}: {content}")
+        
+        # Extract key topics from history
+        all_history_text = " ".join([msg.get('content', '') for msg in history])
+        key_topics = self._extract_key_topics(all_history_text)
+        
+        # If we have key topics and ambiguous query, try to expand it
+        if key_topics and (has_ambiguous_reference or is_short_query):
+            # Create an expanded query that includes context
+            history_context = " ".join(context_parts[-2:])  # Last 2 messages for immediate context
+            
+            # Check if query is asking about history
+            if re.search(r'\bhistory\b', query, re.IGNORECASE):
+                # Look for university/institution mentions in history
+                if 'kca' in all_history_text.lower() or 'university' in all_history_text.lower():
+                    expanded = f"KCA University history"
+                    logger.info(f"Contextualized query: '{query}' -> '{expanded}'")
+                    return expanded
+            
+            # Check if query is asking about fees/costs
+            if re.search(r'\bfee[s]?\b|\bcost\b|\bprice\b|\bpayment\b', query, re.IGNORECASE):
+                if 'course' in all_history_text.lower() or 'program' in all_history_text.lower():
+                    expanded = f"KCA University course fees"
+                    logger.info(f"Contextualized query: '{query}' -> '{expanded}'")
+                    return expanded
+            
+            # Check if query is asking about requirements/admission
+            if re.search(r'\brequirement[s]?\b|\badmission[s]?\b|\bapply\b|\bapplication\b', query, re.IGNORECASE):
+                expanded = f"KCA University admission requirements"
+                logger.info(f"Contextualized query: '{query}' -> '{expanded}'")
+                return expanded
+            
+            # For other ambiguous queries, prepend key topics
+            if key_topics and is_short_query:
+                main_topic = key_topics[-1]  # Most recent topic
+                expanded = f"{main_topic} {query}"
+                logger.info(f"Contextualized query: '{query}' -> '{expanded}'")
+                return expanded
+        
+        return query
+
+    def get_answer(self, query: str, history: list = None):
+        """Get answer using RAG pipeline with conversation context"""
         try:
+            # Contextualize the query using conversation history
+            original_query = query
+            if history:
+                query = self._contextualize_query(query, history)
+                if query != original_query:
+                    logger.info(f"Query enhanced from '{original_query}' to '{query}'")
+            
+            # Format history for the prompt
+            history_text = ""
+            if history:
+                history_text = "\n".join([
+                    f"{'User' if msg.get('role') == 'user' else 'Assistant'}: {msg.get('content', '')}"
+                    for msg in history[-6:]  # Last 6 messages
+                ])
+            
             if not self.should_use_rag(query):
                 if self.llm:
                     try:
-                        response = self.llm.invoke(query)
+                        # Include history in the prompt even for general questions
+                        if history_text:
+                            contextual_prompt = f"""You are a helpful AI assistant for KCA University.
+
+Conversation History:
+{history_text}
+
+Current Question: {original_query}
+
+Please answer based on the conversation context above. If this is a follow-up question, refer to previous topics discussed."""
+                            response = self.llm.invoke(contextual_prompt)
+                        else:
+                            response = self.llm.invoke(original_query)
+                        
                         if hasattr(response, 'content'):
                             return response.content
                         else:
@@ -119,7 +247,11 @@ Question: {question}"""
             
             if self.llm:
                 try:
-                    prompt = self.system_prompt.format(context=context, question=query)
+                    prompt = self.system_prompt.format(
+                        context=context, 
+                        history=history_text,
+                        question=original_query
+                    )
                     response = self.llm.invoke(prompt)
                     
                     if hasattr(response, 'content'):
@@ -138,22 +270,57 @@ Question: {question}"""
             logger.error(f"Error generating answer: {e}")
             return "I encountered an error while processing your question. Please try again later."
 
-    async def get_answer_stream(self, query: str):
-        """Get answer using RAG pipeline with streaming support - yields individual characters"""
+    async def get_answer_stream(self, query: str, history: list = None):
+        """Get answer using RAG pipeline with streaming support and conversation context"""
         try:
+            # Contextualize the query using conversation history
+            original_query = query
+            if history:
+                query = self._contextualize_query(query, history)
+                if query != original_query:
+                    logger.info(f"Query enhanced from '{original_query}' to '{query}'")
+            
+            # Format history for the prompt
+            history_text = ""
+            if history:
+                history_text = "\n".join([
+                    f"{'User' if msg.get('role') == 'user' else 'Assistant'}: {msg.get('content', '')}"
+                    for msg in history[-6:]  # Last 6 messages
+                ])
+            
             if not self.should_use_rag(query):
                 logger.info(f"Query '{query}' doesn't match documents well. Using LLM's general knowledge.")
                 if self.llm:
                     try:
-                        async for chunk in self.llm.astream(query):
-                            if hasattr(chunk, 'content'):
-                                text = chunk.content
-                            else:
-                                text = str(chunk)
-                            
-                            for char in text:
-                                yield char
-                                await asyncio.sleep(0.03)
+                        # Include history in the prompt even for general questions
+                        if history_text:
+                            contextual_prompt = f"""You are a helpful AI assistant for KCA University.
+
+Conversation History:
+{history_text}
+
+Current Question: {original_query}
+
+Please answer based on the conversation context above. If this is a follow-up question, refer to previous topics discussed."""
+                            async for chunk in self.llm.astream(contextual_prompt):
+                                if hasattr(chunk, 'content'):
+                                    text = chunk.content
+                                else:
+                                    text = str(chunk)
+                                
+                                for char in text:
+                                    yield char
+                                    await asyncio.sleep(0.03)
+                        else:
+                            async for chunk in self.llm.astream(original_query):
+                                if hasattr(chunk, 'content'):
+                                    text = chunk.content
+                                else:
+                                    text = str(chunk)
+                                
+                                for char in text:
+                                    yield char
+                                    await asyncio.sleep(0.03)
                         return
                     except Exception as e:
                         logger.error(f"Error calling LLM for general question: {e}")
@@ -168,7 +335,11 @@ Question: {question}"""
             
             if self.llm:
                 try:
-                    prompt = self.system_prompt.format(context=context, question=query)
+                    prompt = self.system_prompt.format(
+                        context=context,
+                        history=history_text,
+                        question=original_query
+                    )
                     
                     async for chunk in self.llm.astream(prompt):
                         if hasattr(chunk, 'content'):
@@ -196,4 +367,3 @@ Question: {question}"""
             yield "I encountered an error while processing your question. Please try again later."
 
 rag_service = RagService()
-

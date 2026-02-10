@@ -1,6 +1,6 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-export const chatWithAgent = async (message, token) => {
+export const chatWithAgent = async (message, token, history = []) => {
     try {
         const response = await fetch(`${API_URL}/chat`, {
             method: "POST",
@@ -8,7 +8,7 @@ export const chatWithAgent = async (message, token) => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify({ message, history }),
         });
 
         if (!response.ok) {
@@ -23,9 +23,10 @@ export const chatWithAgent = async (message, token) => {
     }
 };
 
-export const chatWithAgentStream = async (message, token, onChunk, onComplete, onError) => {
+export const chatWithAgentStream = async (message, token, onChunk, onComplete, onError, history = []) => {
     try {
-        const response = await fetch(`${API_URL}/chat/stream?message=${encodeURIComponent(message)}`, {
+        const historyParam = history.length > 0 ? `&history=${encodeURIComponent(JSON.stringify(history))}` : "";
+        const response = await fetch(`${API_URL}/chat/stream?message=${encodeURIComponent(message)}${historyParam}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,

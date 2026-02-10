@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import Settings from './Settings';
+import kcaLogo from '../assets/kca-logo.png';
 
 const Auth = () => {
     const [activeTab, setActiveTab] = useState('signin');
@@ -69,10 +70,11 @@ const Auth = () => {
                 className="absolute top-8 left-8 flex items-center gap-2 cursor-pointer z-20"
                 onClick={() => navigate('/')}
             >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold shadow-lg ${isPremium ? 'premium-gradient-bg' : 'bg-blue-600'}`}>
+                <img src={kcaLogo} alt="KCA University Logo" className="w-10 h-10 object-contain rounded-full border-2 border-border-primary" />
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg ${isPremium ? 'premium-gradient-bg' : 'bg-blue-600'}`} style={{ display: 'none' }}>
                     K
                 </div>
-                <span className={`font-bold tracking-tight ${isPremium ? 'premium-gradient-text' : ''}`}>
+                <span className={`text-xl font-bold tracking-tight ${isPremium ? 'premium-gradient-text' : ''}`}>
                     KCA Connect AI
                 </span>
             </div>
