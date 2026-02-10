@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+
+    /* Base Animations */
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Custom Colors for Themes */
+    --color-bg-primary: var(--bg-primary);
+    --color-bg-secondary: var(--bg-secondary);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-accent-primary: var(--accent-primary);
+    --color-accent-secondary: var(--accent-secondary);
+    --color-border-primary: var(--border-primary);
+
+    --background-image-radial-glow: radial-gradient(circle at center, var(--glow-color) 0%, transparent 70%);
+}
+
+:root {
+    /* Light Theme (Current) */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --accent-primary: #4f46e5;
+    --accent-secondary: #9333ea;
+    --border-primary: #f1f5f9;
+    --glow-color: rgba(79, 70, 229, 0.1);
+}
+
+[data-theme='dark'] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-primary: #818cf8;
+    --accent-secondary: #c084fc;
+    --border-primary: #334155;
+    --glow-color: rgba(129, 140, 248, 0.1);
+}
+
+[data-theme='premium'] {
+    /* Precise Premium AI Theme: Midnight Black & Gold/Bronze */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #171717;
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --accent-primary: #2563eb;
+    /* Blue primary */
+    --accent-secondary: #d97706;
+    /* Gold/Bronze accent */
+    --border-primary: #27272a;
+    --glow-gold: 0 0 20px rgba(37, 99, 235, 0.3);
+    --glow-color: rgba(37, 99, 235, 0.15);
+}
+
+.animate-fadeIn {
+    animation: fade-in 0.3s ease-out;
+}
+
+.premium-glow {
+    box-shadow: var(--glow-gold);
+}
+
+.premium-gradient-text {
+    background: linear-gradient(to right, #2563eb, #d97706);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.premium-gradient-bg {
+    background: linear-gradient(to right, #2563eb, #d97706);
+}
+
+.bg-radial-glow {
+    background-image: var(--background-image-radial-glow);
+}

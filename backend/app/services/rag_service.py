@@ -1,0 +1,114 @@
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_qdrant import QdrantVectorStore
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_cerebras import ChatCerebras
+from qdrant_client import QdrantClient
+from app.core.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
+
+class RagService:
+    def __init__(self):
+        self.embeddings = HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL)
+        self.client = QdrantClient(url=settings.QDRANT_URL)
+        self.vector_store = QdrantVectorStore(
+            client=self.client,
+            collection_name=settings.COLLECTION_NAME,
+            embedding=self.embeddings,
+        )
+        
+        self.llm = self._initialize_llm()
+
+        # Create custom prompt template
+        self.system_prompt = """You are a helpful AI assistant for KCA University. Use the following context to answer the student's question. 
+If you cannot find the answer in the context, say so honestly and suggest they contact the university administration.
+
+Context:
+{context}
+
+Question: {question}"""
+
+    def _initialize_llm(self):
+        """Initialize the preferred LLM based on configuration and availability"""
+        # 1. Try Cerebras if configured
+        if settings.CEREBRAS_API_KEY and (settings.DEFAULT_LLM == "cerebras" or not settings.GOOGLE_API_KEY):
+            try:
+                logger.info("Initializing Cerebras LLM (llama-3.3-70b)")
+                return ChatCerebras(
+                    model="llama-3.3-70b",
+                    cerebras_api_key=settings.CEREBRAS_API_KEY,
+                    temperature=0.3,
+                )
+            except Exception as e:
+                logger.error(f"Failed to initialize Cerebras LLM: {e}")
+
+        # 2. Try Gemini
+        if settings.GOOGLE_API_KEY:
+            try:
+                logger.info("Initializing Gemini LLM (gemini-2.0-flash)")
+                return ChatGoogleGenerativeAI(
+                    model="gemini-2.0-flash",
+                    google_api_key=settings.GOOGLE_API_KEY,
+                    temperature=0.3,
+                )
+            except Exception as e:
+                logger.error(f"Failed to initialize Gemini LLM: {e}")
+        
+        logger.warning("No LLM provider available or configured. Operating in retrieval-only mode.")
+        return None
+
+    def search(self, query: str, k: int = 4):
+        """Retrieve relevant documents from vector store"""
+        try:
+            docs = self.vector_store.similarity_search(query, k=k)
+            return docs
+        except Exception as e:
+            logger.error(f"Error during vector search: {e}")
+            return []
+
+    def get_answer(self, query: str):
+        """Get answer using RAG pipeline"""
+        try:
+            # Retrieve relevant documents
+            docs = self.search(query)
+            
+            if not docs:
+                return "I couldn't find any relevant information. Please try rephrasing your question or contact the university administration."
+            
+            # Combine document contexts
+            context = "\n\n".join([d.page_content for d in docs])
+            
+            # If LLM is available, use it for generating responses
+            if self.llm:
+                try:
+                    # Create the prompt
+                    prompt = self.system_prompt.format(context=context, question=query)
+                    
+                    # Get response from LLM
+                    response = self.llm.invoke(prompt)
+                    
+                    # Extract content from response
+                    if hasattr(response, 'content'):
+                        return response.content
+                    else:
+                        return str(response)
+                except Exception as e:
+                    logger.error(f"Error calling LLM provider: {e}")
+                    # Specific handling for Gemini quota issues if we are using Gemini
+                    if isinstance(self.llm, ChatGoogleGenerativeAI) and ("RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)):
+                        logger.warning(f"Gemini API quota exceeded: {e}")
+                        return f"The AI is currently at its limit (Quota Exceeded). Here is the relevant information retrieved from our documents:\n\n{context}"
+                    
+                    # Generic fallback to context-only if LLM call fails
+                    return f"I had trouble summarizing the information, but here is what I found in our records:\n\n{context}"
+            else:
+                # Fallback: return raw context if no LLM
+                return f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
+                
+        except Exception as e:
+            logger.error(f"Error generating answer: {e}")
+            return "I encountered an error while processing your question. Please try again later."
+
+rag_service = RagService()
+

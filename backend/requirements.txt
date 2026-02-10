@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pydantic
+langchain
+langchain-community
+python-dotenv
+qdrant-client
+sentence-transformers
+pydantic-settings
+langchain-huggingface
+langchain-qdrant
+PyPDF2
+google-generativeai
+langchain-google-genai
+langchain-cerebras
