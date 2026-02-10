@@ -1,21 +1,59 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import Settings from './Settings';
 
-const Auth = ({ onLogin }) => {
+const Auth = () => {
     const [activeTab, setActiveTab] = useState('signin');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [fullName, setFullName] = useState('');
+    const [role, setRole] = useState('Student');
+    const [campus, setCampus] = useState('Main');
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
+    const [loading, setLoading] = useState(false);
+
     const { theme } = useTheme();
+    const { signIn, signUp } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock authentication
-        if (email && password) {
-            onLogin();
-            navigate('/chat');
+        setError(null);
+        setSuccess(null);
+        setLoading(true);
+
+        try {
+            if (activeTab === 'signin') {
+                const { error, data } = await signIn({ email, password });
+                if (error) throw error;
+                if (data?.session) navigate('/chat');
+            } else {
+                const { error, data } = await signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            role,
+                            campus,
+                        }
+                    }
+                });
+                if (error) throw error;
+
+                if (data?.user && !data?.session) {
+                    setSuccess('Registration successful! Please check your email for the confirmation link.');
+                } else if (data?.session) {
+                    navigate('/chat');
+                }
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -45,8 +83,8 @@ const Auth = ({ onLogin }) => {
                     <button
                         onClick={() => setActiveTab('signin')}
                         className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'signin'
-                                ? (isPremium ? 'premium-gradient-bg text-white' : 'bg-blue-600 text-white') + ' shadow-lg'
-                                : 'text-text-secondary hover:text-text-primary'
+                            ? (isPremium ? 'premium-gradient-bg text-white' : 'bg-blue-600 text-white') + ' shadow-lg'
+                            : 'text-text-secondary hover:text-text-primary'
                             }`}
                     >
                         Sign In
@@ -54,8 +92,8 @@ const Auth = ({ onLogin }) => {
                     <button
                         onClick={() => setActiveTab('signup')}
                         className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === 'signup'
-                                ? (isPremium ? 'premium-gradient-bg text-white' : 'bg-blue-600 text-white') + ' shadow-lg'
-                                : 'text-text-secondary hover:text-text-primary'
+                            ? (isPremium ? 'premium-gradient-bg text-white' : 'bg-blue-600 text-white') + ' shadow-lg'
+                            : 'text-text-secondary hover:text-text-primary'
                             }`}
                     >
                         Sign Up
@@ -73,6 +111,18 @@ const Auth = ({ onLogin }) => {
                     </p>
                 </div>
 
+                {error && (
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 rounded-2xl text-red-500 text-xs font-semibold text-center italic">
+                        {error}
+                    </div>
+                )}
+
+                {success && (
+                    <div className="mb-6 p-4 bg-green-500/10 border border-green-500/50 rounded-2xl text-green-500 text-xs font-semibold text-center italic">
+                        {success}
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {activeTab === 'signup' && (
                         <div>
@@ -80,6 +130,8 @@ const Auth = ({ onLogin }) => {
                             <input
                                 type="text"
                                 required
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
                                 className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm"
                                 placeholder="E.g. John Doe"
                             />
@@ -102,7 +154,11 @@ const Auth = ({ onLogin }) => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Role</label>
-                                <select className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm appearance-none">
+                                <select
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value)}
+                                    className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm appearance-none"
+                                >
                                     <option>Student</option>
                                     <option>Faculty</option>
                                     <option>Staff</option>
@@ -110,7 +166,11 @@ const Auth = ({ onLogin }) => {
                             </div>
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Campus</label>
-                                <select className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm appearance-none">
+                                <select
+                                    value={campus}
+                                    onChange={(e) => setCampus(e.target.value)}
+                                    className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm appearance-none"
+                                >
                                     <option>Main</option>
                                     <option>Town</option>
                                     <option>Kitengela</option>
@@ -157,10 +217,21 @@ const Auth = ({ onLogin }) => {
 
                     <button
                         type="submit"
-                        className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-xl hover:shadow-2xl transform transition-all active:scale-[0.98] mt-6 ${isPremium ? 'premium-gradient-bg' : 'bg-blue-600'
-                            }`}
+                        disabled={loading}
+                        className={`w-full py-4 rounded-2xl text-white font-black text-lg shadow-xl hover:shadow-2xl transform transition-all active:scale-[0.98] mt-6 flex items-center justify-center gap-2 ${isPremium ? 'premium-gradient-bg' : 'bg-blue-600'
+                            } ${loading ? 'opacity-70 cursor-not-allowed scale-[0.98]' : ''}`}
                     >
-                        {activeTab === 'signin' ? 'Sign Into Account' : 'Create Student Account'}
+                        {loading ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                {activeTab === 'signin' ? 'Signing In...' : 'Registering...'}
+                            </>
+                        ) : (
+                            activeTab === 'signin' ? 'Sign Into Account' : 'Create Student Account'
+                        )}
                     </button>
                 </form>
 

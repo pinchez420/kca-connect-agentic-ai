@@ -1,13 +1,17 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.rag_service import rag_service
 from app.core.config import settings
+from supabase import create_client, Client
 import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize Supabase client
+supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
 
 app = FastAPI(title="KCA Connect Agentic AI")
 
@@ -18,6 +22,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def get_current_user(authorization: str = Header(None)):
+    """Dependency to verify Supabase JWT token"""
+    if not authorization:
+        logger.warning("Authorization header missing")
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+    
+    try:
+        # Expected format: "Bearer <token>"
+        token = authorization.split(" ")[1] if " " in authorization else authorization
+        logger.info(f"Verifying token: {token[:10]}...")
+        
+        # Verify with Supabase
+        user_response = supabase.auth.get_user(token)
+        if not user_response.user:
+            logger.warning("Invalid or expired token")
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+        
+        logger.info(f"User authenticated: {user_response.user.email}")
+        return user_response.user
+    except Exception as e:
+        logger.error(f"Auth error during verification: {e}")
+        raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
 
 class ChatRequest(BaseModel):
     message: str
@@ -55,15 +82,21 @@ def health_check():
     }
 
 @app.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest):
-    """Chat endpoint for RAG-based Q&A"""
+def chat(request: ChatRequest, user=Depends(get_current_user)):
+    """Chat endpoint for RAG-based Q&A (Protected)"""
     try:
         if not request.message or not request.message.strip():
             raise HTTPException(status_code=400, detail="Message cannot be empty")
         
-        logger.info(f"Received query: {request.message[:100]}...")
+        # Using a more robust way to log message snippet
+        msg_snippet = str(request.message)
+        if len(msg_snippet) > 100:
+            msg_snippet = msg_snippet[:100] + "..."
+            
+        logger.info(f"Authenticated user {user.email} (ID: {user.id}) queried: {msg_snippet}")
+        
         answer = rag_service.get_answer(request.message)
-        logger.info("Successfully generated response")
+        logger.info(f"Generated response for user {user.id}")
         
         return ChatResponse(response=answer)
     except HTTPException:

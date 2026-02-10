@@ -1,11 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { chatWithAgent } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import Settings from "./Settings";
+import { supabase } from "../lib/supabaseClient";
 import UserProfile from "./UserProfile";
 
 const ChatInterface = () => {
     const { theme } = useTheme();
+    const { session } = useAuth();
     const [messages, setMessages] = useState([
         {
             role: "agent",
@@ -47,7 +50,7 @@ const ChatInterface = () => {
         setError(null);
 
         try {
-            const response = await chatWithAgent(input);
+            const response = await chatWithAgent(input, session?.access_token);
             const agentMessage = {
                 role: "agent",
                 content: response,
