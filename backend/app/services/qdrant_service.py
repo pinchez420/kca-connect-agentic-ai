@@ -4,7 +4,14 @@ from app.core.config import settings
 
 class QdrantService:
     def __init__(self):
-        self.client = QdrantClient(url=settings.QDRANT_URL)
+        # Support both local Qdrant and Qdrant Cloud (with API key)
+        if settings.QDRANT_API_KEY:
+            self.client = QdrantClient(
+                url=settings.QDRANT_URL,
+                api_key=settings.QDRANT_API_KEY
+            )
+        else:
+            self.client = QdrantClient(url=settings.QDRANT_URL)
         self.collection_name = settings.COLLECTION_NAME
 
     def create_collection_if_not_exists(self, vector_size: int = 384):

@@ -1,25 +1,33 @@
-# TODO: Implement AI Response Streaming & Default Premium Theme
+# Netlify + Render Deployment Setup
 
-## Completed Tasks
-- [x] Analyze codebase and create plan
-- [x] 1. Update ThemeContext.jsx - change default theme to 'premium'
-- [x] 2. Update rag_service.py - add streaming method for LLM responses
-- [x] 3. Update backend/main.py - add /chat/stream endpoint with SSE
-- [x] 4. Update frontend/src/services/api.js - add streaming API function
-- [x] 5. Update frontend/src/components/ChatInterface.jsx - implement streaming display
-- [x] 6. Update frontend/src/index.css - add streaming cursor animation
+## Steps to Complete
 
-## Fixes Applied
-- [x] Fixed cursor: changed from thick block to thin 2px blinking line
-- [x] Fixed glitching: used ref-based content accumulation to prevent re-render issues
-- [x] Fixed cursor placement: cursor now appears inline at end of text instead of on new line
-- [x] Used `step-end` timing for crisp blinking effect
-- [x] Fixed streaming: Now yields individual characters with 30ms delay for visible smooth typing effect
-- [x] Removed outlines and borders from message containers for seamless theme integration
-- [x] Added custom scrollbar styling to match theme colors (accent-primary thumb)
-- [x] Scrollbar positioned on far right with `scrollbar-gutter: stable`
+### 1. Frontend Configuration for Netlify
+- [x] Update `frontend/src/services/api.js` to use environment variables
+- [x] Create `frontend/netlify.toml` for build configuration
+- [x] Create `frontend/.env.example` for environment variable documentation
 
-## Testing
-- [x] Text streaming displays letter-by-letter
-- [x] Default theme is premium on app load
+### 2. Backend Configuration for Render
+- [x] Create `backend/render.yaml` for Render deployment
+- [x] Update `backend/main.py` CORS to allow Netlify domain
+- [x] Create `backend/.env.example` for environment variables
+- [x] Update `backend/app/core/config.py` to add QDRANT_API_KEY support
+- [x] Update `backend/app/services/qdrant_service.py` to support Qdrant Cloud
 
+### 3. Qdrant Cloud Setup
+- [x] Sign up for Qdrant Cloud (https://cloud.qdrant.io/)
+- [x] Create a cluster (free tier available)
+- [x] Get API endpoint and API key
+- [ ] Update backend environment variables on Render (QDRANT_API_KEY acquired)
+
+### 4. Deployment Steps
+- [ ] Deploy backend to Render
+- [ ] Deploy frontend to Netlify
+- [ ] Configure environment variables on both platforms
+- [ ] Test streaming chat functionality
+- [ ] Ingest documents to Qdrant Cloud
+
+### 5. Post-Deployment
+- [ ] Update Supabase auth redirect URLs
+- [ ] Test end-to-end functionality
+- [ ] Document live URLs

@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 export const chatWithAgent = async (message, token) => {
     try {
@@ -70,4 +70,3 @@ export const chatWithAgentStream = async (message, token, onChunk, onComplete, o
         if (onError) onError("Sorry, I'm having trouble connecting to the server.");
     }
 };
-

@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,9 +18,12 @@ supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_K
 
 app = FastAPI(title="KCA Connect Agentic AI")
 
+# Configure CORS - use environment variable for production, allow all for development
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",") if os.getenv("ALLOWED_ORIGINS") else ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -150,4 +154,3 @@ async def chat_stream(message: str, user=Depends(get_current_user)):
             status_code=500,
             detail=f"An error occurred while processing your request: {str(e)}"
         )
-

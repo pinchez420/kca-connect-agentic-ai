@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: kca-connect-api
+    runtime: python
+    plan: standard
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: QDRANT_URL
+        sync: false  # Set this in Render dashboard after Qdrant Cloud setup
+      - key: QDRANT_API_KEY
+        sync: false  # Set this in Render dashboard after Qdrant Cloud setup
+      - key: GOOGLE_API_KEY
+        sync: false  # Set this in Render dashboard
+      - key: CEREBRAS_API_KEY
+        sync: false  # Optional - set in Render dashboard
+      - key: DEFAULT_LLM
+        value: gemini
+      - key: SUPABASE_URL
+        sync: false  # Set this in Render dashboard
+      - key: SUPABASE_ANON_KEY
+        sync: false  # Set this in Render dashboard
+      - key: COLLECTION_NAME
+        value: kca_documents
+      - key: EMBEDDING_MODEL
+        value: all-MiniLM-L6-v2
+    healthCheckPath: /health
+    autoDeploy: true
