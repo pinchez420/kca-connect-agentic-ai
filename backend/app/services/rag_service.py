@@ -5,6 +5,7 @@ from langchain_cerebras import ChatCerebras
 from qdrant_client import QdrantClient
 from app.core.config import settings
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +110,57 @@ Question: {question}"""
         except Exception as e:
             logger.error(f"Error generating answer: {e}")
             return "I encountered an error while processing your question. Please try again later."
+
+    async def get_answer_stream(self, query: str):
+        """Get answer using RAG pipeline with streaming support - yields individual characters"""
+        try:
+            # Retrieve relevant documents
+            docs = self.search(query)
+            
+            if not docs:
+                yield "I couldn't find any relevant information. Please try rephrasing your question or contact the university administration."
+                return
+            
+            # Combine document contexts
+            context = "\n\n".join([d.page_content for d in docs])
+            
+            # If LLM is available, use it for streaming responses
+            if self.llm:
+                try:
+                    # Create the prompt
+                    prompt = self.system_prompt.format(context=context, question=query)
+                    
+                    # Stream response from LLM
+                    async for chunk in self.llm.astream(prompt):
+                        # Extract content from chunk
+                        if hasattr(chunk, 'content'):
+                            text = chunk.content
+                        else:
+                            text = str(chunk)
+                        
+                        # Yield individual characters for smooth streaming
+                        for char in text:
+                            yield char
+                            # 30ms delay for visible streaming effect
+                            await asyncio.sleep(0.03)
+                except Exception as e:
+                    logger.error(f"Error calling LLM provider: {e}")
+                    # Specific handling for Gemini quota issues
+                    if isinstance(self.llm, ChatGoogleGenerativeAI) and ("RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)):
+                        logger.warning(f"Gemini API quota exceeded: {e}")
+                        yield f"The AI is currently at its limit (Quota Exceeded). Here is the relevant information retrieved from our documents:\n\n{context}"
+                    else:
+                        yield f"I had trouble summarizing the information, but here is what I found in our records:\n\n{context}"
+            else:
+                # Fallback: return raw context if no LLM
+                fallback_text = f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
+                for char in fallback_text:
+                    yield char
+                    await asyncio.sleep(0.03)
+                
+        except Exception as e:
+            logger.error(f"Error generating streaming answer: {e}")
+            yield "I encountered an error while processing your question. Please try again later."
 
 rag_service = RagService()
 

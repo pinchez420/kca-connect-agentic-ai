@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from app.services.rag_service import rag_service
 from app.core.config import settings
 from supabase import create_client, Client
 import logging
+import asyncio
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -107,3 +109,45 @@ def chat(request: ChatRequest, user=Depends(get_current_user)):
             status_code=500, 
             detail=f"An error occurred while processing your request: {str(e)}"
         )
+
+async def stream_answer_generator(message: str, user):
+    """Generator function for streaming responses"""
+    try:
+        msg_snippet = str(message)
+        if len(msg_snippet) > 100:
+            msg_snippet = msg_snippet[:100] + "..."
+        logger.info(f"Streaming response for user {user.id} - query: {msg_snippet}")
+        
+        async for chunk in rag_service.get_answer_stream(message):
+            yield f"data: {chunk}\n\n"
+        
+        yield "data: [DONE]\n\n"
+    except Exception as e:
+        logger.error(f"Error in streaming: {e}")
+        yield f"data: ERROR: I encountered an error while processing your question. Please try again later.\n\n"
+
+@app.get("/chat/stream")
+async def chat_stream(message: str, user=Depends(get_current_user)):
+    """Streaming chat endpoint using Server-Sent Events (SSE)"""
+    try:
+        if not message or not message.strip():
+            raise HTTPException(status_code=400, detail="Message cannot be empty")
+        
+        return StreamingResponse(
+            stream_answer_generator(message, user),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in streaming chat endpoint: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"An error occurred while processing your request: {str(e)}"
+        )
+

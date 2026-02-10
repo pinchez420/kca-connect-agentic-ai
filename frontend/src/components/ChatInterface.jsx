@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import { chatWithAgent } from "../services/api";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { chatWithAgentStream } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import Settings from "./Settings";
-import { supabase } from "../lib/supabaseClient";
 import UserProfile from "./UserProfile";
 
 const ChatInterface = () => {
@@ -19,13 +18,16 @@ const ChatInterface = () => {
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const streamingContentRef = useRef("");
     const messagesEndRef = useRef(null);
 
-    const scrollToBottom = () => {
+    const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    }, []);
 
-    useEffect(scrollToBottom, [messages]);
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages, scrollToBottom]);
 
     const formatTime = (date) => {
         return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
@@ -44,22 +46,62 @@ const ChatInterface = () => {
             content: input,
             timestamp: new Date()
         };
+        
+        // Clear streaming ref and add user message
+        streamingContentRef.current = "";
         setMessages((prev) => [...prev, userMessage]);
         setInput("");
         setIsLoading(true);
         setError(null);
 
+        // Create a placeholder message for streaming response
+        const streamingMessage = {
+            role: "agent",
+            content: "",
+            timestamp: new Date(),
+            isStreaming: true
+        };
+        
+        setMessages((prev) => [...prev, streamingMessage]);
+
         try {
-            const response = await chatWithAgent(input, session?.access_token);
-            const agentMessage = {
-                role: "agent",
-                content: response,
-                timestamp: new Date()
-            };
-            setMessages((prev) => [...prev, agentMessage]);
+            await chatWithAgentStream(
+                userMessage.content,
+                session?.access_token,
+                // onChunk - accumulate and update smoothly
+                (chunk) => {
+                    streamingContentRef.current += chunk;
+                    setMessages((prev) => {
+                        const updated = [...prev];
+                        const lastMsg = updated[updated.length - 1];
+                        if (lastMsg && lastMsg.role === "agent" && lastMsg.isStreaming) {
+                            lastMsg.content = streamingContentRef.current;
+                        }
+                        return updated;
+                    });
+                },
+                // onComplete - streaming done
+                () => {
+                    setMessages((prev) => {
+                        const updated = [...prev];
+                        const lastMsg = updated[updated.length - 1];
+                        if (lastMsg && lastMsg.role === "agent") {
+                            lastMsg.isStreaming = false;
+                        }
+                        return updated;
+                    });
+                    setIsLoading(false);
+                },
+                // onError
+                (errMsg) => {
+                    setError(errMsg || "Failed to get response. Please try again.");
+                    setIsLoading(false);
+                    // Remove the streaming message on error
+                    setMessages((prev) => prev.filter((msg) => !msg.isStreaming));
+                }
+            );
         } catch (err) {
             setError("Failed to get response. Please try again.");
-        } finally {
             setIsLoading(false);
         }
     };
@@ -73,6 +115,31 @@ const ChatInterface = () => {
     };
 
     const isPremium = theme === 'premium';
+
+    // Helper to render message content with cursor
+    const renderMessageContent = (content, isStreaming) => {
+        if (!content) return null;
+        
+        const lines = content.split("\n");
+        const lastLine = lines[lines.length - 1];
+        const otherLines = lines.slice(0, -1);
+        
+        return (
+            <>
+                {otherLines.map((line, i) => (
+                    <p key={i} className="mb-1 last:mb-0 text-sm leading-relaxed">
+                        {line}
+                    </p>
+                ))}
+                <p className="text-sm leading-relaxed inline">
+                    {lastLine}
+                    {isStreaming && (
+                        <span className="streaming-cursor inline-block w-0.5 h-4 bg-accent-primary ml-0.5 align-middle" />
+                    )}
+                </p>
+            </>
+        );
+    };
 
     return (
         <div className={`flex flex-col h-screen bg-bg-primary transition-colors duration-300 ${isPremium ? 'premium-glow' : ''}`}>
@@ -94,8 +161,8 @@ const ChatInterface = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 max-w-4xl w-full mx-auto">
-                <div className="space-y-4">
+            <div className="flex-1 overflow-y-auto px-4 py-6 w-full scrollbar-thin scrollbar-thumb-accent-primary scrollbar-track-transparent">
+                <div className="max-w-4xl mx-auto space-y-4">
                     {messages.map((msg, index) => (
                         <div
                             key={index}
@@ -104,18 +171,22 @@ const ChatInterface = () => {
                             <div
                                 className={`group max-w-[75%] ${msg.role === "user"
                                     ? (isPremium ? "premium-gradient-bg text-white" : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white") + " rounded-2xl rounded-br-md"
-                                    : "bg-bg-secondary/80 backdrop-blur-sm text-text-primary shadow-md rounded-2xl rounded-bl-md border border-border-primary"
-                                    } p-4 transition-all duration-200 hover:shadow-lg`}
+                                    : "bg-bg-secondary/60 backdrop-blur-sm text-text-primary rounded-2xl rounded-bl-md"
+                                    } p-4 transition-all duration-200`}
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex-1">
-                                        {msg.content.split("\n").map((line, i) => (
-                                            <p key={i} className="mb-1 last:mb-0 text-sm leading-relaxed">
-                                                {line}
-                                            </p>
-                                        ))}
+                                        {msg.role === "user" ? (
+                                            msg.content.split("\n").map((line, i) => (
+                                                <p key={i} className="mb-1 last:mb-0 text-sm leading-relaxed">
+                                                    {line}
+                                                </p>
+                                            ))
+                                        ) : (
+                                            renderMessageContent(msg.content, msg.isStreaming)
+                                        )}
                                     </div>
-                                    {msg.role === "agent" && (
+                                    {msg.role === "agent" && !msg.isStreaming && (
                                         <button
                                             onClick={() => copyToClipboard(msg.content)}
                                             className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-bg-primary rounded"
@@ -133,9 +204,9 @@ const ChatInterface = () => {
                             </div>
                         </div>
                     ))}
-                    {isLoading && (
+                    {isLoading && !messages.some(m => m.isStreaming) && (
                         <div className="flex justify-start">
-                            <div className="bg-bg-secondary/80 backdrop-blur-sm p-4 rounded-2xl rounded-bl-md shadow-md border border-border-primary">
+                            <div className="bg-bg-secondary/60 backdrop-blur-sm p-4 rounded-2xl rounded-bl-md">
                                 <div className="flex items-center gap-2">
                                     <div className="flex gap-1">
                                         <div className={`w-2 h-2 ${isPremium ? 'bg-amber-500' : 'bg-accent-primary'} rounded-full animate-bounce`} style={{ animationDelay: '0ms' }}></div>
@@ -174,7 +245,7 @@ const ChatInterface = () => {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Ask about timetables, fees, exams..."
-                        className={`flex-1 p-3 rounded-xl border-2 border-border-primary focus:outline-none focus:border-accent-primary bg-bg-primary text-text-primary transition-all duration-200`}
+                        className={`flex-1 p-3 rounded-xl border border-border-primary/50 focus:border-accent-primary bg-bg-primary/50 text-text-primary transition-all duration-200 outline-none`}
                         disabled={isLoading}
                     />
                     <button
@@ -191,3 +262,4 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
+
