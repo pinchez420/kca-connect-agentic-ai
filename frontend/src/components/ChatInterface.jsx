@@ -4,6 +4,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import Settings from "./Settings";
 import UserProfile from "./UserProfile";
+import kcaLogo from "../assets/kca-logo.png";
 
 const ChatInterface = () => {
     const { theme } = useTheme();
@@ -146,11 +147,14 @@ const ChatInterface = () => {
             {/* Header */}
             <div className={`bg-bg-secondary/80 backdrop-blur-md shadow-sm border-b border-border-primary p-4 z-10`}>
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
-                    <div>
-                        <h1 className={`text-2xl font-bold ${isPremium ? 'premium-gradient-text' : 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'}`}>
-                            KCA Connect AI
-                        </h1>
-                        <p className={`text-sm text-text-secondary`}>Your intelligent university assistant</p>
+                    <div className="flex items-center gap-3">
+                        <img src={kcaLogo} alt="KCA University Logo" className="w-10 h-10 object-contain" />
+                        <div>
+                            <h1 className={`text-2xl font-bold ${isPremium ? 'premium-gradient-text' : 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'}`}>
+                                KCA Connect AI
+                            </h1>
+                            <p className={`text-sm text-text-secondary`}>Your intelligent university assistant</p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-4">
                         <Settings />

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import Settings from './Settings';
+import kcaLogo from '../assets/kca-logo.png';
 
 const LandingPage = () => {
     const { theme } = useTheme();
@@ -67,7 +68,8 @@ const LandingPage = () => {
             <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-primary/80 backdrop-blur-md border-b border-border-primary px-6 py-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg ${isPremium ? 'premium-gradient-bg' : 'bg-blue-600'}`}>
+                        <img src={kcaLogo} alt="KCA University Logo" className="w-10 h-10 object-contain" />
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg ${isPremium ? 'premium-gradient-bg' : 'bg-blue-600'}`} style={{ display: 'none' }}>
                             K
                         </div>
                         <span className={`text-xl font-bold tracking-tight ${isPremium ? 'premium-gradient-text' : ''}`}>
