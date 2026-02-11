@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { chatWithAgentStream } from "../services/api";
+import { chatWithAgentStream, autoSaveChat as autoSaveChatApi } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import Sidebar from "./Sidebar";
+import ChatHistoryModal from "./ChatHistoryModal";
 import kcaLogo from "../assets/kca-logo.png";
 
 const ChatInterface = () => {
@@ -12,16 +13,21 @@ const ChatInterface = () => {
         {
             role: "agent",
             content: "Hello! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?",
-            timestamp: new Date()
+            timestamp: new Date().toISOString()
         },
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [saveSuccess, setSaveSuccess] = useState(false);
     const streamingContentRef = useRef("");
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
     const abortControllerRef = useRef(null);
+    const currentChatIdRef = useRef(null);
+
+    // Modal states
+    const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
     const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,7 +37,8 @@ const ChatInterface = () => {
         scrollToBottom();
     }, [messages, scrollToBottom]);
 
-    const formatTime = (date) => {
+    const formatTime = (dateString) => {
+        const date = new Date(dateString);
         return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     };
 
@@ -49,6 +56,48 @@ const ChatInterface = () => {
             }));
     };
 
+    // Auto-save chat after completion
+    const autoSaveChat = useCallback(async () => {
+        if (messages.length <= 1) return; // Don't save just the greeting
+
+        const chatMessages = messages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+            timestamp: msg.timestamp
+        }));
+
+        // Generate title from first user message
+        const firstUserMsg = messages.find(m => m.role === 'user');
+        const title = firstUserMsg 
+            ? (firstUserMsg.content.length > 30 ? firstUserMsg.content.substring(0, 30) + "..." : firstUserMsg.content)
+            : "New Chat";
+
+        try {
+            const result = await autoSaveChatApi(session.access_token, chatMessages, title, currentChatIdRef.current);
+            if (result && result.chat_id) {
+                currentChatIdRef.current = result.chat_id;
+            }
+        } catch (err) {
+            console.error("Auto-save failed:", err);
+        }
+    }, [messages, session]);
+
+    // Manual save chat
+    const handleSaveChat = async () => {
+        if (messages.length <= 1) {
+            setError("No chat to save. Start a conversation first.");
+            return;
+        }
+
+        try {
+            const result = await autoSaveChat();
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        } catch (err) {
+            setError("Failed to save chat. Please try again.");
+        }
+    };
+
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
@@ -59,7 +108,7 @@ const ChatInterface = () => {
         const userMessage = {
             role: "user",
             content: input,
-            timestamp: new Date()
+            timestamp: new Date().toISOString()
         };
 
         const conversationHistory = getConversationHistory();
@@ -73,7 +122,7 @@ const ChatInterface = () => {
         const streamingMessage = {
             role: "agent",
             content: "",
-            timestamp: new Date(),
+            timestamp: new Date().toISOString(),
             isStreaming: true
         };
 
@@ -94,8 +143,8 @@ const ChatInterface = () => {
                         return updated;
                     });
                 },
-                () => {
-                    // Success completion
+                async () => {
+                    // Success completion - save chat
                     setMessages((prev) => {
                         const updated = [...prev];
                         const lastMsg = updated[updated.length - 1];
@@ -106,10 +155,14 @@ const ChatInterface = () => {
                     });
                     setIsLoading(false);
                     abortControllerRef.current = null;
+                    
                     // Auto-focus input after response completion
                     setTimeout(() => {
                         inputRef.current?.focus();
                     }, 100);
+
+                    // Save the chat
+                    await autoSaveChat();
                 },
                 (errMsg) => {
                     // Error
@@ -120,8 +173,8 @@ const ChatInterface = () => {
                 },
                 conversationHistory,
                 abortControllerRef.current?.signal,
-                () => {
-                    // Abort callback - stop was triggered
+                async () => {
+                    // Abort callback - stop was triggered - save partial chat
                     setMessages((prev) => {
                         const updated = [...prev];
                         const lastMsg = updated[updated.length - 1];
@@ -136,10 +189,14 @@ const ChatInterface = () => {
                     });
                     setIsLoading(false);
                     abortControllerRef.current = null;
+                    
                     // Auto-focus input after stop
                     setTimeout(() => {
                         inputRef.current?.focus();
                     }, 100);
+
+                    // Save the partial chat
+                    await autoSaveChat();
                 }
             );
         } catch (err) {
@@ -166,11 +223,22 @@ const ChatInterface = () => {
             {
                 role: "agent",
                 content: "Hello! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?",
-                timestamp: new Date()
+                timestamp: new Date().toISOString()
             },
         ]);
         setInput("");
         setError(null);
+        currentChatIdRef.current = null;
+    };
+
+    const handleLoadChat = (chat) => {
+        // Load a saved chat
+        const loadedMessages = chat.messages.map(msg => ({
+            ...msg,
+            timestamp: msg.timestamp || new Date().toISOString()
+        }));
+        setMessages(loadedMessages);
+        currentChatIdRef.current = chat.id;
     };
 
     const isPremium = theme === 'premium';
@@ -202,7 +270,11 @@ const ChatInterface = () => {
     return (
         <div className={`flex h-screen bg-bg-primary transition-colors duration-300 ${isPremium ? 'premium-glow' : ''}`}>
             {/* Left Sidebar */}
-            <Sidebar onNewChat={handleNewChat} />
+            <Sidebar 
+                onNewChat={handleNewChat}
+                onOpenHistory={() => setIsHistoryOpen(true)}
+                onSaveChat={handleSaveChat}
+            />
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col h-full overflow-hidden">
@@ -229,7 +301,7 @@ const ChatInterface = () => {
                             >
                                 <div
                                     className={`group max-w-[85%] ${msg.role === "user"
-                                        ? (isPremium ? "premium-gradient-bg text-white" : "bg-gradient-to-r from-indigo-600 to-purple-600 text-white") + " rounded-2xl rounded-br-md"
+                                        ? (isPremium ? 'premium-gradient-bg text-white' : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white') + " rounded-2xl rounded-br-md"
                                         : msg.isSystem
                                             ? "bg-bg-secondary/80 border border-accent-primary/30 text-text-primary rounded-2xl rounded-bl-md"
                                             : "bg-bg-secondary/60 backdrop-blur-sm text-text-primary rounded-2xl rounded-bl-md"
@@ -309,6 +381,21 @@ const ChatInterface = () => {
                     </div>
                 )}
 
+                {/* Success Message */}
+                {saveSuccess && (
+                    <div className="max-w-4xl w-full mx-auto px-4 pb-2">
+                        <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 flex items-center justify-between">
+                            <span className="text-sm text-green-500">Chat saved successfully!</span>
+                            <button
+                                onClick={() => setSaveSuccess(false)}
+                                className="text-sm text-green-500 font-semibold hover:underline"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Input Form */}
                 <div className={`bg-bg-secondary/80 backdrop-blur-md shadow-lg border-t border-border-primary p-4`}>
                     <form onSubmit={handleSend} className="max-w-4xl mx-auto flex gap-3">
@@ -345,9 +432,15 @@ const ChatInterface = () => {
                     </form>
                 </div>
             </div>
+
+            {/* Chat History Modal - Shows ALL chats */}
+            <ChatHistoryModal
+                isOpen={isHistoryOpen}
+                onClose={() => setIsHistoryOpen(false)}
+                onLoadChat={handleLoadChat}
+            />
         </div>
     );
 };
 
 export default ChatInterface;
-

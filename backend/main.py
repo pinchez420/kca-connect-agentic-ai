@@ -9,8 +9,10 @@ from app.services.rag_service import rag_service
 from app.services.web_search_service import web_search_service
 from app.core.config import settings
 from supabase import create_client, Client
+from uuid import UUID
 import logging
 import asyncio
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -191,6 +193,34 @@ class UrlFetchResponse(BaseModel):
     content: str
     error: Optional[str] = None
 
+# Chat History Models
+class ChatMessage(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+    timestamp: str
+
+class CreateChatRequest(BaseModel):
+    title: Optional[str] = None
+    messages: List[ChatMessage]
+
+class UpdateChatRequest(BaseModel):
+    title: Optional[str] = None
+    messages: Optional[List[ChatMessage]] = None
+    is_saved: Optional[bool] = None
+
+class ChatResponse(BaseModel):
+    id: str
+    user_id: str
+    title: str
+    messages: List[ChatMessage]
+    is_saved: bool
+    created_at: str
+    updated_at: str
+
+class ChatListResponse(BaseModel):
+    chats: List[dict]
+    total: int
+
 @app.post("/web/search", response_model=WebSearchResponse)
 def web_search(request: WebSearchRequest, user=Depends(get_current_user)):
     """
@@ -243,3 +273,345 @@ def fetch_url(request: UrlFetchRequest, user=Depends(get_current_user)):
             status_code=500,
             detail=f"Failed to fetch URL: {str(e)}"
         )
+
+# ============ Chat History Endpoints ============
+
+@app.get("/chats", response_model=ChatListResponse)
+def get_chats(
+    limit: int = 50, 
+    offset: int = 0, 
+    saved_only: bool = False,
+    user=Depends(get_current_user)
+):
+    """
+    Get all chats for the authenticated user (with pagination)
+    """
+    try:
+        logger.info(f"Fetching chats for user {user.id}, saved_only={saved_only}")
+        
+        # Use httpx directly to bypass any Supabase client issues
+        import httpx
+        
+        headers = {
+            "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+            "apikey": settings.SUPABASE_SERVICE_KEY,
+            "Content-Type": "application/json"
+        }
+        
+        # Build query URL
+        params = {
+            "select": "*",
+            "user_id": f"eq.{user.id}",
+            "order": "updated_at.desc",
+            "offset": offset,
+            "limit": limit
+        }
+        
+        if saved_only:
+            params["is_saved"] = "eq.true"
+        
+        with httpx.Client() as client:
+            url = f"{settings.SUPABASE_URL}/rest/v1/chats"
+            response = client.get(url, headers=headers, params=params)
+            
+            logger.info(f"Direct REST API response status: {response.status_code}")
+            logger.info(f"Direct REST API response: {response.text}")
+            
+            if response.status_code == 200:
+                chats = response.json()
+                return {
+                    "chats": chats,
+                    "total": len(chats)
+                }
+            else:
+                logger.error(f"Failed to fetch chats: {response.status_code} - {response.text}")
+                raise HTTPException(status_code=500, detail="Failed to fetch chats")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching chats: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch chats")
+
+@app.get("/chats/{chat_id}", response_model=ChatResponse)
+def get_chat(chat_id: str, user=Depends(get_current_user)):
+    """
+    Get a specific chat by ID
+    """
+    try:
+        result = supabase.table("chats").select("*").eq("id", chat_id).eq("user_id", user.id).execute()
+        
+        if not result.data or len(result.data) == 0:
+            raise HTTPException(status_code=404, detail="Chat not found")
+        
+        chat = result.data[0]
+        return {
+            "id": chat["id"],
+            "user_id": chat["user_id"],
+            "title": chat["title"],
+            "messages": chat["messages"],
+            "is_saved": chat["is_saved"],
+            "created_at": chat["created_at"],
+            "updated_at": chat["updated_at"]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching chat: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch chat")
+
+@app.post("/chats", response_model=ChatResponse)
+def create_chat(request: CreateChatRequest, user=Depends(get_current_user), authorization: str = Header(None)):
+    """
+    Create a new chat
+    """
+    try:
+        # Extract the user's JWT token
+        token = authorization.split(" ")[1] if " " in authorization else authorization
+        
+        # Create a new Supabase client with the user's token for authenticated operations
+        user_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+        user_supabase.auth.set_session(token, user.id)
+        
+        # Generate title from first message if not provided
+        title = request.title
+        if not title and request.messages:
+            first_msg = request.messages[0].content if hasattr(request.messages[0], 'content') else request.messages[0]['content']
+            title = first_msg[:50] + "..." if len(first_msg) > 50 else first_msg
+        
+        chat_data = {
+            "user_id": user.id,
+            "title": title or "New Chat",
+            "messages": [m.model_dump() if hasattr(m, 'model_dump') else m for m in request.messages],
+            "is_saved": False
+        }
+        
+        result = user_supabase.table("chats").insert(chat_data).execute()
+        
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to create chat")
+        
+        chat = result.data[0]
+        return {
+            "id": chat["id"],
+            "user_id": chat["user_id"],
+            "title": chat["title"],
+            "messages": chat["messages"],
+            "is_saved": chat["is_saved"],
+            "created_at": chat["created_at"],
+            "updated_at": chat["updated_at"]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating chat: {e}")
+        raise HTTPException(status_code=500, detail="Failed to create chat")
+
+@app.put("/chats/{chat_id}", response_model=ChatResponse)
+def update_chat(chat_id: str, request: UpdateChatRequest, user=Depends(get_current_user), authorization: str = Header(None)):
+    """
+    Update an existing chat (messages, title, or saved status)
+    """
+    try:
+        # Extract the user's JWT token
+        token = authorization.split(" ")[1] if " " in authorization else authorization
+        
+        # Create a new Supabase client with the user's token for authenticated operations
+        user_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+        user_supabase.auth.set_session(token, user.id)
+        
+        # First verify the chat belongs to the user
+        check = user_supabase.table("chats").select("id").eq("id", chat_id).eq("user_id", user.id).execute()
+        if not check.data or len(check.data) == 0:
+            raise HTTPException(status_code=404, detail="Chat not found")
+        
+        # Build update data
+        update_data = {}
+        if request.title is not None:
+            update_data["title"] = request.title
+        if request.messages is not None:
+            update_data["messages"] = [m.model_dump() if hasattr(m, 'model_dump') else m for m in request.messages]
+        if request.is_saved is not None:
+            update_data["is_saved"] = request.is_saved
+        
+        update_data["updated_at"] = datetime.utcnow().isoformat()
+        
+        result = user_supabase.table("chats").update(update_data).eq("id", chat_id).execute()
+        
+        if not result.data:
+            raise HTTPException(status_code=500, detail="Failed to update chat")
+        
+        chat = result.data[0]
+        return {
+            "id": chat["id"],
+            "user_id": chat["user_id"],
+            "title": chat["title"],
+            "messages": chat["messages"],
+            "is_saved": chat["is_saved"],
+            "created_at": chat["created_at"],
+            "updated_at": chat["updated_at"]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating chat: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update chat")
+
+@app.delete("/chats/{chat_id}")
+def delete_chat(chat_id: str, user=Depends(get_current_user), authorization: str = Header(None)):
+    """
+    Delete a chat
+    """
+    try:
+        # Extract the user's JWT token
+        token = authorization.split(" ")[1] if " " in authorization else authorization
+        
+        # Create a new Supabase client with the user's token for authenticated operations
+        user_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+        user_supabase.auth.set_session(token, user.id)
+        
+        # First verify the chat belongs to the user
+        check = user_supabase.table("chats").select("id").eq("id", chat_id).eq("user_id", user.id).execute()
+        if not check.data or len(check.data) == 0:
+            raise HTTPException(status_code=404, detail="Chat not found")
+        
+        user_supabase.table("chats").delete().eq("id", chat_id).execute()
+        
+        return {"message": "Chat deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting chat: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete chat")
+
+@app.post("/chats/{chat_id}/save")
+def toggle_save_chat(chat_id: str, user=Depends(get_current_user), authorization: str = Header(None)):
+    """
+    Toggle the saved status of a chat
+    """
+    try:
+        # Extract the user's JWT token
+        token = authorization.split(" ")[1] if " " in authorization else authorization
+        
+        # Create a new Supabase client with the user's token for authenticated operations
+        user_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+        user_supabase.auth.set_session(token, user.id)
+        
+        # First get current status
+        result = user_supabase.table("chats").select("id, is_saved").eq("id", chat_id).eq("user_id", user.id).execute()
+        
+        if not result.data or len(result.data) == 0:
+            raise HTTPException(status_code=404, detail="Chat not found")
+        
+        current_status = result.data[0]["is_saved"]
+        new_status = not current_status
+        
+        update_result = user_supabase.table("chats").update({
+            "is_saved": new_status,
+            "updated_at": datetime.utcnow().isoformat()
+        }).eq("id", chat_id).execute()
+        
+        return {
+            "message": f"Chat {'saved' if new_status else 'unsaved'} successfully",
+            "is_saved": new_status
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error toggling save status: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update save status")
+
+@app.post("/chats/saved", response_model=ChatListResponse)
+def get_saved_chats(limit: int = 50, offset: int = 0, user=Depends(get_current_user)):
+    """
+    Get all saved chats for the authenticated user
+    """
+    return get_chats(limit=limit, offset=offset, saved_only=True, user=user)
+
+class AutoSaveRequest(BaseModel):
+    title: Optional[str] = None
+    messages: List[ChatMessage]
+    chat_id: Optional[str] = None
+
+@app.post("/auto-save")
+def auto_save_chat(request: AutoSaveRequest, user=Depends(get_current_user)):
+    """
+    Auto-save chat: Creates a new chat or updates existing one
+    If chat_id is provided, updates that chat. Otherwise creates new.
+    """
+    try:
+        import httpx
+        
+        # Generate title from first message if not provided
+        title = request.title
+        if not title and request.messages:
+            first_msg = request.messages[0].content if hasattr(request.messages[0], 'content') else request.messages[0]['content']
+            title = first_msg[:50] + "..." if len(first_msg) > 50 else first_msg
+        
+        headers = {
+            "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+            "apikey": settings.SUPABASE_SERVICE_KEY,
+            "Content-Type": "application/json",
+            "Prefer": "return=representation"
+        }
+        
+        with httpx.Client() as client:
+            # If chat_id provided, try to update existing chat
+            if request.chat_id:
+                # First verify the chat belongs to the user
+                check_url = f"{settings.SUPABASE_URL}/rest/v1/chats?id=eq.{request.chat_id}&user_id=eq.{user.id}"
+                check_response = client.get(check_url, headers=headers)
+                
+                if check_response.status_code == 200 and check_response.json():
+                    # Chat exists and belongs to user - UPDATE it
+                    update_data = {
+                        "title": title or "New Chat",
+                        "messages": [m.model_dump() if hasattr(m, 'model_dump') else m for m in request.messages],
+                        "updated_at": datetime.utcnow().isoformat()
+                    }
+                    
+                    update_url = f"{settings.SUPABASE_URL}/rest/v1/chats?id=eq.{request.chat_id}"
+                    update_response = client.patch(update_url, headers=headers, json=update_data)
+                    
+                    logger.info(f"Auto-save update response status: {update_response.status_code}")
+                    
+                    if update_response.status_code in [200, 201]:
+                        result = update_response.json()
+                        logger.info(f"Chat auto-saved (updated) successfully: {request.chat_id}")
+                        return {
+                            "success": True,
+                            "chat_id": request.chat_id,
+                            "message": "Chat updated successfully"
+                        }
+            
+            # Either no chat_id provided, or update failed - CREATE new chat
+            chat_data = {
+                "user_id": user.id,
+                "title": title or "New Chat",
+                "messages": [m.model_dump() if hasattr(m, 'model_dump') else m for m in request.messages],
+                "is_saved": False
+            }
+            
+            url = f"{settings.SUPABASE_URL}/rest/v1/chats"
+            response = client.post(url, headers=headers, json=chat_data)
+            
+            logger.info(f"Auto-save create response status: {response.status_code}")
+            
+            if response.status_code in [200, 201]:
+                result = response.json()
+                chat_id = result[0]['id'] if result else None
+                logger.info(f"Chat auto-saved (created) successfully: {chat_id}")
+                return {
+                    "success": True,
+                    "chat_id": chat_id,
+                    "message": "Chat created successfully"
+                }
+            else:
+                logger.error(f"Auto-save failed: {response.status_code} - {response.text}")
+                raise HTTPException(status_code=500, detail="Failed to auto-save chat")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in auto-save: {e}")
+        raise HTTPException(status_code=500, detail="Failed to auto-save chat")
