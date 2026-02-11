@@ -1,10 +1,11 @@
-
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_cerebras import ChatCerebras
+from langchain_groq import ChatGroq
 from qdrant_client import QdrantClient
 from app.core.config import settings
+from app.services.web_search_service import web_search_service
 import logging
 import asyncio
 import re
@@ -24,10 +25,13 @@ class RagService:
         self.llm = self._initialize_llm()
 
         # Create custom prompt template
-        self.system_prompt = """You are a helpful AI assistant for KCA University. Use the following context and conversation history to answer the student's question.
+        self.system_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. Use the following context from documents, web search results, and conversation history to answer the student's question.
 
 Context from documents:
 {context}
+
+Web Search Results:
+{web_context}
 
 Conversation History:
 {history}
@@ -35,15 +39,30 @@ Conversation History:
 Current Question: {question}
 
 Instructions:
-1. Use the context above to provide accurate information about KCA University
-2. If the question refers to previous topics (using words like "it", "its", "they", "them", "this", "that"), use the conversation history to understand what is being referred to
-3. If you cannot find the answer in the context, say so honestly and suggest they contact the university administration
-4. Always maintain context from the conversation history when answering follow-up questions"""
+1. You are KCA Connect AI, the official AI assistant of KCA University
+2. If asked about your name, identify yourself as "KCA Connect AI"
+3. Use the context above to provide accurate information about KCA University
+4. If the question refers to previous topics (using words like "it", "its", "they", "them", "this", "that"), use the conversation history to understand what is being referred to
+5. If you cannot find the answer in the context, say so honestly and suggest they contact the university administration
+6. For current events or real-time information, use the web search results provided
+7. Always maintain context from the conversation history when answering follow-up questions"""
 
     def _initialize_llm(self):
-        """Initialize the preferred LLM based on configuration and availability"""
-        # 1. Try Cerebras if configured
-        if settings.CEREBRAS_API_KEY and (settings.DEFAULT_LLM == "cerebras" or not settings.GOOGLE_API_KEY):
+        """Initialize the preferred LLM based on configuration and preference"""
+        # 1. Try Groq if configured OR if it's the default preference
+        if settings.GROQ_API_KEY and (settings.DEFAULT_LLM == "groq" or not settings.CEREBRAS_API_KEY):
+            try:
+                logger.info("Initializing Groq LLM (llama-3.3-70b-versatile)")
+                return ChatGroq(
+                    model="llama-3.3-70b-versatile",
+                    groq_api_key=settings.GROQ_API_KEY,
+                    temperature=0.3,
+                )
+            except Exception as e:
+                logger.error(f"Failed to initialize Groq LLM: {e}")
+        
+        # 2. Try Cerebras only if it's the configured default AND Groq failed
+        if settings.DEFAULT_LLM == "cerebras" and settings.CEREBRAS_API_KEY:
             try:
                 logger.info("Initializing Cerebras LLM (llama-3.3-70b)")
                 return ChatCerebras(
@@ -54,8 +73,8 @@ Instructions:
             except Exception as e:
                 logger.error(f"Failed to initialize Cerebras LLM: {e}")
 
-        # 2. Try Gemini
-        if settings.GOOGLE_API_KEY:
+        # 3. Try Gemini only if it's the configured default AND Groq/Cerebras failed
+        if settings.DEFAULT_LLM == "gemini" and settings.GOOGLE_API_KEY:
             try:
                 logger.info("Initializing Gemini LLM (gemini-2.0-flash)")
                 return ChatGoogleGenerativeAI(
@@ -105,6 +124,68 @@ Instructions:
         except Exception as e:
             logger.error(f"Error checking relevance: {e}")
             return False
+
+    def search_web(self, query: str, num_results: int = 3) -> str:
+        """
+        Search the web and return formatted results
+        
+        Args:
+            query: Search query
+            num_results: Number of results to return
+            
+        Returns:
+            Formatted web search results string
+        """
+        try:
+            results = web_search_service.search_web(query, num_results)
+            
+            if not results:
+                return ""
+            
+            formatted_results = []
+            for i, result in enumerate(results, 1):
+                formatted_results.append(f"{i}. {result.get('title', 'No title')}")
+                formatted_results.append(f"   URL: {result.get('url', '')}")
+                if result.get('snippet'):
+                    formatted_results.append(f"   Summary: {result['snippet'][:150]}...")
+                formatted_results.append("")
+            
+            logger.info(f"Web search returned {len(results)} results for '{query}'")
+            return "\n".join(formatted_results)
+            
+        except Exception as e:
+            logger.error(f"Web search failed: {e}")
+            return ""
+
+    def _should_search_web(self, query: str) -> bool:
+        """
+        Determine if a query should trigger web search
+        
+        Args:
+            query: User query
+            
+        Returns:
+            True if web search should be performed
+        """
+        # Keywords that suggest current/real-time information is needed
+        current_keywords = [
+            'news', 'latest', 'recent', 'current', 'today', 'tomorrow',
+            '2024', '2025', '2023', 'deadline', 'announcement',
+            'update', 'status', 'now', 'this week', 'this month'
+        ]
+        
+        query_lower = query.lower()
+        
+        # Check for current information keywords
+        for keyword in current_keywords:
+            if keyword in query_lower:
+                return True
+        
+        # Check for question marks suggesting information seeking
+        if '?' in query and len(query.split()) > 4:
+            return True
+        
+        return False
 
     def _extract_key_topics(self, text: str) -> list:
         """Extract key topics/entities from text that might be referenced later"""
@@ -215,22 +296,34 @@ Instructions:
                     for msg in history[-6:]  # Last 6 messages
                 ])
             
+            # Check if we should search the web
+            should_search = self._should_search_web(original_query)
+            web_context = ""
+            
+            if not self.should_use_rag(query) or should_search:
+                logger.info(f"Query '{query}' doesn't match documents well. Searching the web...")
+                web_context = self.search_web(query)
+            
             if not self.should_use_rag(query):
                 if self.llm:
                     try:
-                        # Include history in the prompt even for general questions
-                        if history_text:
-                            contextual_prompt = f"""You are a helpful AI assistant for KCA University.
+                        # Include history and web context in the prompt
+                        if history_text or web_context:
+                            contextual_prompt = f"""You are KCA Connect AI, the official AI assistant of KCA University.
 
 Conversation History:
 {history_text}
 
+Web Search Results:
+{web_context if web_context else 'No web search results available.'}
+
 Current Question: {original_query}
 
-Please answer based on the conversation context above. If this is a follow-up question, refer to previous topics discussed."""
+You are KCA Connect AI. Please answer based on the conversation context and web search results above."""
                             response = self.llm.invoke(contextual_prompt)
                         else:
-                            response = self.llm.invoke(original_query)
+                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI."""
+                            response = self.llm.invoke(contextual_prompt)
                         
                         if hasattr(response, 'content'):
                             return response.content
@@ -248,7 +341,8 @@ Please answer based on the conversation context above. If this is a follow-up qu
             if self.llm:
                 try:
                     prompt = self.system_prompt.format(
-                        context=context, 
+                        context=context,
+                        web_context=web_context if web_context else "No web search results available.",
                         history=history_text,
                         question=original_query
                     )
@@ -288,20 +382,33 @@ Please answer based on the conversation context above. If this is a follow-up qu
                     for msg in history[-6:]  # Last 6 messages
                 ])
             
+            # Check if we should search the web
+            should_search = self._should_search_web(original_query)
+            web_context = ""
+            
+            if not self.should_use_rag(query) or should_search:
+                logger.info(f"Query '{query}' doesn't match documents well. Searching the web...")
+                web_context = self.search_web(query)
+                
+                if web_context:
+                    logger.info(f"Web search found results, enriching context")
+            
             if not self.should_use_rag(query):
-                logger.info(f"Query '{query}' doesn't match documents well. Using LLM's general knowledge.")
                 if self.llm:
                     try:
-                        # Include history in the prompt even for general questions
-                        if history_text:
-                            contextual_prompt = f"""You are a helpful AI assistant for KCA University.
+                        # Include history and web context in the prompt
+                        if history_text or web_context:
+                            contextual_prompt = f"""You are KCA Connect AI, the official AI assistant of KCA University.
 
 Conversation History:
 {history_text}
 
+Web Search Results:
+{web_context if web_context else 'No web search results available.'}
+
 Current Question: {original_query}
 
-Please answer based on the conversation context above. If this is a follow-up question, refer to previous topics discussed."""
+You are KCA Connect AI. Please answer based on the conversation context and web search results above."""
                             async for chunk in self.llm.astream(contextual_prompt):
                                 if hasattr(chunk, 'content'):
                                     text = chunk.content
@@ -312,7 +419,8 @@ Please answer based on the conversation context above. If this is a follow-up qu
                                     yield char
                                     await asyncio.sleep(0.03)
                         else:
-                            async for chunk in self.llm.astream(original_query):
+                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI."""
+                            async for chunk in self.llm.astream(contextual_prompt):
                                 if hasattr(chunk, 'content'):
                                     text = chunk.content
                                 else:
@@ -337,6 +445,7 @@ Please answer based on the conversation context above. If this is a follow-up qu
                 try:
                     prompt = self.system_prompt.format(
                         context=context,
+                        web_context=web_context if web_context else "No web search results available.",
                         history=history_text,
                         question=original_query
                     )

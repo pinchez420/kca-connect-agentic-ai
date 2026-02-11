@@ -1,10 +1,12 @@
 import os
+import json
 from fastapi import FastAPI, HTTPException, Depends, Header
 from pydantic import BaseModel
 from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from app.services.rag_service import rag_service
+from app.services.web_search_service import web_search_service
 from app.core.config import settings
 from supabase import create_client, Client
 import logging
@@ -169,4 +171,75 @@ async def chat_stream(message: str, history: str = "[]", user=Depends(get_curren
         raise HTTPException(
             status_code=500,
             detail=f"An error occurred while processing your request: {str(e)}"
+        )
+
+class WebSearchRequest(BaseModel):
+    query: str
+    num_results: int = 5
+
+class WebSearchResponse(BaseModel):
+    results: List[dict]
+    query: str
+
+class UrlFetchRequest(BaseModel):
+    url: str
+
+class UrlFetchResponse(BaseModel):
+    success: bool
+    title: str
+    url: str
+    content: str
+    error: Optional[str] = None
+
+@app.post("/web/search", response_model=WebSearchResponse)
+def web_search(request: WebSearchRequest, user=Depends(get_current_user)):
+    """
+    Search the web for information (Protected endpoint)
+    Uses Tavily API if available, falls back to DuckDuckGo
+    """
+    try:
+        logger.info(f"User {user.email} requested web search: {request.query}")
+        
+        results = web_search_service.search_web(request.query, num_results=request.num_results)
+        
+        return WebSearchResponse(results=results, query=request.query)
+        
+    except Exception as e:
+        logger.error(f"Error in web search endpoint: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Search failed: {str(e)}"
+        )
+
+@app.post("/web/fetch", response_model=UrlFetchResponse)
+def fetch_url(request: UrlFetchRequest, user=Depends(get_current_user)):
+    """
+    Fetch and parse content from a specific URL (Protected endpoint)
+    """
+    try:
+        logger.info(f"User {user.email} requested URL fetch: {request.url}")
+        
+        result = web_search_service.fetch_url_content(request.url)
+        
+        if not result['success']:
+            return UrlFetchResponse(
+                success=False,
+                title=result.get('title', ''),
+                url=request.url,
+                content='',
+                error=result.get('error', 'Failed to fetch URL')
+            )
+        
+        return UrlFetchResponse(
+            success=True,
+            title=result['title'],
+            url=result['url'],
+            content=result['content']
+        )
+        
+    except Exception as e:
+        logger.error(f"Error in URL fetch endpoint: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch URL: {str(e)}"
         )

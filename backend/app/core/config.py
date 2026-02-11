@@ -8,7 +8,9 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "all-MiniLM-L6-v2"
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     CEREBRAS_API_KEY: str = os.getenv("CEREBRAS_API_KEY", "")
-    DEFAULT_LLM: str = os.getenv("DEFAULT_LLM", "gemini")  # Options: 'gemini', 'cerebras'
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    DEFAULT_LLM: str = os.getenv("DEFAULT_LLM", "groq")  # Options: 'groq', 'gemini', 'cerebras'
+    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
     
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "")
     SUPABASE_ANON_KEY: str = os.getenv("SUPABASE_ANON_KEY", "")

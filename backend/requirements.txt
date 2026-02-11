@@ -13,3 +13,8 @@ PyPDF2
 google-generativeai
 langchain-google-genai
 langchain-cerebras
+langchain-tavily
+beautifulsoup4
+requests
+httpx
+langchain-groq

@@ -23,7 +23,7 @@ export const chatWithAgent = async (message, token, history = []) => {
     }
 };
 
-export const chatWithAgentStream = async (message, token, onChunk, onComplete, onError, history = []) => {
+export const chatWithAgentStream = async (message, token, onChunk, onComplete, onError, history = [], abortSignal = null, onAbort = null) => {
     try {
         const historyParam = history.length > 0 ? `&history=${encodeURIComponent(JSON.stringify(history))}` : "";
         const response = await fetch(`${API_URL}/chat/stream?message=${encodeURIComponent(message)}${historyParam}`, {
@@ -31,6 +31,7 @@ export const chatWithAgentStream = async (message, token, onChunk, onComplete, o
             headers: {
                 "Authorization": `Bearer ${token}`,
             },
+            signal: abortSignal
         });
 
         if (!response.ok) {
@@ -67,7 +68,13 @@ export const chatWithAgentStream = async (message, token, onChunk, onComplete, o
 
         if (onComplete) onComplete();
     } catch (error) {
+        if (error.name === 'AbortError') {
+            // Stop was triggered, notify the caller
+            if (onAbort) onAbort();
+            return;
+        }
         console.error("Error in streaming:", error);
         if (onError) onError("Sorry, I'm having trouble connecting to the server.");
     }
 };
+
