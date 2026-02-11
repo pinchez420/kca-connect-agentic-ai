@@ -241,3 +241,53 @@ export const autoSaveChat = async (token, messages, title = null, chatId = null)
         throw error;
     }
 };
+
+// ============ User Profile API ============
+
+export const updateUserProfile = async (token, profileData) => {
+    try {
+        const response = await fetch(`${API_URL}/user/profile`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(profileData),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to update profile");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        throw error;
+    }
+};
+
+export const uploadAvatar = async (token, file) => {
+    try {
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        const response = await fetch(`${API_URL}/user/avatar`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to upload avatar");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error uploading avatar:", error);
+        throw error;
+    }
+};

@@ -1,6 +1,6 @@
 import os
 import json
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, UploadFile, File, Form
 from pydantic import BaseModel
 from typing import List, Optional
 from fastapi.middleware.cors import CORSMiddleware
@@ -615,3 +615,152 @@ def auto_save_chat(request: AutoSaveRequest, user=Depends(get_current_user)):
     except Exception as e:
         logger.error(f"Error in auto-save: {e}")
         raise HTTPException(status_code=500, detail="Failed to auto-save chat")
+
+# ============ User Profile Endpoints ============
+
+class UpdateProfileRequest(BaseModel):
+    full_name: Optional[str] = None
+    course_name: Optional[str] = None
+    campus_branch: Optional[str] = None
+    contact_number: Optional[str] = None
+
+@app.put("/user/profile")
+def update_user_profile(request: UpdateProfileRequest, user=Depends(get_current_user), authorization: str = Header(None)):
+    """
+    Update user profile metadata (course, campus, contact number, etc.)
+    """
+    try:
+        logger.info(f"Updating profile for user {user.id}")
+        
+        # Extract the user's JWT token
+        token = authorization.split(" ")[1] if " " in authorization else authorization
+        
+        # Create a new Supabase client with the user's token for authenticated operations
+        user_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+        user_supabase.auth.set_session(token, user.id)
+        
+        # Build update data for user_metadata
+        update_data = {}
+        
+        if request.full_name is not None:
+            update_data["full_name"] = request.full_name
+        
+        # These will be stored in user_metadata as custom fields
+        if request.course_name is not None:
+            update_data["course_name"] = request.course_name
+        
+        if request.campus_branch is not None:
+            update_data["campus_branch"] = request.campus_branch
+        
+        if request.contact_number is not None:
+            update_data["contact_number"] = request.contact_number
+        
+        # Update user metadata in Supabase using user-specific client
+        result = user_supabase.auth.update_user({
+            "data": update_data
+        })
+        
+        if result.user:
+            logger.info(f"Profile updated successfully for user {user.id}")
+            return {
+                "success": True,
+                "message": "Profile updated successfully",
+                "user": {
+                    "id": result.user.id,
+                    "email": result.user.email,
+                    "user_metadata": result.user.user_metadata
+                }
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to update profile")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating profile: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
+
+@app.post("/user/avatar")
+async def upload_avatar(
+    user=Depends(get_current_user),
+    authorization: str = Header(None),
+    avatar: UploadFile = File(...)
+):
+    """
+    Upload user avatar to Supabase Storage
+    """
+    try:
+        logger.info(f"Uploading avatar for user {user.id}")
+        
+        if not avatar or not avatar.filename:
+            raise HTTPException(status_code=400, detail="No file provided")
+        
+        # Validate file type
+        allowed_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+        if avatar.content_type not in allowed_types:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid file type. Allowed: {', '.join(allowed_types)}"
+            )
+        
+        # Read file content
+        file_content = await avatar.read()
+        file_size = len(file_content)
+        max_size = 5 * 1024 * 1024  # 5MB
+        
+        if file_size > max_size:
+            raise HTTPException(status_code=400, detail="File size exceeds 5MB limit")
+        
+        # Generate unique filename
+        import uuid
+        file_ext = avatar.filename.split(".")[-1] if "." in avatar.filename else "jpg"
+        file_name = f"{user.id}/{uuid.uuid4()}.{file_ext}"
+        
+        # Use service role client for storage operations (bypasses RLS)
+        try:
+            service_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_KEY)
+            
+            upload_result = service_supabase.storage.from_("avatars").upload(
+                file_name, 
+                file_content, 
+                {"content-type": avatar.content_type}
+            )
+            
+            if upload_result.path:
+                # Get public URL
+                public_url = service_supabase.storage.from_("avatars").get_public_url(file_name)
+                
+                # Create a user-specific client to update user metadata
+                token = authorization.split(" ")[1] if " " in authorization else authorization
+                user_supabase = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
+                user_supabase.auth.set_session(token, user.id)
+                
+                # Update user metadata with avatar URL
+                update_result = user_supabase.auth.update_user({
+                    "data": {"avatar_url": public_url}
+                })
+                
+                logger.info(f"Avatar uploaded successfully for user {user.id}: {public_url}")
+                
+                return {
+                    "success": True,
+                    "message": "Avatar uploaded successfully",
+                    "avatar_url": public_url
+                }
+            else:
+                raise HTTPException(status_code=500, detail="Failed to upload avatar to storage")
+                
+        except Exception as storage_error:
+            logger.error(f"Storage error: {storage_error}")
+            
+            # Return helpful error message
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Failed to upload avatar: {str(storage_error)}. Please check Supabase Storage bucket configuration."
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading avatar: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload avatar: {str(e)}")

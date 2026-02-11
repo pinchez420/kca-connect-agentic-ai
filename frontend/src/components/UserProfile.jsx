@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import ProfileModal from './ProfileModal';
 
@@ -6,14 +6,31 @@ const UserProfile = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const { user, signOut } = useAuth();
+    
+    // Local state for avatar URL - updated via callback from ProfileModal
+    const [localAvatarUrl, setLocalAvatarUrl] = useState(null);
 
     const handleSignOut = async () => {
         await signOut();
     };
 
+    // Callback to receive updated avatar from ProfileModal
+    const handleAvatarUpdate = useCallback((avatarUrl) => {
+        setLocalAvatarUrl(avatarUrl);
+    }, []);
+
     const userEmail = user?.email || 'student@kca.ac.ke';
-    const userName = user?.user_metadata?.full_name || 'KCA Student';
-    const initials = userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'KCA Student';
+    // Use local avatar first, then fall back to user metadata
+    const avatarUrl = localAvatarUrl || user?.user_metadata?.avatar_url;
+    
+    const initials = userName
+        .split(' ')
+        .filter(Boolean)
+        .map(n => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2);
 
     return (
         <div className="relative">
@@ -22,9 +39,17 @@ const UserProfile = () => {
                 className="flex items-center gap-2 p-1 pl-3 rounded-full border border-border-primary hover:bg-bg-secondary transition-colors"
             >
                 <span className="text-sm font-medium text-text-primary hidden sm:block">{userName}</span>
-                <div className="w-8 h-8 rounded-full premium-gradient-bg flex items-center justify-center text-white font-bold text-sm shadow-sm">
-                    {initials}
-                </div>
+                {avatarUrl ? (
+                    <img 
+                        src={avatarUrl} 
+                        alt={userName} 
+                        className="w-8 h-8 rounded-full object-cover"
+                    />
+                ) : (
+                    <div className="w-8 h-8 rounded-full premium-gradient-bg flex items-center justify-center text-white font-bold text-sm shadow-sm">
+                        {initials}
+                    </div>
+                )}
             </button>
 
             {isOpen && (
@@ -35,9 +60,17 @@ const UserProfile = () => {
                     ></div>
                     <div className="absolute right-0 mt-2 w-64 rounded-xl shadow-xl bg-bg-secondary border border-border-primary z-20 overflow-hidden animate-fadeIn">
                         <div className="p-4 text-center border-b border-border-primary">
-                            <div className="w-16 h-16 rounded-full premium-gradient-bg mx-auto flex items-center justify-center text-white font-bold text-2xl shadow-md mb-2">
-                                {initials}
-                            </div>
+                            {avatarUrl ? (
+                                <img 
+                                    src={avatarUrl} 
+                                    alt={userName} 
+                                    className="w-16 h-16 rounded-full object-cover mx-auto mb-2 shadow-md"
+                                />
+                            ) : (
+                                <div className="w-16 h-16 rounded-full premium-gradient-bg mx-auto flex items-center justify-center text-white font-bold text-2xl shadow-md mb-2">
+                                    {initials}
+                                </div>
+                            )}
                             <h3 className="font-bold text-text-primary text-lg">{userName}</h3>
                             <p className="text-sm text-text-secondary">{userEmail}</p>
                         </div>
@@ -66,7 +99,11 @@ const UserProfile = () => {
                 </>
             )}
         {isProfileOpen && (
-                <ProfileModal isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} user={user} />
+                <ProfileModal 
+                    isOpen={isProfileOpen} 
+                    onClose={() => setIsProfileOpen(false)}
+                    onAvatarUpdate={handleAvatarUpdate}
+                />
             )}
         </div>
     );
