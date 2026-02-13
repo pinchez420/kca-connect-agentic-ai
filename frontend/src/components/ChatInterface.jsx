@@ -21,11 +21,65 @@ const ChatInterface = () => {
         return "Hello! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?";
     };
     
+    const fullGreeting = getGreeting();
+    
+    // State for animated greeting (typing effect)
+    const [displayedGreeting, setDisplayedGreeting] = useState("");
+    const [greetingComplete, setGreetingComplete] = useState(false);
+    
+    // Typing effect for initial greeting
+    useEffect(() => {
+        let index = 0;
+        setDisplayedGreeting("");
+        setGreetingComplete(false);
+        
+        // Reset message content for streaming effect
+        setMessages([
+            {
+                role: "agent",
+                content: "",
+                timestamp: new Date().toISOString(),
+                isStreaming: true
+            },
+        ]);
+        
+        const timer = setInterval(() => {
+            if (index < fullGreeting.length) {
+                const currentText = fullGreeting.slice(0, index + 1);
+                setDisplayedGreeting(currentText);
+                // Update the message content for streaming effect
+                setMessages(prev => {
+                    const updated = [...prev];
+                    if (updated[0] && updated[0].role === "agent") {
+                        updated[0].content = currentText;
+                        updated[0].isStreaming = true; // Keep streaming while typing
+                    }
+                    return updated;
+                });
+                index++;
+            } else {
+                clearInterval(timer);
+                setGreetingComplete(true);
+                // Stop streaming when complete
+                setMessages(prev => {
+                    const updated = [...prev];
+                    if (updated[0] && updated[0].role === "agent") {
+                        updated[0].isStreaming = false;
+                    }
+                    return updated;
+                });
+            }
+        }, 30); // Speed of typing (lower = faster)
+        
+        return () => clearInterval(timer);
+    }, []);
+    
     const [messages, setMessages] = useState([
         {
             role: "agent",
-            content: getGreeting(),
-            timestamp: new Date().toISOString()
+            content: "", // Start empty for streaming effect
+            timestamp: new Date().toISOString(),
+            isStreaming: true // Start with streaming cursor
         },
     ]);
     const [input, setInput] = useState("");
@@ -231,13 +285,49 @@ const ChatInterface = () => {
     };
 
     const handleNewChat = () => {
+        // Reset typing animation for new chat
+        let index = 0;
+        setDisplayedGreeting("");
+        setGreetingComplete(false);
+        
+        // Reset message with empty content for streaming effect
         setMessages([
             {
                 role: "agent",
-                content: getGreeting(),
-                timestamp: new Date().toISOString()
+                content: "",
+                timestamp: new Date().toISOString(),
+                isStreaming: true
             },
         ]);
+        
+        const timer = setInterval(() => {
+            if (index < fullGreeting.length) {
+                const currentText = fullGreeting.slice(0, index + 1);
+                setDisplayedGreeting(currentText);
+                // Update message content for streaming effect
+                setMessages(prev => {
+                    const updated = [...prev];
+                    if (updated[0] && updated[0].role === "agent") {
+                        updated[0].content = currentText;
+                        updated[0].isStreaming = true;
+                    }
+                    return updated;
+                });
+                index++;
+            } else {
+                clearInterval(timer);
+                setGreetingComplete(true);
+                // Stop streaming when complete
+                setMessages(prev => {
+                    const updated = [...prev];
+                    if (updated[0] && updated[0].role === "agent") {
+                        updated[0].isStreaming = false;
+                    }
+                    return updated;
+                });
+            }
+        }, 30);
+        
         setInput("");
         setError(null);
         currentChatIdRef.current = null;
@@ -255,27 +345,127 @@ const ChatInterface = () => {
 
     const isPremium = theme === 'premium';
 
+    // Helper to render inline formatting (bold, italic, code)
+    const renderInlineFormatting = (text) => {
+        if (!text) return null;
+        
+        // Split by formatting patterns
+        const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|~~[^~]+~~)/g);
+        
+        return parts.map((part, i) => {
+            // Bold
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
+            }
+            // Italic
+            if (part.startsWith('*') && part.endsWith('*') && !part.startsWith('**')) {
+                return <em key={i} className="italic">{part.slice(1, -1)}</em>;
+            }
+            // Inline code - theme-aware colors (visible in both light and dark mode)
+            if (part.startsWith('`') && part.endsWith('`')) {
+                return <code key={i} className={`${isPremium ? 'bg-amber-900/50 text-amber-300' : 'bg-indigo-100 text-indigo-700'} px-1.5 py-0.5 rounded text-xs font-mono`}>{part.slice(1, -1)}</code>;
+            }
+            // Strikethrough
+            if (part.startsWith('~~') && part.endsWith('~~')) {
+                return <del key={i} className="text-gray-500 line-through">{part.slice(2, -2)}</del>;
+            }
+            return part;
+        });
+    };
+
+    // Enhanced message content renderer with better formatting
     const renderMessageContent = (content, isStreaming) => {
         if (!content) return null;
 
-        const lines = content.split("\n");
-        const lastLine = lines[lines.length - 1];
-        const otherLines = lines.slice(0, -1);
-
+        // Split content into blocks for better formatting
+        const blocks = content.split(/\n\n+/);
+        
         return (
-            <>
-                {otherLines.map((line, i) => (
-                    <p key={i} className="mb-1 last:mb-0 text-sm leading-relaxed">
-                        {line}
-                    </p>
-                ))}
-                <p className="text-sm leading-relaxed inline">
-                    {lastLine}
-                    {isStreaming && (
-                        <span className="streaming-cursor inline-block w-0.5 h-4 bg-accent-primary ml-0.5 align-middle" />
-                    )}
-                </p>
-            </>
+            <div className="space-y-3">
+                {blocks.map((block, blockIndex) => {
+                    // Check if it's a code block
+                    if (block.match(/^```[\s\S]*```$/)) {
+                        const codeContent = block.replace(/^```(\w*)\n?/, '').replace(/```$/, '');
+                        return (
+                            <div key={blockIndex} className="relative group">
+                                <pre className={`${isPremium ? 'bg-gray-900' : 'bg-slate-800'} text-gray-100 p-3 rounded-lg overflow-x-auto text-xs sm:text-sm font-mono border ${isPremium ? 'border-gray-700' : 'border-slate-600'}`}>
+                                    <code>{codeContent}</code>
+                                </pre>
+                                <button
+                                    onClick={() => copyToClipboard(codeContent)}
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-gray-600 rounded hover:bg-gray-500"
+                                    title="Copy code"
+                                >
+                                    <svg className="w-4 h-4 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        );
+                    }
+                    
+                    // Check if it's a numbered list
+                    if (block.match(/^\d+\.\s/m)) {
+                        const items = block.split('\n').filter(line => line.trim());
+                        return (
+                            <ol key={blockIndex} className="list-decimal list-inside space-y-1 ml-2">
+                                {items.map((item, i) => {
+                                    const text = item.replace(/^\d+\.\s*/, '');
+                                    return (
+                                        <li key={i} className="text-sm leading-relaxed text-text-primary">
+                                            {renderInlineFormatting(text)}
+                                        </li>
+                                    );
+                                })}
+                            </ol>
+                        );
+                    }
+                    
+                    // Check if it's a bullet list
+                    if (block.match(/^[-*•]\s/m)) {
+                        const items = block.split('\n').filter(line => line.trim());
+                        return (
+                            <ul key={blockIndex} className="list-disc list-inside space-y-1 ml-2">
+                                {items.map((item, i) => {
+                                    const text = item.replace(/^[-*•]\s*/, '');
+                                    return (
+                                        <li key={i} className="text-sm leading-relaxed text-text-primary">
+                                            {renderInlineFormatting(text)}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        );
+                    }
+                    
+                    // Check if it's a heading
+                    if (block.match(/^#{1,3}\s/m)) {
+                        const headingText = block.replace(/^#+\s*/, '');
+                        const level = block.match(/^(#{1,3})/)[1].length;
+                        const headingClasses = {
+                            1: 'text-lg font-bold text-text-primary',
+                            2: 'text-base font-semibold text-text-primary',
+                            3: 'text-sm font-medium text-text-primary'
+                        };
+                        return (
+                            <p key={blockIndex} className={headingClasses[level]}>
+                                {renderInlineFormatting(headingText)}
+                            </p>
+                        );
+                    }
+                    
+                    // Regular paragraph
+                    return (
+                        <p key={blockIndex} className="text-sm leading-relaxed text-text-primary">
+                            {renderInlineFormatting(block)}
+                        </p>
+                    );
+                })}
+                {/* Streaming cursor at end */}
+                {isStreaming && (
+                    <span className="streaming-cursor inline-block w-0.5 h-4 bg-accent-primary ml-0.5 align-middle" />
+                )}
+            </div>
         );
     };
 
@@ -289,10 +479,10 @@ const ChatInterface = () => {
             />
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col h-full overflow-hidden">
+            <div className="flex-1 flex flex-col h-full overflow-hidden md:ml-0">
                 {/* Header */}
                 <div className={`bg-bg-secondary/80 backdrop-blur-md shadow-sm border-b border-border-primary p-4 z-10 flex-shrink-0`}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 md:ml-0 ml-12">
                         <img src={kcaLogo} alt="KCA University Logo" className="w-10 h-10 object-contain rounded-full border-2 border-border-primary" />
                         <div>
                             <h1 className={`text-xl font-bold ${isPremium ? 'premium-gradient-text' : 'bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent'}`}>
@@ -424,21 +614,23 @@ const ChatInterface = () => {
                             <button
                                 type="button"
                                 onClick={handleStop}
-                                className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl transition-all duration-200 font-semibold shadow-md flex items-center gap-2"
+                                className="w-12 h-12 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                                title="Stop"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                                 </svg>
-                                Stop
                             </button>
                         ) : (
                             <button
                                 type="submit"
-                                className={`${isPremium ? 'premium-gradient-bg' : 'bg-gradient-to-r from-indigo-600 to-purple-600'} text-white px-8 py-3 rounded-xl hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-md hover:shadow-lg transform hover:scale-105`}
+                                className={`w-12 h-12 flex items-center justify-center rounded-full ${isPremium ? 'premium-gradient-bg' : 'bg-gradient-to-r from-indigo-600 to-purple-600'} text-white hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:scale-105`}
                                 disabled={!input.trim()}
                             >
-                                Send
+                                <svg className="w-5 h-5 transform rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                </svg>
                             </button>
                         )}
                     </form>
@@ -456,3 +648,4 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
+

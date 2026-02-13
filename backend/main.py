@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 from app.services.rag_service import rag_service
 from app.services.web_search_service import web_search_service
 from app.core.config import settings
+from app.routes import admin
 from supabase import create_client, Client
 from uuid import UUID
 import logging
@@ -33,6 +34,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include admin routes
+app.include_router(admin.router)
 
 async def get_current_user(authorization: str = Header(None)):
     """Dependency to verify Supabase JWT token"""

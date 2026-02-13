@@ -291,3 +291,225 @@ export const uploadAvatar = async (token, file) => {
         throw error;
     }
 };
+
+// ============ Admin Analytics API ============
+
+export const getAnalyticsOverview = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/overview`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch analytics overview");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching analytics overview:", error);
+        return null;
+    }
+};
+
+export const getUserAnalytics = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/users`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch user analytics");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching user analytics:", error);
+        return null;
+    }
+};
+
+export const getChatAnalytics = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/chats`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch chat analytics");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching chat analytics:", error);
+        return null;
+    }
+};
+
+export const getChatsDaily = async (token, days = 7) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/chats/daily?days=${days}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch daily chats");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching daily chats:", error);
+        return [];
+    }
+};
+
+export const getMessagesDaily = async (token, days = 7) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/messages/daily?days=${days}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch daily messages");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching daily messages:", error);
+        return [];
+    }
+};
+
+export const getTopTopics = async (token, limit = 10) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/topics?limit=${limit}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch top topics");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching top topics:", error);
+        return [];
+    }
+};
+
+export const getEngagementAnalytics = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/engagement`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch engagement analytics");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching engagement analytics:", error);
+        return null;
+    }
+};
+
+export const getSystemHealth = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/analytics/system`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch system health");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching system health:", error);
+        return null;
+    }
+};
+
+export const getAllUsers = async (token, limit = 50, offset = 0) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users?limit=${limit}&offset=${offset}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch users");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return null;
+    }
+};
+
+export const makeUserAdmin = async (token, userId) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}/make-admin`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to make user admin");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error making user admin:", error);
+        throw error;
+    }
+};
+
+export const removeUserAdmin = async (token, userId) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}/remove-admin`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to remove user admin");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error removing user admin:", error);
+        throw error;
+    }
+};

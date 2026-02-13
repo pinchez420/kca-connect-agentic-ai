@@ -4,11 +4,15 @@ import ChatInterface from "./components/ChatInterface";
 import LandingPage from "./components/LandingPage";
 import Auth from "./components/Auth";
 import UserProfile from "./components/UserProfile";
+import AdminDashboard from "./components/AdminDashboard";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const AppRoutes = () => {
   const { user } = useAuth();
+
+  // Check if user is admin
+  const isAdmin = user?.user_metadata?._admin === true;
 
   return (
     <Routes>
@@ -29,6 +33,12 @@ const AppRoutes = () => {
         path="/profile"
         element={
           user ? <UserProfile /> : <Navigate to="/auth" />
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          user && isAdmin ? <AdminDashboard /> : <Navigate to="/chat" />
         }
       />
     </Routes>
