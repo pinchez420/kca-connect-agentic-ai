@@ -10,8 +10,20 @@ const ChatHistoryModal = ({ isOpen, onClose, onLoadChat }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [deletingId, setDeletingId] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const isPremium = theme === 'premium';
+
+    // Filter chats based on search query
+    const filteredChats = chats.filter(chat => {
+        if (!searchQuery.trim()) return true;
+        const query = searchQuery.toLowerCase();
+        const titleMatch = chat.title?.toLowerCase().includes(query);
+        const messageMatch = chat.messages?.some(msg => 
+            msg.content?.toLowerCase().includes(query)
+        );
+        return titleMatch || messageMatch;
+    });
 
     useEffect(() => {
         if (isOpen && session?.access_token) {
@@ -19,6 +31,17 @@ const ChatHistoryModal = ({ isOpen, onClose, onLoadChat }) => {
             fetchChats();
         }
     }, [isOpen, session]);
+    
+    // Focus search input when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setTimeout(() => {
+                document.getElementById('chat-search-input')?.focus();
+            }, 100);
+        } else {
+            setSearchQuery(""); // Clear search when modal closes
+        }
+    }, [isOpen]);
 
     const fetchChats = async () => {
         setLoading(true);
@@ -104,24 +127,51 @@ const ChatHistoryModal = ({ isOpen, onClose, onLoadChat }) => {
             />
 
             {/* Modal */}
-            <div className={`relative w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-2xl overflow-hidden ${isPremium ? 'premium-gradient-bg' : 'bg-bg-secondary'}`}>
+            <div className={`relative w-full max-w-2xl max-h-[80vh] rounded-2xl shadow-2xl overflow-hidden ${isPremium ? 'bg-[#171717]' : 'bg-bg-secondary'}`}>
                 {/* Header */}
-                <div className={`flex items-center justify-between p-4 border-b border-border-primary ${isPremium ? 'bg-black/20' : 'bg-bg-primary/50'}`}>
-                    <h2 className={`text-xl font-bold ${isPremium ? 'text-white' : 'text-text-primary'}`}>
-                        Chat History
-                    </h2>
-                    <button
-                        onClick={onClose}
-                        className={`p-2 rounded-lg hover:bg-bg-primary/50 transition-colors ${isPremium ? 'text-white' : 'text-text-secondary'}`}
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <div className={`flex flex-col gap-3 p-4 border-b border-border-primary ${isPremium ? 'bg-black/20' : 'bg-bg-primary/50'}`}>
+                    <div className="flex items-center justify-between">
+                        <h2 className={`text-xl font-bold ${isPremium ? 'text-white' : 'text-text-primary'}`}>
+                            Chat History
+                        </h2>
+                        <button
+                            onClick={onClose}
+                            className={`p-2 rounded-lg hover:bg-bg-primary/50 transition-colors ${isPremium ? 'text-white' : 'text-text-secondary'}`}
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    {/* Search Input */}
+                    <div className="relative">
+                        <svg className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isPremium ? 'text-white/50' : 'text-text-secondary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                    </button>
+                        <input
+                            id="chat-search-input"
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search chats..."
+                            className={`w-full pl-10 pr-4 py-2 rounded-lg border border-border-primary/50 focus:border-accent-primary bg-bg-primary/50 ${isPremium ? 'text-white placeholder-white/50' : 'text-text-primary'} outline-none transition-colors`}
+                        />
+                        {searchQuery && (
+                            <button
+                                onClick={() => setSearchQuery("")}
+                                className={`absolute right-3 top-1/2 -translate-y-1/2 ${isPremium ? 'text-white/50 hover:text-white' : 'text-text-secondary hover:text-text-primary'}`}
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4 overflow-y-auto max-h-[60vh]">
+                <div className={`p-4 overflow-y-auto max-h-[60vh] scrollbar-thin ${isPremium ? 'scrollbar-premium' : 'scrollbar-default'}`}>
                     {loading ? (
                         <div className="flex items-center justify-center py-12">
                             <div className="flex gap-2">
@@ -134,7 +184,15 @@ const ChatHistoryModal = ({ isOpen, onClose, onLoadChat }) => {
                         <div className="text-center py-8 text-red-500">
                             {error}
                         </div>
-                    ) : chats.length === 0 ? (
+                    ) : filteredChats.length === 0 && searchQuery ? (
+                        <div className="text-center py-12 text-text-secondary">
+                            <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <p className="text-lg font-medium">No chats found</p>
+                            <p className="text-sm mt-1">Try a different search term</p>
+                        </div>
+                    ) : filteredChats.length === 0 ? (
                         <div className="text-center py-12 text-text-secondary">
                             <svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -144,14 +202,14 @@ const ChatHistoryModal = ({ isOpen, onClose, onLoadChat }) => {
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            {chats.map((chat) => (
+                            {filteredChats.map((chat) => (
                                 <div
                                     key={chat.id}
                                     onClick={() => {
                                         onLoadChat(chat);
                                         onClose();
                                     }}
-                                    className={`group p-4 rounded-xl cursor-pointer transition-all duration-200 border border-transparent hover:border-border-primary ${isPremium ? 'hover:bg-white/10' : 'hover:bg-bg-primary/50'}`}
+                                    className={`group p-4 rounded-xl cursor-pointer transition-all duration-200 border border-transparent hover:border-border-primary ${isPremium ? 'hover:bg-white/5 bg-black/20' : 'hover:bg-bg-primary/50'}`}
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">

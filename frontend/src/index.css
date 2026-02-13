@@ -134,3 +134,47 @@
     scrollbar-gutter: stable;
 }
 
+/* Theme-specific scrollbars */
+.scrollbar-default::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-default::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-default::-webkit-scrollbar-thumb {
+    background-color: var(--accent-primary);
+    border-radius: 3px;
+}
+
+.scrollbar-default::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent-secondary);
+}
+
+.scrollbar-premium::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-premium::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-premium::-webkit-scrollbar-thumb {
+    background: linear-gradient(to right, #2563eb, #d97706);
+    border-radius: 3px;
+}
+
+.scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to right, #3b82f6, #f59e0b);
+}
+
+/* Dark theme scrollbar */
+[data-theme='dark'] .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #818cf8;
+}
+
+[data-theme='dark'] .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: #c084fc;
+}
+
