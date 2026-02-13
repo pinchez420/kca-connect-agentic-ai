@@ -8,11 +8,23 @@ import kcaLogo from "../assets/kca-logo.png";
 
 const ChatInterface = () => {
     const { theme } = useTheme();
-    const { session } = useAuth();
+    const { session, user } = useAuth();
+    
+    // Get user's name from user metadata (full_name or name)
+    const userName = user?.user_metadata?.full_name || user?.user_metadata?.name;
+    
+    // Dynamic greeting based on whether user has set their name
+    const getGreeting = () => {
+        if (userName) {
+            return `Hello, ${userName}! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?`;
+        }
+        return "Hello! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?";
+    };
+    
     const [messages, setMessages] = useState([
         {
             role: "agent",
-            content: "Hello! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?",
+            content: getGreeting(),
             timestamp: new Date().toISOString()
         },
     ]);
@@ -222,7 +234,7 @@ const ChatInterface = () => {
         setMessages([
             {
                 role: "agent",
-                content: "Hello! I'm KCA Connect AI, your official KCA University assistant. How can I help you today?",
+                content: getGreeting(),
                 timestamp: new Date().toISOString()
             },
         ]);

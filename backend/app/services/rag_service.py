@@ -12,6 +12,25 @@ import re
 
 logger = logging.getLogger(__name__)
 
+def _format_document_context(docs: list) -> str:
+    """
+    Format document chunks with proper separation to prevent words running together.
+    Ensures each chunk ends with proper punctuation before joining.
+    """
+    if not docs:
+        return ""
+    
+    formatted_chunks = []
+    for doc in docs:
+        content = doc.page_content.strip()
+        # Ensure each chunk ends with proper punctuation
+        if content and content[-1] not in '.!?。':
+            content = content + '.'
+        formatted_chunks.append(content)
+    
+    # Join with double newlines and separator for clear separation
+    return "\n\n---\n\n".join(formatted_chunks)
+
 class RagService:
     def __init__(self):
         self.embeddings = HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL)
@@ -45,7 +64,11 @@ Instructions:
 4. If the question refers to previous topics (using words like "it", "its", "they", "them", "this", "that"), use the conversation history to understand what is being referred to
 5. If you cannot find the answer in the context, say so honestly and suggest they contact the university administration
 6. For current events or real-time information, use the web search results provided
-7. Always maintain context from the conversation history when answering follow-up questions"""
+7. Always maintain context from the conversation history when answering follow-up questions
+8. GREETING ETIQUETTE: 
+   - Only greet with "Hello" at the START of a NEW conversation (when there is no conversation history)
+   - If the user has already greeted you or there is prior conversation, do NOT start with "Hello" - just answer their question directly
+   - Be conversational but concise - continue from where the conversation left off"""
 
     def _initialize_llm(self):
         """Initialize the preferred LLM based on configuration and preference"""
@@ -101,26 +124,144 @@ Instructions:
             logger.error(f"Error during vector search: {e}")
             return []
 
-    def search(self, query: str, k: int = 4):
-        """Retrieve relevant documents from vector store"""
+    def search(self, query: str, k: int = 5):
+        """Retrieve relevant documents from vector store with enhanced name search"""
         try:
-            results = self.search_with_scores(query, k=k)
+            # Check if query looks like a name search (capitalized words, common name patterns)
+            # Convert to title case for matching (handle cases like "clive onsomu" -> "Clive Onsomu")
+            query_title = query.strip().title()
+            is_name_search = bool(re.match(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query_title))
+            
+            # Check if query looks like a unit/course search
+            # Course names often have patterns like "Xxxx Yyyy" (title case with multiple words)
+            # or are all uppercase like "EXPERT SYSTEMS"
+            is_course_search = (
+                bool(re.search(r'\b(systems?|course|unit|class|timetable|lecture)\b', query, re.IGNORECASE)) or
+                # Or if query is multiple capitalized words (likely a course name)
+                (len(query.split()) >= 2 and bool(re.match(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip()))) or
+                # Or if query is all uppercase (like course codes)
+                (query.isupper() and len(query.split()) >= 2)
+            )
+            
+            results = []
+            seen_contents = set()
+            
+            # Primary search with original query
+            primary_results = self.search_with_scores(query, k=k)
+            for doc, score in primary_results:
+                content_hash = hash(doc.page_content[:100])
+                if content_hash not in seen_contents:
+                    results.append((doc, score))
+                    seen_contents.add(content_hash)
+            
+            # For course/unit searches, also search with key terms extracted
+            if is_course_search and len(results) < k:
+                # Extract key terms from query (last 2-3 words are usually the course name)
+                query_words = query.strip().split()
+                if len(query_words) >= 2:
+                    # Search with last few words (the actual course name)
+                    search_terms = [" ".join(query_words[-2:]), " ".join(query_words[-3:])]
+                    # Also try just the last word if it's a single word course
+                    if len(query_words) == 1:
+                        search_terms.append(query_words[0])
+                    for term in search_terms:
+                        if len(results) >= k * 2:
+                            break
+                        try:
+                            term_results = self.search_with_scores(term, k=3)
+                            for doc, score in term_results:
+                                content_hash = hash(doc.page_content[:100])
+                                if content_hash not in seen_contents:
+                                    results.append((doc, score))
+                                    seen_contents.add(content_hash)
+                        except:
+                            continue
+            
+            # Fallback: If still no results, try broader searches with timetable-related terms
+            if len(results) == 0:
+                fallback_terms = ["timetable", "unit", "course", query.split()[-1] if query.split() else query]
+                for term in fallback_terms:
+                    try:
+                        fallback_results = self.search_with_scores(term, k=3)
+                        for doc, score in fallback_results:
+                            content_hash = hash(doc.page_content[:100])
+                            if content_hash not in seen_contents:
+                                results.append((doc, score))
+                                seen_contents.add(content_hash)
+                    except:
+                        continue
+            
+            # If it looks like a name search, also search with "contact" and variations
+            if is_name_search:
+                # Also search directly with title case version
+                try:
+                    title_results = self.search_with_scores(query_title, k=k)
+                    for doc, score in title_results:
+                        content_hash = hash(doc.page_content[:100])
+                        if content_hash not in seen_contents:
+                            results.append((doc, score))
+                            seen_contents.add(content_hash)
+                except:
+                    pass
+                
+                # Use title case for name variations
+                name_variations = [
+                    f"contact {query_title}",
+                    f"{query_title} contact info",
+                    f"phone {query_title}",
+                    f"email {query_title}",
+                    f"faculty {query_title}",
+                    f"staff {query_title}",
+                ]
+                
+                for variation in name_variations:
+                    if len(results) >= k * 2:  # Limit total results
+                        break
+                    try:
+                        var_results = self.search_with_scores(variation, k=3)
+                        for doc, score in var_results:
+                            content_hash = hash(doc.page_content[:100])
+                            if content_hash not in seen_contents:
+                                results.append((doc, score))
+                                seen_contents.add(content_hash)
+                    except:
+                        continue
+            
+            logger.info(f"Search for '{query}' returned {len(results)} unique documents")
             return [doc for doc, score in results]
         except Exception as e:
             logger.error(f"Error during vector search: {e}")
             return []
 
-    def should_use_rag(self, query: str, relevance_threshold: float = 0.5) -> bool:
+    def should_use_rag(self, query: str, relevance_threshold: float = 0.3) -> bool:
         """Check if query should use RAG based on document relevance scores"""
         try:
-            results = self.search_with_scores(query, k=1)
+            # Check if query looks like a name search - be more lenient for name queries
+            is_name_search = bool(re.match(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip()))
+            threshold = 0.15 if is_name_search else relevance_threshold
+            
+            results = self.search_with_scores(query, k=5)
             if not results:
                 return False
             
-            best_doc, best_score = results[0]
-            logger.info(f"Best relevance score for query '{query}': {best_score}")
+            # Check if any of the top results have acceptable relevance
+            for doc, score in results:
+                logger.info(f"Relevance score for query '{query}': {score}")
+                if score >= threshold:
+                    return True
             
-            return best_score >= relevance_threshold
+            # For name searches, always use RAG if we have any results
+            if is_name_search and results:
+                logger.info(f"Name search '{query}' - using RAG with best effort")
+                return True
+            
+            # If no results meet threshold, still use RAG if we have any documents
+            # This ensures we use document content even with lower similarity
+            if results:
+                logger.info(f"Using RAG with best effort - best score: {results[0][1]}")
+                return True
+            
+            return False
         except Exception as e:
             logger.error(f"Error checking relevance: {e}")
             return False
@@ -319,10 +460,15 @@ Web Search Results:
 
 Current Question: {original_query}
 
-You are KCA Connect AI. Please answer based on the conversation context and web search results above."""
+Instructions:
+- Answer based on the conversation context and web search results above
+- If there is prior conversation history, do NOT start with "Hello" - just answer directly
+- Only greet with "Hello" at the very start of a completely new conversation with no history"""
                             response = self.llm.invoke(contextual_prompt)
                         else:
-                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI."""
+                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI.
+
+Important: Only greet with "Hello" if this is the very first message. Otherwise, just answer directly."""
                             response = self.llm.invoke(contextual_prompt)
                         
                         if hasattr(response, 'content'):
@@ -336,7 +482,7 @@ You are KCA Connect AI. Please answer based on the conversation context and web 
                     return "I couldn't find any relevant information."
             
             docs = self.search(query)
-            context = "\n\n".join([d.page_content for d in docs])
+            context = _format_document_context(docs)
             
             if self.llm:
                 try:
@@ -408,7 +554,10 @@ Web Search Results:
 
 Current Question: {original_query}
 
-You are KCA Connect AI. Please answer based on the conversation context and web search results above."""
+Instructions:
+- Answer based on the conversation context and web search results above
+- If there is prior conversation history, do NOT start with "Hello" - just answer directly
+- Only greet with "Hello" at the very start of a completely new conversation with no history"""
                             async for chunk in self.llm.astream(contextual_prompt):
                                 if hasattr(chunk, 'content'):
                                     text = chunk.content
@@ -419,7 +568,9 @@ You are KCA Connect AI. Please answer based on the conversation context and web 
                                     yield char
                                     await asyncio.sleep(0.03)
                         else:
-                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI."""
+                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI.
+
+Important: Only greet with "Hello" if this is the very first message. Otherwise, just answer directly."""
                             async for chunk in self.llm.astream(contextual_prompt):
                                 if hasattr(chunk, 'content'):
                                     text = chunk.content
@@ -439,7 +590,7 @@ You are KCA Connect AI. Please answer based on the conversation context and web 
                     return
             
             docs = self.search(query)
-            context = "\n\n".join([d.page_content for d in docs])
+            context = _format_document_context(docs)
             
             if self.llm:
                 try:
@@ -476,3 +627,4 @@ You are KCA Connect AI. Please answer based on the conversation context and web 
             yield "I encountered an error while processing your question. Please try again later."
 
 rag_service = RagService()
+

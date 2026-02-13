@@ -1,0 +1,335 @@
+# KCA UNIVERSITY SCHOOL OF TECHNOLOGY TIMETABLE (JANUARY – APRIL 2026)
+
+*Prepared by: Charles B. Malungu, Timetable Coordinator – School of Technology*  
+*Approved by: Dr. Paul Abuonji (CoD SD & IS), Dr. Simon Mwendia (Dean, School of Technology)*  
+*Date: December 21–22, 2025*
+
+---
+
+## 1. Bachelor of Science in Software Development (BSD) - Full-Time Mode
+
+### 1.1 BSD Year 1 Trimester 1 (FT 1.1)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | LAB       | TC 0-5/0-6   | STU 1103  | COMPUTER APPLICATIONS                    |
+| Monday    | 1400-1700 HRS | PHYSICAL  | LT 1-1       | MAT 1102  | DISCRETE MATHEMATICS                     |
+| Tuesday   | 0800-1100 HRS | LAB       | TC 0-1/0-2   | CUU 1102  | FUNDAMENTALS OF COMPUTER SYSTEMS         |
+| Thursday  | 1100-1400 HRS | VIRTUAL   | ZOOM         | CUU 1103  | COMMUNICATION SKILLS                     |
+| Thursday  | 1400-1800 HRS | PHYSICAL  | TC 3-1       | STU 1102  | COMPUTING MATHEMATICS                    |
+| Thursday  | 1500-1900 HRS | LAB       | TC 0-5/0-6   | CSN 1101  | WEB TECHNOLOGIES AND INTERNET APPLICATIONS |
+| Friday    | 0800-1200 HRS | PHYSICAL  | TC 1-5       | ISS 1104  | COMPUTER ORGANIZATION & ARCHITECTURE     |
+| Friday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | STU 1101  | OPERATING SYSTEMS                        |
+
+### 1.2 BSD Year 1 Trimester 2 (FT 1.2)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | CUU 1201  | HEALTH AWARENESS & LIFE SKILLS           |
+| Monday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | STU 1203  | SYSTEMS ANALYSIS AND DESIGN              |
+| Tuesday   | 0800-1100 HRS | PHYSICAL  | TC 2-8       | STA 1203  | PROBABILITY AND STATISTICS I             |
+| Tuesday   | 1400-1700 HRS | PHYSICAL  | TC 3-3       | DSA 1201  | COMPUTATIONAL THINKING THEORY            |
+| Tuesday   | 1500-1900 HRS | LAB       | TC 0-5/0-6   | STU 1202  | WEB DESIGN AND DEVELOPMENT               |
+| Wednesday | 1100-1400 HRS | LAB       | TC 0-5/0-6   | STU 1204  | PRINCIPLES OF DATABASE SYSTEMS           |
+| Friday    | 0700-1100 HRS | LAB       | TC 0-5/0-6   | STU 1201  | INTRODUCTION TO PROGRAMMING              |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | CUU 1202  | FOUNDATIONS OF CRITICAL AND CREATIVE THINKING |
+
+### 1.3 BSD Year 1 Trimester 3 (FT 1.3)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | STU 2102  | COMPUTING RESEARCH SKILLS AND DESIGN     |
+| Monday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | CUU 2103  | ETHICS AND LEADERSHIP                    |
+| Monday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | STU 2103  | NETWORKING ESSENTIALS                    |
+| Tuesday   | 1500-1900 HRS | LAB       | TC 0-3       | STU 2101  | DATABASE SYSTEMS DESIGN AND DEVELOPMENT  |
+| Wednesday | 1400-1700 HRS | VIRTUAL   | ZOOM         | ISS 2101  | MANAGEMENT INFORMATION SYSTEMS           |
+| Thursday  | 0700-1100 HRS | LAB       | DA LAB       | CPP 2101  | ASSEMBLY LANGUAGE PROGRAMMING            |
+| Thursday  | 1100-1400 HRS | VIRTUAL   | ZOOM         | SEN 2101  | SOFTWARE ENGINEERING PRINCIPLES          |
+| Thursday  | 1400-1700 HRS | VIRTUAL   | ZOOM         | CUU 2102  | INFORMATION LITERACY AND ACADEMIC WRITING |
+
+### 1.4 BSD Year 2 Trimester 1 (FT 2.1)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 1100-1400 HRS | PHYSICAL  | TC 3-1       | FIN 2105  | FINANCIAL ACCOUNTING AND MANAGEMENT      |
+| Tuesday   | 0800-1100 HRS | VIRTUAL   | ZOOM         | SEN 2201  | HUMAN-COMPUTER INTERACTION               |
+| Tuesday   | 1100-1400 HRS | VIRTUAL   | ZOOM         | CPP 2203  | ELECTRONIC BUSINESS SYSTEMS              |
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | SEN 2203  | SYSTEMS DEVELOPMENT METHODOLOGY          |
+| Wednesday | 1400-1800 HRS | LAB       | TC 0-1/0-2   | STU 2201  | DATA STRUCTURES AND ALGORITHMS           |
+| Thursday  | 1400-1700 HRS | VIRTUAL   | ZOOM         | CUU 2201  | ENTREPRENEURSHIP PRINCIPLES AND PRACTICE |
+| Friday    | 0700-1100 HRS | LAB       | TC 2-3-2     | CPP 2202  | APPLICATION PROGRAMMING WITH VB.NET      |
+| Friday    | 1400-1700 HRS | LAB       | TC 0-1/0-2   | CPP 2201  | OBJECT ORIENTED PROGRAMMING WITH C++     |
+
+### 1.5 BSD Year 2 Trimester 2 (FT 2.2)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | SEN 3101  | COMPUTING PROJECT MANAGEMENT             |
+| Tuesday   | 0700-1100 HRS | LAB       | TC 2-3-2     | CPP 3102  | CLOUD APPLICATION DEVELOPMENT            |
+| Tuesday   | 1400-1700 HRS | VIRTUAL   | ZOOM         | DSA 3105  | NETWORK SCIENCE THEORY                   |
+| Thursday  | 0700-1100 HRS | LAB       | TC 0-1/0-2   | CPP 3101  | OBJECT ORIENTED PROGRAMMING WITH JAVA    |
+| Thursday  | 1100-1500 HRS | LAB       | TC 0-1/0-2   | STU 3102  | MOBILE APPLICATIONS DEVELOPMENT          |
+| Friday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | ISS 3102  | EXPERT SYSTEMS                           |
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | CSN 2202  | INFORMATION SYSTEMS SECURITY AND CRYPTOGRAPHY |
+
+### 1.6 BSD Year 2 Trimester 3 (FT 2.3)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | SEN 3101  | COMPUTING PROJECT MANAGEMENT             |
+| Tuesday   | 0700-1100 HRS | LAB       | DA LAB       | CPP 3202  | ADVANCED JAVA PROGRAMMING                |
+| Wednesday | 1100-1500 HRS | PHYSICAL  | AMPHITHEATRE | MAT 3201  | LINEAR PROGRAMMING                       |
+| Wednesday | 1500-1900 HRS | LAB       | TC 2-3-1     | CPP 3204  | NETWORK PROGRAMMING                      |
+| Thursday  | 1500-1900 HRS | PHYSICAL  | TC 1-5       | CPU 3203  | MOBILE GAMING PROGRAMMING                |
+| Friday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | ISS 4104  | DISTRIBUTED SYSTEMS                      |
+| Friday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | MKT 1201  | PRINCIPLES OF MARKETING                  |
+| Friday    | 1400-1800 HRS | VIRTUAL   | ZOOM         | ISS 3102  | EXPERT SYSTEMS                           |
+
+### 1.7 BSD Year 3 Trimester 1 (FT 3.1)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0700-1100 HRS | LAB       | DA LAB       | CPP 4103  | ARTIFICIAL INTELLIGENCE PROGRAMMING      |
+| Monday    | 1400-1800 HRS | LAB       | TC 0-3       | DSA 1101  | PRINCIPLES OF DATA SCIENCE               |
+| Tuesday   | 0800-1200 HRS | VIRTUAL   | ZOOM         | CPP 4102  | MULTIMEDIA PROGRAMMING                   |
+| Wednesday | 0800-1100 HRS | VIRTUAL   | ZOOM         | SEN 4101  | SOFTWARE TESTING TOOLS AND TECHNIQUES    |
+| Wednesday | 1400-1800 HRS | VIRTUAL   | ZOOM         | STU 1202  | WEB DESIGN AND DEVELOPMENT               |
+| Thursday  | 1400-1800 HRS | VIRTUAL   | ZOOM         | DBS 4101  | ADVANCED DATABASES                       |
+| Friday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | CSN 4206  | INFORMATION SYSTEM AUDIT                 |
+| Saturday  | 1200-1500 HRS | VIRTUAL   | ZOOM         | CSN 4206  | INFORMATION SYSTEM AUDIT                 |
+
+### 1.8 BSD Year 3 Trimester 2 (FT 3.2)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0700-1100 HRS | PHYSICAL  | TC 3-8       | ISS 4201  | EMBEDDED SYSTEMS                         |
+| Wednesday | 0800-1100 HRS | VIRTUAL   | ZOOM         | ISS 4102  | GEOGRAPHICAL INFORMATION SYSTEMS         |
+| Wednesday | 1100-1500 HRS | LAB       | TC 0-7/0-8   | CPP 4202  | ADVANCED APPLICATION PROGRAMMING         |
+| Thursday  | 0800-1100 HRS | VIRTUAL   | ZOOM         | DSA 3202  | AMBIENT INTELLIGENCE                     |
+| Thursday  | 1100-1500 HRS | LAB       | TC 1-8       | DSA 3101  | MACHINE LEARNING                         |
+| Thursday  | 1730-2030 HRS | VIRTUAL   | ZOOM         | DSA 3202  | AMBIENT INTELLIGENCE                     |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | SEN 4201  | ADVANCED SOFTWARE ENGINEERING            |
+| Friday    | 1500-1900 HRS | LAB       | TC 2-3-1     | DSA 4202  | PROGRAMMING FOR DATA SCIENCE             |
+
+---
+
+## 2. Bachelor of Science in Information Technology (BIT) - Full-Time Mode
+
+### 2.1 BIT Year 1 Trimester 1 (FT 1.1)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                     |
+|-----------|---------------|-----------|--------------|-----------|-------------------------------|
+| Monday    | 0800-1100 HRS | LAB       | TC 0-7/0-8   | STU 1103  | COMPUTER APPLICATIONS         |
+| Monday    | 1400-1700 HRS | PHYSICAL  | LT 1-1       | MAT 1102  | DISCRETE MATHEMATICS          |
+| Tuesday   | 1100-1400 HRS | LAB       | TC 0-1/0-2   | CUU 1102  | FUNDAMENTALS OF COMPUTER SYSTEMS |
+| Wednesday | 1400-1700 HRS | PHYSICAL  | TC 3-4       | STU 1102  | COMPUTING MATHEMATICS         |
+| Thursday  | 1100-1400 HRS | VIRTUAL   | ZOOM         | CUU 1103  | COMMUNICATION SKILLS          |
+| Friday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | STU 1101  | OPERATING SYSTEMS             |
+
+### 2.2 BIT Year 1 Trimester 2 (FT 1.2)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | CUU 1201  | HEALTH AWARENESS & LIFE SKILLS           |
+| Monday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | STU 1203  | SYSTEMS ANALYSIS AND DESIGN              |
+| Tuesday   | 1100-1500 HRS | LAB       | TC 0-5/0-6   | ACC 1304  | WEB DESIGN AND DEVELOPMENT               |
+| Tuesday   | 1100-1500 HRS | LAB       | TC 0-7/0-8   | STU 1202  | WEB DESIGN AND DEVELOPMENT               |
+| Wednesday | 1100-1400 HRS | LAB       | TC 0-5/0-6   | STU 1204  | PRINCIPLES OF DATABASE SYSTEMS           |
+| Wednesday | 1100-1400 HRS | LAB       | TC 1-8       | STU 1204  | PRINCIPLES OF DATABASE SYSTEMS           |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | CUU 1202  | FOUNDATIONS OF CRITICAL AND CREATIVE THINKING |
+| Friday    | 1400-1800 HRS | LAB       | TC 0-1/0-2   | STU 1201  | INTRODUCTION TO PROGRAMMING              |
+| Friday    | 1400-1800 HRS | LAB       | TC 1-8       | STU 1201  | INTRODUCTION TO PROGRAMMING              |
+
+### 2.3 BIT Year 1 Trimester 3 (FT 1.3)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | STU 2102  | COMPUTING RESEARCH SKILLS AND DESIGN     |
+| Monday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | CUU 2103  | ETHICS AND LEADERSHIP                    |
+| Monday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | STU 2103  | NETWORKING ESSENTIALS                    |
+| Tuesday   | 1500-1900 HRS | LAB       | TC 0-7/0-8   | STU 2101  | DATABASE SYSTEMS DESIGN AND DEVELOPMENT  |
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | CPP 2104  | OBJECT-ORIENTED TECHNOLOGIES             |
+| Wednesday | 1400-1800 HRS | LAB       | TC 0-5/0-6   | STU 2201  | DATA STRUCTURES AND ALGORITHMS           |
+
+### 2.4 BIT Year 2 Trimester 1 (FT 2.1)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | STU 2103  | NETWORKING ESSENTIALS                    |
+| Tuesday   | 0800-1100 HRS | VIRTUAL   | ZOOM         | SEN 2201  | HUMAN-COMPUTER INTERACTION               |
+| Thursday  | 1100-1400 HRS | VIRTUAL   | ZOOM         | SEN 2101  | SOFTWARE ENGINEERING PRINCIPLES          |
+| Thursday  | 1400-1700 HRS | VIRTUAL   | ZOOM         | CUU 2201  | ENTREPRENEURSHIP PRINCIPLES AND PRACTICE |
+| Thursday  | 1400-1800 HRS | LAB       | DA LAB       | CPP 2202  | APPLICATION PROGRAMMING WITH VB.NET      |
+| Thursday  | 1400-1800 HRS | LAB       | TC 0-3       | CPP 2202  | APPLICATION PROGRAMMING WITH VB.NET      |
+| Friday    | 0700-1100 HRS | LAB       | TC 0-1/0-2   | CPP 2202  | APPLICATION PROGRAMMING WITH VB.NET      |
+| Friday    | 1400-1800 HRS | VIRTUAL   | ZOOM         | DSA 2204  | ARTIFICIAL INTELLIGENCE                  |
+
+### 2.5 BIT Year 2 Trimester 2 (FT 2.2)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | SEN 3101  | COMPUTING PROJECT MANAGEMENT             |
+| Tuesday   | 0800-1100 HRS | PHYSICAL  | LT 1-1       | STA 1203  | PROBABILITY AND STATISTICS I             |
+| Thursday  | 0700-1100 HRS | LAB       | TC 0-3       | CPP 3101  | OBJECT ORIENTED PROGRAMMING WITH JAVA    |
+| Thursday  | 0700-1100 HRS | LAB       | TC 0-3       | CPP 3101  | OBJECT ORIENTED PROGRAMMING WITH JAVA    |
+| Thursday  | 1100-1500 HRS | LAB       | TC 0-7/0-8   | STU 3102  | MOBILE APPLICATIONS DEVELOPMENT          |
+| Friday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | ISS 3102  | EXPERT SYSTEMS                           |
+
+### 2.6 BIT Year 2 Trimester 3 (FT 2.3)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Tuesday   | 1400-1700 HRS | VIRTUAL   | ZOOM         | CSN 3208  | COMMUNICATION SYSTEMS AND TECHNOLOGIES   |
+| Thursday  | 0700-1100 HRS | LAB       | TC 0-5/0-6   | CSN 3201  | NETWORK SYSTEMS DESIGN AND MANAGEMENT    |
+| Thursday  | 1100-1500 HRS | LAB       | C-1          | STU 3102  | MOBILE APPLICATIONS DEVELOPMENT          |
+| Friday    | 0800-1200 HRS | VIRTUAL   | ZOOM         | DSA 2204  | ARTIFICIAL INTELLIGENCE                  |
+| Friday    | 1100-1500 HRS | LAB       | TC 0-7/0-8   | CPP 3204  | NETWORK PROGRAMMING                      |
+| Wednesday | 0800-1200 HRS | VIRTUAL   | ZOOM         | ISS 4102  | GEOGRAPHICAL INFORMATION SYSTEMS         |
+
+### 2.7 BIT Year 3 Trimester 1 (FT 3.1)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Tuesday   | 0800-1100 HRS | PHYSICAL  | TC 3-4       | ISS 4202  | SIMULATION AND MODELLING                 |
+| Tuesday   | 0800-1100 HRS | PHYSICAL  | TC 3-4       | ISS 4202  | SIMULATION AND MODELLING                 |
+| Tuesday   | 0800-1100 HRS | PHYSICAL  | AMPHITHEATRE | ISS 4202  | SIMULATION AND MODELLING                 |
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | CSN 2202  | INFORMATION SYSTEMS SECURITY AND CRYPTOGRAPHY |
+| Wednesday | 1400-1700 HRS | VIRTUAL   | ZOOM         | SEN 4107  | KNOWLEDGE MANAGEMENT                     |
+| Wednesday | 1400-1700 HRS | VIRTUAL   | ZOOM         | SEN 4107  | KNOWLEDGE MANAGEMENT                     |
+| Wednesday | 1400-1700 HRS | VIRTUAL   | ZOOM         | SEN 4107  | KNOWLEDGE MANAGEMENT                     |
+| Thursday  | 0800-1100 HRS | VIRTUAL   | ZOOM         | CSN 4104  | BLOCKCHAIN TECHNOLOGIES AND APPLICATIONS |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | ISS 4101  | STRATEGIC INFORMATION SYSTEMS MANAGEMENT |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | ISS 4101  | STRATEGIC INFORMATION SYSTEMS MANAGEMENT |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | ISS 4101  | STRATEGIC INFORMATION SYSTEMS MANAGEMENT |
+
+### 2.8 BIT Year 3 Trimester 2 (FT 3.2)
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------|
+| Monday    | 1400-1700 HRS | VIRTUAL   | ZOOM         | CUU 2101  | ETHICS AND LEADERSHIP                    |
+| Tuesday   | 0800-1100 HRS | VIRTUAL   | ZOOM         | DSA 3206  | DATA WAREHOUSING AND DATA MINING         |
+| Tuesday   | 1400-1800 HRS | VIRTUAL   | ZOOM         | CPP 4101  | INTERNET APPLICATION PROGRAMMING         |
+| Friday    | 1100-1400 HRS | VIRTUAL   | ZOOM         | DBS 4203  | DISTRIBUTED MULTIMEDIA SYSTEMS           |
+| Friday    | 1400-1800 HRS | VIRTUAL   | ZOOM         | ISS 3102  | EXPERT SYSTEMS                           |
+
+---
+
+## 3. Postgraduate Programmes
+
+### 3.1 MSc in Information Systems Management (MISM) Year 1 Trimester 1
+
+| Day       | Time          | Room Type | Venue | Unit Code | Unit Name                     | Lecturer             |
+|-----------|---------------|-----------|-------|-----------|-------------------------------|----------------------|
+| Thursday  | 1730-2030 HRS | PG        | ZOOM  | CPP 6101  | OBJECT-ORIENTED TECHNOLOGIES  | Dr. Edwin Omol       |
+| Friday    | 1730-2030 HRS | PG        | ZOOM  | DBS 6102  | ELECTRONIC BUSINESS SYSTEMS   | Dr. Rachael Kibuku   |
+| Saturday  | 0800-1100 HRS | PG        | ZOOM  | DSA 6101  | PRINCIPLES OF DATA SCIENCE    | Dr. Simon Mwendia    |
+| Saturday  | 1100-1400 HRS | PG        | ZOOM  | DBS 6101  | DATA STORAGE MANAGEMENT       | Dr. Abraham Matheka  |
+| Saturday  | 1500-1800 HRS | PG        | ZOOM  | ISS 6101  | BUSINESS PROCESS MODELLING    | Dr. Edwin Omol       |
+
+### 3.2 MSc in Information Systems Management (MISM) Year 1 Trimester 2
+
+| Day       | Time          | Room Type | Venue | Unit Code | Unit Name                          | Lecturer          |
+|-----------|---------------|-----------|-------|-----------|------------------------------------|-------------------|
+| Thursday  | 1730-2030 HRS | PG        | ZOOM  | SEN 6201  | SYSTEM DYNAMICS MODELLING          | Prof. Lucy Mburu  |
+| Friday    | 1730-2030 HRS | PG        | ZOOM  | CSN 6202  | WIRELESS TECHNOLOGIES              | Dr. Paul Abuonji  |
+| Saturday  | 0800-1100 HRS | PG        | ZOOM  | DBS 6201  | DATA MINING AND DATA WAREHOUSING   | Dr. Kaimenyi      |
+| Saturday  | 1100-1400 HRS | PG        | ZOOM  | ISS 6201  | DECISION SUPPORT SYSTEMS           | Dr. Rachael Kibuku|
+| Saturday  | 1500-1800 HRS | PG        | ZOOM  | CSN 6203  | INFORMATION SYSTEMS SECURITY       | Dr. Paul Abuonji  |
+
+### 3.3 MSc in Information Systems Management (MISM) Year 2 Trimester 1
+
+| Day       | Time          | Room Type | Venue | Unit Code | Unit Name                                      | Lecturer          |
+|-----------|---------------|-----------|-------|-----------|------------------------------------------------|-------------------|
+| Thursday  | 1730-2030 HRS | PG        | ZOOM  | STU 7101  | RESEARCH METHODOLOGY                           | Dr. Rachael Kibuku|
+| Friday    | 1730-2030 HRS | PG        | ZOOM  | CSN 7101  | CYBER SECURITY AND FORENSICS                   | Dr. Paul Abuonji  |
+| Saturday  | 0800-1100 HRS | PG        | ZOOM  | DSA 7101  | DATA ANALYTICS AND KNOWLEDGE ENGINEERING       | Dr. Rufus Gikera  |
+| Saturday  | 1100-1400 HRS | PG        | ZOOM  | ISS 7102  | STRATEGIC MANAGEMENT INFORMATION SYSTEMS       | Dr. Joy Kibor     |
+| Saturday  | 1500-1800 HRS | PG        | ZOOM  | ISS 7101  | ICT POLICY                                     | Dr. Rachael Kibuku|
+
+### 3.4 PhD in Information Systems (Year 1 Trimester 1)
+
+| Day       | Time          | Room Type | Venue | Unit Code | Unit Name                                                  | Lecturer          |
+|-----------|---------------|-----------|-------|-----------|------------------------------------------------------------|-------------------|
+| Monday    | 1730-2030 HRS | PG        | ZOOM  | STU 8201  | RESEARCH AND INNOVATION DESIGN WORKSHOPS                   | Dr. Rachael Kibuku|
+| Thursday  | 1730-2030 HRS | PG        | ZOOM  | ISS 8201  | ADVANCES IN EMERGING BUSINESS APPLICATIONS AND TECHNOLOGY  | Prof. Lucy Mburu  |
+| Friday    | 1730-2030 HRS | PG        | ZOOM  | ISS 8202  | PROBLEM SOLVING PARADIGMS IN INFORMATION SYSTEMS           | Dr. Simon Mwendia |
+
+---
+
+## 4. Diploma & Certificate Programs
+
+### 4.1 Diploma in Information Technology (DIT) - Main Campus Full-Time Trimester 1
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                              |
+|-----------|---------------|-----------|--------------|-----------|----------------------------------------|
+| Monday    | 1100-1400 HRS | LAB       | TC 2-3-1     | CDU 302   | FUNDAMENTALS OF COMPUTER SYSTEMS       |
+| Monday    | 1100-1400 HRS | LAB       | TC 0-1/0-2   | CDU 302   | FUNDAMENTALS OF COMPUTER SYSTEMS       |
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | CDU 301   | COMMUNICATION SKILLS                   |
+| Thursday  | 0800-1100 HRS | PHYSICAL  | TC 3-1       | STU 301   | COMPUTING MATHEMATICS                  |
+| Thursday  | 0800-1100 HRS | PHYSICAL  | TC 3-1       | STU 301   | COMPUTING MATHEMATICS                  |
+| Thursday  | 1100-1400 HRS | PHYSICAL  | TC 3-8       | STU 302   | COMPUTER ORGANIZATION & ARCHITECTURE   |
+| Thursday  | 1100-1400 HRS | PHYSICAL  | TC 3-4       | STU 302   | COMPUTER ORGANIZATION & ARCHITECTURE   |
+| Friday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | MGT 101   | PRINCIPLES OF MANAGEMENT               |
+
+### 4.2 Certificate in Information Technology (CIT) - Main Campus Trimester 1
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                                      |
+|-----------|---------------|-----------|--------------|-----------|------------------------------------------------|
+| Monday    | 1400-1700 HRS | LAB       | TC 2-3-2     | STU 101   | INTERNET AND THE WEB                           |
+| Tuesday   | 0800-1100 HRS | PHYSICAL  | TC 2-3-3     | ISS 102   | FOUNDATION PHYSICS AND ELECTRICITY FOR IT      |
+| Tuesday   | 1100-1400 HRS | VIRTUAL   | ZOOM         | ISS 103   | INTRODUCTION TO INFORMATION SYSTEMS            |
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | MKT 401   | CUSTOMER RELATIONSHIP MARKETING                |
+| Wednesday | 1400-1700 HRS | VIRTUAL   | ZOOM         | ISS 101   | COMPUTERS AND SOCIETY                          |
+
+### 4.3 Certificate in Information Technology (CIT) - Main Campus Trimester 2
+
+| Day       | Time          | Room Type | Venue        | Unit Code | Unit Name                              |
+|-----------|---------------|-----------|--------------|-----------|----------------------------------------|
+| Wednesday | 1100-1400 HRS | VIRTUAL   | ZOOM         | CDU 301   | COMMUNICATION SKILLS                   |
+| Friday    | 0800-1100 HRS | VIRTUAL   | ZOOM         | MGT 101   | PRINCIPLES OF MANAGEMENT               |
+| Thursday  | 0800-1100 HRS | PHYSICAL  | TC 3-1       | STU 301   | COMPUTING MATHEMATICS                  |
+| Thursday  | 1100-1400 HRS | PHYSICAL  | TC 3-5       | STU 302   | COMPUTER ORGANIZATION & ARCHITECTURE   |
+| Monday    | 1100-1400 HRS | LAB       | TC 0-3       | CDU 302   | FUNDAMENTALS OF COMPUTER SYSTEMS       |
+
+---
+
+## Appendix: Key Reference Tables
+
+### Room Type Codes
+| Code      | Description                     |
+|-----------|---------------------------------|
+| PHYSICAL  | Physical classroom/lecture hall |
+| LAB       | Computer laboratory             |
+| VIRTUAL   | Online session (Zoom)           |
+| PG        | Postgraduate session            |
+
+### Venue Codes
+| Code        | Location Description                     |
+|-------------|------------------------------------------|
+| TC X-Y      | Teaching Complex, Room X-Y               |
+| LT X-Y      | Lecture Theatre X-Y                      |
+| DA LAB      | Data Analytics Laboratory                |
+| C-X         | Classroom X                              |
+| AMPHITHEATRE| Main Amphitheatre                        |
+| RM X-Y      | Room X-Y (campus-specific)               |
+
+### Unit Prefix Codes
+| Prefix | Discipline Area                              |
+|--------|----------------------------------------------|
+| STU    | Core Computing/Programming                   |
+| MAT    | Mathematics                                  |
+| STA    | Statistics                                   |
+| CUU    | University Core Units                        |
+| ISS    | Information Systems & Security               |
+| CPP    | Programming (C++, Java, VB.NET)              |
+| CSN    | Computer Systems & Networking                |
+| DSA    | Data Science & Analytics                     |
+| SEN    | Software Engineering                         |
+| DBS    | Database Systems                             |
+| FIN    | Finance                                      |
+| MKT    | Marketing                                    |
+| CDU    | Communication & Development                  |
+| MGT    | Management                                   |
+| CPU    | Gaming/Graphics Programming                  |
+| SBU    | Small Business                               |
+| ACC    | Accounting                                   |

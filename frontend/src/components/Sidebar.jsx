@@ -42,9 +42,17 @@ const Sidebar = ({ onNewChat, onOpenHistory, onSaveChat }) => {
                 {/* User Profile Section */}
                 <div className="p-4 border-b border-border-primary">
                     <div className={`flex ${isCollapsed ? 'justify-center' : 'items-center gap-3'}`}>
-                        <div className="w-10 h-10 rounded-full premium-gradient-bg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
-                            {initials}
-                        </div>
+                        {user?.user_metadata?.avatar_url ? (
+                            <img 
+                                src={user.user_metadata.avatar_url} 
+                                alt={userName}
+                                className="w-10 h-10 rounded-full object-cover flex-shrink-0 shadow-sm"
+                            />
+                        ) : (
+                            <div className="w-10 h-10 rounded-full premium-gradient-bg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
+                                {initials}
+                            </div>
+                        )}
                         {!isCollapsed && (
                             <div className="flex-1 min-w-0">
                                 <p className="font-medium text-text-primary truncate">{userName}</p>

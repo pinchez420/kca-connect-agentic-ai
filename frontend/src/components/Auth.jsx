@@ -79,6 +79,17 @@ const Auth = () => {
                 </span>
             </div>
 
+            {/* Back Button - Navigate to landing page */}
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-8 right-8 flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-secondary/50 border border-border-primary text-text-primary hover:bg-bg-secondary transition-colors z-20"
+            >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+            </button>
+
             <div className={`max-w-md w-full bg-bg-secondary/40 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-border-primary z-10 relative animate-fadeIn ${isPremium ? 'premium-glow' : ''}`}>
                 {/* Tabs */}
                 <div className="flex p-1 bg-bg-primary/50 rounded-2xl mb-8 border border-border-primary">
@@ -249,3 +260,4 @@ const Auth = () => {
 };
 
 export default Auth;
+
