@@ -41,7 +41,10 @@ const Sidebar = ({ onNewChat, onOpenHistory, onSaveChat }) => {
 
                 {/* User Profile Section */}
                 <div className="p-4 border-b border-border-primary">
-                    <div className={`flex ${isCollapsed ? 'justify-center' : 'items-center gap-3'}`}>
+                    <div 
+                        className={`flex ${isCollapsed ? 'justify-center' : 'items-center gap-3'} ${!isCollapsed ? 'cursor-pointer' : ''}`}
+                        onClick={() => !isCollapsed && setIsProfileOpen(true)}
+                    >
                         {user?.user_metadata?.avatar_url ? (
                             <img 
                                 src={user.user_metadata.avatar_url} 

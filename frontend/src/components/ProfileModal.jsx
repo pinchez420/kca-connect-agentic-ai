@@ -14,6 +14,7 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showFullAvatar, setShowFullAvatar] = useState(false);
   
   // Sync currentUser with context user
   useEffect(() => {
@@ -223,7 +224,8 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
                   <img 
                     src={avatarPreview || currentUser.user_metadata.avatar_url} 
                     alt="Profile" 
-                    className="w-28 h-28 rounded-full object-cover border-4 border-indigo-200 shadow-md"
+                    className="w-28 h-28 rounded-full object-cover border-4 border-indigo-200 shadow-md cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setShowFullAvatar(true)}
                   />
                 ) : (
                   <div className="w-28 h-28 rounded-full premium-gradient-bg flex items-center justify-center text-white font-bold text-2xl shadow-md">
@@ -407,6 +409,28 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
           )}
         </div>
       </div>
+
+      {/* Full Size Avatar Lightbox */}
+      {showFullAvatar && (avatarPreview || currentUser?.user_metadata?.avatar_url) && (
+        <div 
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80"
+          onClick={() => setShowFullAvatar(false)}
+        >
+          <img 
+            src={avatarPreview || currentUser.user_metadata.avatar_url} 
+            alt="Full Profile" 
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+          />
+          <button
+            onClick={() => setShowFullAvatar(false)}
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
