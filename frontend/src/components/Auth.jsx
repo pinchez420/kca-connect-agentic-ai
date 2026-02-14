@@ -9,6 +9,7 @@ const Auth = () => {
     const [activeTab, setActiveTab] = useState('signin');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [fullName, setFullName] = useState('');
     const [role, setRole] = useState('Student');
     const [campus, setCampus] = useState('Main');
@@ -152,21 +153,21 @@ const Auth = () => {
                     )}
 
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Student Email Address</label>
+                        <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Email Address</label>
                         <input
                             type="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm"
-                            placeholder="22-00000@students.kcau.ac.ke"
+                            placeholder="student email/email address"
                         />
                     </div>
 
                     {activeTab === 'signup' && (
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Role</label>
+                            <label className="block text-xs font-bold uppercase tracking-widest text-text-secondary mb-2 ml-1">Role</label>
                                 <select
                                     value={role}
                                     onChange={(e) => setRole(e.target.value)}
@@ -175,6 +176,7 @@ const Auth = () => {
                                     <option>Student</option>
                                     <option>Faculty</option>
                                     <option>Staff</option>
+                                    <option>Guest</option>
                                 </select>
                             </div>
                             <div>
@@ -199,14 +201,32 @@ const Auth = () => {
                                 <button type="button" className="text-[10px] font-bold text-accent-primary hover:underline uppercase tracking-tighter">Forgot Password?</button>
                             )}
                         </div>
-                        <input
-                            type="password"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm"
-                            placeholder="••••••••"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full p-4 rounded-2xl border border-border-primary bg-bg-primary/50 text-text-primary focus:outline-none focus:border-accent-primary transition-all backdrop-blur-sm pr-12"
+                                placeholder="••••••••"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors"
+                            >
+                                {showPassword ? (
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     {activeTab === 'signup' && (

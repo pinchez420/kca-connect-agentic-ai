@@ -365,7 +365,7 @@ const AdminDashboard = () => {
                     <div className="bg-bg-secondary rounded-xl p-6 border border-border-primary shadow-sm">
                         <h3 className="text-lg font-semibold text-text-primary mb-4">Activity Over Time</h3>
                         {chartData.length > 0 ? (
-                            <div className="space-y-3">
+                            <div className="space-y-3 max-h-80 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-accent-primary scrollbar-track-bg-primary">
                                 {chartData.map((item, index) => (
                                     <div key={index} className="flex items-center gap-4">
                                         <span className="text-text-secondary text-sm w-16">{item.date}</span>
@@ -407,7 +407,7 @@ const AdminDashboard = () => {
                     <div className="bg-bg-secondary rounded-xl p-6 border border-border-primary shadow-sm">
                         <h3 className="text-lg font-semibold text-text-primary mb-4">Top Chat Topics</h3>
                         {topTopics.length > 0 ? (
-                            <div className="space-y-3">
+                            <div className="space-y-3 max-h-80 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-accent-primary scrollbar-track-bg-primary">
                                 {topTopics.map((topic, index) => (
                                     <div key={index} className="flex items-center gap-3">
                                         <span className="text-text-secondary text-sm w-6">{index + 1}.</span>
