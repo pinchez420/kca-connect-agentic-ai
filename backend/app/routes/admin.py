@@ -26,14 +26,17 @@ def get_admin_user(authorization: str = Header(None)):
         
         user_response = supabase.auth.get_user(token)
         if not user_response.user:
+            logger.warning("Invalid token - no user found")
             raise HTTPException(status_code=401, detail="Invalid or expired token")
         
         user = user_response.user
+        logger.info(f"User from token: {user.email}, metadata: {user.user_metadata}")
+        
         is_admin = user.user_metadata.get('_admin', False) if user.user_metadata else False
         
         if not is_admin:
             logger.warning(f"Non-admin user {user.email} attempted to access admin endpoints")
-            raise HTTPException(status_code=403, detail="Admin access required")
+            raise HTTPException(status_code=403, detail="Admin access required. You do not have admin privileges.")
         
         logger.info(f"Admin user {user.email} accessed admin dashboard")
         return user
@@ -93,15 +96,28 @@ def get_analytics_overview(admin=Depends(get_admin_user)):
     """
     Get overview analytics - summary statistics
     """
+    logger.info("Getting analytics overview")
     try:
         service = get_service_client()
         
         # Get total users
+        total_users = 0
         try:
-            users_response = service.auth.admin.list_users()
-            total_users = len(users_response.users) if users_response.users else 0
-        except:
-            total_users = 0
+            headers = {
+                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+                "apikey": settings.SUPABASE_SERVICE_KEY
+            }
+            response = httpx.get(
+                f"{settings.SUPABASE_URL}/auth/v1/admin/users?limit=1",
+                headers=headers,
+                timeout=30.0
+            )
+            if response.status_code == 200:
+                # Get users list to at least confirm access works
+                users_data = response.json().get("users", [])
+                total_users = len(users_data) if users_data else 0
+        except Exception as e:
+            logger.error(f"Error getting users: {e}")
         
         # Get active users (sessions in last 30 days)
         thirty_days_ago = (datetime.utcnow() - timedelta(days=30)).isoformat()
@@ -170,21 +186,47 @@ def get_user_analytics(admin=Depends(get_admin_user)):
     """
     Get user-specific analytics
     """
+    logger.info("Getting user analytics")
     try:
         service = get_service_client()
         
-        # Get all users
-        users_response = service.auth.admin.list_users()
-        total_users = len(users_response.users) if users_response.users else 0
+        # Get all users via HTTP
+        users = []
+        try:
+            headers = {
+                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+                "apikey": settings.SUPABASE_SERVICE_KEY
+            }
+            response = httpx.get(
+                f"{settings.SUPABASE_URL}/auth/v1/admin/users?limit=1000",
+                headers=headers,
+                timeout=30.0
+            )
+            if response.status_code == 200:
+                users = response.json().get("users", [])
+        except Exception as e:
+            logger.error(f"Error listing users: {e}")
+        
+        total_users = len(users)
         
         # Get active users (last 30 days)
         thirty_days_ago = (datetime.utcnow() - timedelta(days=30)).isoformat()
-        sessions_response = service.table("user_sessions").select("user_id").execute()
-        active_users = len(set([s['user_id'] for s in sessions_response.data if s.get('login_at', '') > thirty_days_ago])) if sessions_response.data else 0
+        try:
+            sessions_response = service.table("user_sessions").select("user_id").execute()
+            active_users = len(set([s['user_id'] for s in sessions_response.data if s.get('login_at', '') > thirty_days_ago])) if sessions_response.data else 0
+        except:
+            active_users = 0
         
         # Get new users (last 7 days)
         seven_days_ago = (datetime.utcnow() - timedelta(days=7)).isoformat()
-        new_users = len([u for u in users_response.users if u.created_at and u.created_at > seven_days_ago]) if users_response.users else 0
+        new_users = 0
+        for user in users:
+            if isinstance(user, dict):
+                created_at = user.get('created_at')
+            else:
+                created_at = getattr(user, 'created_at', None)
+            if created_at and created_at > seven_days_ago:
+                new_users += 1
         
         return {
             "total": total_users,
@@ -202,6 +244,7 @@ def get_chat_analytics(admin=Depends(get_admin_user)):
     """
     Get chat-specific analytics
     """
+    logger.info("Getting chat analytics")
     try:
         service = get_service_client()
         
@@ -233,6 +276,7 @@ def get_chats_daily(admin=Depends(get_admin_user), days: int = 7):
     """
     Get number of chats created per day
     """
+    logger.info(f"Getting chats daily for {days} days")
     try:
         service = get_service_client()
         
@@ -267,6 +311,7 @@ def get_messages_daily(admin=Depends(get_admin_user), days: int = 7):
     """
     Get number of messages per day
     """
+    logger.info(f"Getting messages daily for {days} days")
     try:
         service = get_service_client()
         
@@ -303,6 +348,7 @@ def get_top_topics(admin=Depends(get_admin_user), limit: int = 10):
     """
     Get most popular chat topics
     """
+    logger.info(f"Getting top {limit} topics")
     try:
         service = get_service_client()
         
@@ -332,6 +378,7 @@ def get_engagement_analytics(admin=Depends(get_admin_user)):
     """
     Get user engagement metrics
     """
+    logger.info("Getting engagement analytics")
     try:
         service = get_service_client()
         
@@ -383,6 +430,7 @@ def get_system_health(admin=Depends(get_admin_user)):
     """
     Get system health metrics
     """
+    logger.info("Getting system health")
     try:
         from app.services.rag_service import rag_service
         
@@ -425,9 +473,38 @@ def get_all_users(admin=Depends(get_admin_user), limit: int = 50, offset: int = 
     try:
         service = get_service_client()
         
-        # Get users from auth
-        response = service.auth.admin.list_users()
-        users = response.users or []
+        # Get users using direct HTTP to Supabase Admin API
+        users = []
+        try:
+            headers = {
+                "Authorization": f"Bearer {settings.SUPABASE_SERVICE_KEY}",
+                "apikey": settings.SUPABASE_SERVICE_KEY
+            }
+            # Use higher limit to get all users
+            response = httpx.get(
+                f"{settings.SUPABASE_URL}/auth/v1/admin/users?limit=1000",
+                headers=headers,
+                timeout=30.0
+            )
+            logger.info(f"Users API response status: {response.status_code}")
+            if response.status_code == 200:
+                data = response.json()
+                users = data.get("users", [])
+                logger.info(f"Successfully fetched {len(users)} users from Supabase Admin API")
+            else:
+                logger.error(f"Failed to fetch users: {response.status_code} - {response.text}")
+        except Exception as e:
+            logger.error(f"Error fetching users via HTTP: {e}")
+            # Try fallback to supabase client
+            try:
+                response = service.auth.admin.list_users()
+                users = response.users if response.users else []
+                logger.info(f"Fallback: fetched {len(users)} users via client")
+            except Exception as e2:
+                logger.error(f"Fallback also failed: {e2}")
+        
+        total = len(users)
+        logger.info(f"Total users found: {total}")
         
         # Apply pagination
         paginated_users = users[offset:offset + limit]
@@ -435,24 +512,44 @@ def get_all_users(admin=Depends(get_admin_user), limit: int = 50, offset: int = 
         # Format user data
         result = []
         for user in paginated_users:
+            # Handle dict format from HTTP response
+            if isinstance(user, dict):
+                user_id = user.get('id')
+                user_email = user.get('email')
+                user_created_at = user.get('created_at')
+                user_last_sign_in = user.get('last_sign_in_at')
+                user_metadata = user.get('user_metadata') or user.get('raw_user_meta_data', {})
+            else:
+                user_id = getattr(user, 'id', None)
+                user_email = getattr(user, 'email', None)
+                user_created_at = getattr(user, 'created_at', None)
+                user_last_sign_in = getattr(user, 'last_sign_in_at', None)
+                user_metadata = getattr(user, 'user_metadata', {}) or {}
+            
             # Get user's chat count
-            chats_response = service.table("chats").select("id", count="exact").eq("user_id", user.id).execute()
-            chat_count = chats_response.count or 0
+            chat_count = 0
+            if user_id:
+                try:
+                    chats_response = service.table("chats").select("id", count="exact").eq("user_id", str(user_id)).execute()
+                    chat_count = chats_response.count or 0
+                except:
+                    pass
             
             result.append({
-                "id": user.id,
-                "email": user.email,
-                "created_at": user.created_at,
-                "last_sign_in": user.last_sign_in_at,
+                "id": str(user_id) if user_id else "",
+                "email": user_email or "",
+                "created_at": user_created_at,
+                "last_sign_in": user_last_sign_in,
                 "chat_count": chat_count,
-                "is_admin": user.user_metadata.get('_admin', False) if user.user_metadata else False,
-                "full_name": user.user_metadata.get('full_name', '') if user.user_metadata else '',
-                "campus_branch": user.user_metadata.get('campus_branch', '') if user.user_metadata else ''
+                "is_admin": user_metadata.get('_admin', False) if isinstance(user_metadata, dict) else False,
+                "full_name": user_metadata.get('full_name', '') if isinstance(user_metadata, dict) else '',
+                "campus_branch": user_metadata.get('campus_branch', '') if isinstance(user_metadata, dict) else ''
             })
         
+        logger.info(f"Returning {len(result)} users (total: {total})")
         return {
             "users": result,
-            "total": len(users)
+            "total": total
         }
         
     except Exception as e:
@@ -514,4 +611,73 @@ def remove_user_admin(user_id: str, admin=Depends(get_admin_user)):
     except Exception as e:
         logger.error(f"Error removing admin: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to remove admin: {str(e)}")
+
+
+class UpdateUserRequest(BaseModel):
+    full_name: Optional[str] = None
+    course_name: Optional[str] = None
+    campus_branch: Optional[str] = None
+    contact_number: Optional[str] = None
+    year_of_study: Optional[str] = None
+    trimester: Optional[str] = None
+    mode_of_study: Optional[str] = None
+    is_admin: Optional[bool] = None
+
+
+@router.put("/users/{user_id}")
+def update_user(user_id: str, request: UpdateUserRequest, admin=Depends(get_admin_user)):
+    """
+    Update user metadata and admin flag (admin only)
+    """
+    try:
+        service = get_service_client()
+
+        user_response = service.auth.admin.get_user_by_id(user_id)
+        if not user_response or not user_response.user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        metadata = user_response.user.user_metadata or {}
+
+        # Only apply provided fields
+        updates = request.model_dump(exclude_unset=True)
+
+        # Handle admin flag separately
+        if "is_admin" in updates:
+            metadata["_admin"] = bool(updates.pop("is_admin"))
+
+        # Merge remaining fields into user_metadata
+        for key, value in updates.items():
+            metadata[key] = value
+
+        service.auth.admin.update_user_by_id(user_id, {"data": metadata})
+
+        return {"success": True, "message": "User updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating user: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update user: {str(e)}")
+
+
+@router.delete("/users/{user_id}")
+def delete_user(user_id: str, admin=Depends(get_admin_user)):
+    """
+    Delete a user (admin only). Also attempts to clean up user's chats.
+    """
+    try:
+        service = get_service_client()
+        service.auth.admin.delete_user(user_id)
+
+        # Best-effort cleanup of related chats
+        try:
+            service.table("chats").delete().eq("user_id", user_id).execute()
+        except Exception:
+            pass
+
+        return {"success": True, "message": f"User {user_id} deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting user: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
 

@@ -515,13 +515,14 @@ export const getAllUsers = async (token, limit = 50, offset = 0) => {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to fetch users");
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Failed to fetch users (${response.status})`);
         }
 
         return await response.json();
     } catch (error) {
         console.error("Error fetching users:", error);
-        return null;
+        throw error; // Re-throw to allow caller to handle
     }
 };
 
@@ -561,6 +562,50 @@ export const removeUserAdmin = async (token, userId) => {
         return await response.json();
     } catch (error) {
         console.error("Error removing user admin:", error);
+        throw error;
+    }
+};
+
+export const updateUser = async (token, userId, data) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.detail || "Failed to update user");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error updating user:", error);
+        throw error;
+    }
+};
+
+export const deleteUser = async (token, userId) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.detail || "Failed to delete user");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error deleting user:", error);
         throw error;
     }
 };
