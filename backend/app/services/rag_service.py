@@ -13,6 +13,18 @@ from flashrank import Ranker, RerankRequest
 
 logger = logging.getLogger(__name__)
 
+def _fix_merged_words(text: str) -> str:
+    """
+    Fix merged words from PDF extraction (e.g. "RequirementsTo" -> "Requirements To")
+    """
+    if not text:
+        return text
+    # Fix lowercase followed by uppercase
+    text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)
+    # Fix uppercase sequence followed by lowercase
+    text = re.sub(r'([A-Z])([A-Z][a-z])', r'\1 \2', text)
+    return text
+
 def _format_document_context(docs: list) -> str:
     """
     Format document chunks with proper separation to prevent words running together.
@@ -24,6 +36,8 @@ def _format_document_context(docs: list) -> str:
     formatted_chunks = []
     for doc in docs:
         content = doc.page_content.strip()
+        # Fix merged words from PDF extraction
+        content = _fix_merged_words(content)
         # Ensure each chunk ends with proper punctuation
         if content and content[-1] not in '.!?。':
             content = content + '.'
