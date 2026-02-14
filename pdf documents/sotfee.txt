@@ -1,0 +1,66 @@
+# KCA UNIVERSITY (KCAU) SCHOOL OF TECHNOLOGY FEE STRUCTURE 2024-2025
+
+## 1. General Fee Information
+- **Tuition Fee Rate:** Kshs. 11,500 per unit (unless otherwise stated).
+- **Attachment Fee:** Kshs. 11,500 (standard for most BSc programs).
+- **Installment Plan:** Fees are payable in 3 installments: 
+    1. 1st Installment: 50%
+    2. 2nd Installment: 30%
+    3. 3rd Installment: 20%
+- **Note:** Installment payments carry an extra charge of Kshs. 1,500.
+
+---
+
+## 2. Degree Programmes - Group A
+**Degrees:** BSc in Applied Computing, Bachelor of Business Information Technology (BBIT), BSc in Data Science.
+- **Basis:** Calculation assumes 7 units per trimester.
+- **Trimester 1 Total Fees:** Kshs. 92,310 (Admin: 11,810 + Tuition: 80,500).
+- **Trimesters 2 to 8 Total Fees:** Kshs. 90,010 per trimester (Admin: 9,510 + Tuition: 80,500).
+- **Industrial Attachment Fee:** Kshs. 11,500.
+
+## 3. Degree Programmes - Group B
+**Degrees:** BSc in Information Security & Forensics (BSc. ISF), BSc in Software Development.
+- **Basis:** Calculation assumes 8 units per trimester.
+- **Trimester 1 Total Fees:** Kshs. 104,240 (Admin: 12,240 + Tuition: 92,000).
+- **Trimesters 2 to 8 Total Fees:** Kshs. 101,940 per trimester (Admin: 9,940 + Tuition: 92,000).
+- **Industrial Attachment Fee:** Kshs. 11,500.
+
+## 4. Degree Programmes - Group C
+**Degrees:** BSc in Information Technology, BSc in Information and Communication Technology (ICT).
+- **Basis:** Calculation assumes 6 units per trimester.
+- **Trimester 1 Total Fees:** Kshs. 80,380 (Admin: 11,380 + Tuition: 69,000).
+- **Trimesters 2 to 8 Total Fees:** Kshs. 78,080 per trimester (Admin: 9,080 + Tuition: 69,000).
+- **Industrial Attachment Fee:** Kshs. 11,500.
+
+## 5. Degree Programmes - Group D
+**Degree:** BSc in Gaming and Animation Technology.
+- **Trimester 1 Total Fees:** Kshs. 104,240 (8 units).
+- **Trimesters 2 to 6 Total Fees:** Kshs. 101,940 per trimester (8 units).
+- **Trimesters 7 and 8 Total Fees:** Kshs. 90,010 per trimester (7 units).
+- **Industrial Attachment Fee:** Kshs. 11,500.
+
+---
+
+## 6. Certificate and Diploma Programmes
+**Degrees:** Certificate/Diploma in Business Information Technology (CBIT/DBIT), Certificate/Diploma in Information Technology (CIT/DIT).
+
+- **Module 1 (DBIT 1 / CBIT 1):** Total Kshs. 39,900 (Admin: 9,900 + Tuition: 30,000).
+- **Modules 2 to 4 (DBIT/DIT 2-4):** Total Kshs. 37,900 per module (Admin: 7,900 + Tuition: 30,000).
+- **Module 5 (DBIT 5 / DIT 5):** Total Kshs. 43,900 (Includes Kshs. 6,000 Attachment fee).
+
+---
+
+## 7. Official Banking and Payment Details
+To ensure successful payment, use only the following official KCA University channels:
+
+| Payment Method | Account Number / Details | Bank Code / Branch |
+| :--- | :--- | :--- |
+| **Standard Chartered** | 0102001171100 | Thika Road Mall (TRM) |
+| **ABSA Bank** | 1352178 | Sarit Centre Branch |
+| **NCBA** | 6432280015 | Wabera Street |
+| **M-PESA Paybill** | 300078 | Account: (Use Student ID) |
+
+- **Standard Chartered Swift Code:** SCBLKENX
+- **ABSA Swift Code:** BARCKENX
+- **NCBA Swift Code:** CBAKENX
+- **Important Notes:** Cash and Personal Cheques are NOT accepted. Foreign students pay 20% more on tuition fees (excludes East African Community countries).

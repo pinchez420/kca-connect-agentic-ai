@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { 
-    getAnalyticsOverview, 
-    getChatAnalytics, 
-    getChatsDaily, 
+import {
+    getAnalyticsOverview,
+    getChatAnalytics,
+    getChatsDaily,
     getMessagesDaily,
     getTopTopics,
     getEngagementAnalytics,
-    getSystemHealth
+    getSystemHealth,
+    uploadDocument
 } from '../services/api';
 
 // Icons
@@ -73,13 +74,48 @@ const AdminDashboard = () => {
     const [systemHealth, setSystemHealth] = useState(null);
     const [days, setDays] = useState(7);
 
+    // Upload State
+    const [uploadFile, setUploadFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState(null); // { type: 'success' | 'error', message: '' }
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setUploadFile(e.target.files[0]);
+            setUploadStatus(null);
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!uploadFile || !session?.access_token) return;
+
+        setUploading(true);
+        setUploadStatus(null);
+
+        try {
+            await uploadDocument(session.access_token, uploadFile);
+            setUploadStatus({ type: 'success', message: `Successfully ingested ${uploadFile.name}` });
+            setUploadFile(null);
+            // Reset file input
+            const fileInput = document.getElementById('file-upload');
+            if (fileInput) fileInput.value = '';
+
+            // Refresh stats to show new vector counts
+            loadAnalytics();
+        } catch (error) {
+            setUploadStatus({ type: 'error', message: error.message || 'Failed to upload document' });
+        } finally {
+            setUploading(false);
+        }
+    };
+
     useEffect(() => {
         loadAnalytics();
     }, [session, days]);
 
     const loadAnalytics = async () => {
         if (!session?.access_token) return;
-        
+
         setLoading(true);
         try {
             const [
@@ -140,8 +176,8 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-text-secondary text-sm">Time range:</span>
-                        <select 
-                            value={days} 
+                        <select
+                            value={days}
                             onChange={(e) => setDays(Number(e.target.value))}
                             className="bg-bg-secondary border border-border-primary rounded-lg px-3 py-2 text-text-primary"
                         >
@@ -154,33 +190,33 @@ const AdminDashboard = () => {
 
                 {/* Overview Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-                    <StatCard 
-                        title="Total Users" 
-                        value={overview?.total_users || 0} 
+                    <StatCard
+                        title="Total Users"
+                        value={overview?.total_users || 0}
                         icon={UsersIcon}
                         color="bg-blue-500/10 text-blue-500"
                     />
-                    <StatCard 
-                        title="Active Users (30d)" 
-                        value={overview?.active_users_30d || 0} 
+                    <StatCard
+                        title="Active Users (30d)"
+                        value={overview?.active_users_30d || 0}
                         icon={ActivityIcon}
                         color="bg-green-500/10 text-green-500"
                     />
-                    <StatCard 
-                        title="Total Chats" 
-                        value={overview?.total_chats || 0} 
+                    <StatCard
+                        title="Total Chats"
+                        value={overview?.total_chats || 0}
                         icon={ChatIcon}
                         color="bg-purple-500/10 text-purple-500"
                     />
-                    <StatCard 
-                        title="Total Messages" 
-                        value={overview?.total_messages || 0} 
+                    <StatCard
+                        title="Total Messages"
+                        value={overview?.total_messages || 0}
                         icon={MessageIcon}
                         color="bg-orange-500/10 text-orange-500"
                     />
-                    <StatCard 
-                        title="Avg Session" 
-                        value={overview?.avg_session_duration || '0h 0m'} 
+                    <StatCard
+                        title="Avg Session"
+                        value={overview?.avg_session_duration || '0h 0m'}
                         icon={ServerIcon}
                         color="bg-indigo-500/10 text-indigo-500"
                     />
@@ -203,7 +239,7 @@ const AdminDashboard = () => {
                                                     <span className="text-text-secondary">{item.chats}</span>
                                                 </div>
                                                 <div className="h-2 bg-bg-primary rounded-full overflow-hidden">
-                                                    <div 
+                                                    <div
                                                         className="h-full bg-purple-500 rounded-full"
                                                         style={{ width: `${Math.min(100, (item.chats / Math.max(...chartData.map(d => d.chats), 1)) * 100)}%` }}
                                                     />
@@ -215,7 +251,7 @@ const AdminDashboard = () => {
                                                     <span className="text-text-secondary">{item.messages}</span>
                                                 </div>
                                                 <div className="h-2 bg-bg-primary rounded-full overflow-hidden">
-                                                    <div 
+                                                    <div
                                                         className="h-full bg-orange-500 rounded-full"
                                                         style={{ width: `${Math.min(100, (item.messages / Math.max(...chartData.map(d => d.messages), 1)) * 100)}%` }}
                                                     />
@@ -241,7 +277,7 @@ const AdminDashboard = () => {
                                         <span className="flex-1 text-text-primary truncate">{topic.title}</span>
                                         <span className="text-text-secondary text-sm">{topic.count}</span>
                                         <div className="w-24 h-2 bg-bg-primary rounded-full overflow-hidden">
-                                            <div 
+                                            <div
                                                 className="h-full bg-accent-primary rounded-full"
                                                 style={{ width: `${Math.min(100, (topic.count / topTopics[0].count) * 100)}%` }}
                                             />
@@ -297,11 +333,10 @@ const AdminDashboard = () => {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-text-secondary">Status</span>
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                    systemHealth?.status === 'healthy' 
-                                    ? 'bg-green-500/10 text-green-500' 
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${systemHealth?.status === 'healthy'
+                                    ? 'bg-green-500/10 text-green-500'
                                     : 'bg-red-500/10 text-red-500'
-                                }`}>
+                                    }`}>
                                     {systemHealth?.status || 'Unknown'}
                                 </span>
                             </div>
@@ -316,6 +351,56 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Knowledge Base Management */}
+            <div className="bg-bg-secondary rounded-xl p-6 border border-border-primary shadow-sm mt-6">
+                <h3 className="text-lg font-semibold text-text-primary mb-4">Knowledge Base Management</h3>
+                <p className="text-text-secondary text-sm mb-4">
+                    Upload official documents (PDF, DOCX, TXT) to the Qdrant vector database.
+                    The AI will immediately be able to use this information to answer user queries.
+                </p>
+
+                <div className="flex flex-col md:flex-row items-start gap-4">
+                    <div className="flex-1 w-full">
+                        <input
+                            type="file"
+                            id="file-upload"
+                            accept=".pdf,.docx,.txt"
+                            onChange={handleFileChange}
+                            className="block w-full text-sm text-text-secondary
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-lg file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-accent-primary file:text-white
+                                    hover:file:bg-accent-secondary
+                                    cursor-pointer"
+                        />
+                        <p className="text-xs text-text-secondary mt-2">
+                            Supported formats: PDF, DOCX, TXT. Max size: 10MB.
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={handleUpload}
+                        disabled={!uploadFile || uploading}
+                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${!uploadFile || uploading
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                            : 'bg-accent-primary text-white hover:bg-accent-secondary'
+                            }`}
+                    >
+                        {uploading ? 'Ingesting...' : 'Upload & Ingest'}
+                    </button>
+                </div>
+
+                {uploadStatus && (
+                    <div className={`mt-4 p-3 rounded-lg text-sm ${uploadStatus.type === 'success'
+                        ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                        : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                        }`}>
+                        {uploadStatus.message}
+                    </div>
+                )}
             </div>
         </div>
     );

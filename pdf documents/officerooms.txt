@@ -1,0 +1,55 @@
+# KCA UNIVERSITY (KCAU) MAIN CAMPUS - OFFICE AND ROOM LOCATIONS
+
+## Block B Locations
+- **Location:** Block B - Main Reception
+- **Location:** Block B - Office of the Vice Chancellor (VC)
+- **Location:** Block B - Deputy Vice Chancellor (Enrollment Management, Academic and Student Affairs) Office
+- **Location:** Block B - Chief Finance & Operations Office
+- **Location:** Block B - Human Resource (HR) Department
+- **Location:** Block B - Internal Audit
+- **Location:** Block B - Corporate Affairs and Communications Office
+- **Location:** Block B - ICAD
+- **Location:** Block B - Procurement and Administration
+- **Location:** Block B - Legal Office
+- **Location:** Block B - Management Accounts
+
+## Block C Locations
+- **Location:** Block C - Welcome Centre
+- **Location:** Block C - Enrollment Office
+- **Location:** Block C - Credit Control
+- **Location:** Block C - ICT Department
+- **Location:** Block C - Main Hall
+- **Location:** Block C - Cashier
+
+## Block D Locations
+- **Location:** Block D - Accounts Payables
+- **Location:** Block D - Security Office
+
+## Block E Locations
+- **Location:** Block E - Student Center
+- **Location:** Block E - Student Affairs Office
+
+## Block F to K Locations
+- **Location:** Block F - Recreational Centre
+- **Location:** Block G - Lecture Rooms
+- **Location:** Block H - Lecture Rooms
+- **Location:** Block I - Computer Lab
+- **Location:** Block J - Computer Lab
+- **Location:** Block K - Exams Office
+- **Location:** Block K - Registrar Office
+- **Location:** Block K - Clinic / Health Centre
+- **Location:** Block K - Counseling Room
+
+## Tuition Complex (TC Block)
+- **General Facilities:** Computer Labs, Quality Assurance, SAKU Office.
+- **Academic Units in TC Block:** School of Professional Programmes, Faculty of Computing and Information Management, School of Post Graduate Studies and Research Extension, Faculty of Education, School of Business and Public Management, School of Technology.
+- **TC Floor Guide:** 
+    - TC 0: Ground Floor (Lecture Rooms)
+    - TC 1: First Floor (Lecture Rooms)
+    - TC 2: Second Floor (Lecture Rooms)
+    - TC 3: Third Floor (Lecture Rooms)
+
+## Martin Oduor Otieno Building (KCA University Library)
+- **Library Ground Floor:** Reception (Borrowing and Returning Books)
+- **Library Facilities:** Chief and Deputy Librarian’s Offices, Study Area, E-Library Centre.
+- **Administrative Units in Library Building:** Research and Extension Office, Dean School of Graduate Studies Office.

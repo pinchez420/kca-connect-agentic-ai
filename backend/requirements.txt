@@ -18,3 +18,6 @@ beautifulsoup4
 requests
 httpx
 langchain-groq
+python-multipart
+python-docx
+flashrank

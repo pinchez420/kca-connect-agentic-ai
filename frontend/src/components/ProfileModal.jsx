@@ -5,32 +5,35 @@ import { supabase } from '../lib/supabaseClient';
 
 const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
   const { user, updateUser: refreshUserFromContext } = useAuth();
-  
+
   // Use the callback if provided, otherwise fallback to context
   const updateUser = refreshUserFromContext;
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [showFullAvatar, setShowFullAvatar] = useState(false);
-  
+
   // Sync currentUser with context user
   useEffect(() => {
     if (user) {
       setCurrentUser(user);
     }
   }, [user]);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     full_name: '',
     course_name: '',
     campus_branch: '',
     contact_number: '',
+    year_of_study: '',
+    trimester: '',
+    mode_of_study: '',
   });
-  
+
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
 
@@ -43,6 +46,9 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
         course_name: metadata.course_name || '',
         campus_branch: metadata.campus_branch || '',
         contact_number: metadata.contact_number || '',
+        year_of_study: metadata.year_of_study || '',
+        trimester: metadata.trimester || '',
+        mode_of_study: metadata.mode_of_study || '',
       });
     }
   }, [currentUser]);
@@ -57,7 +63,7 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
 
   const userEmail = currentUser.email || 'student@kca.ac.ke';
   const userName = formData.full_name || currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || 'KCA Student';
-  
+
   const initials = userName
     .split(' ')
     .filter(Boolean)
@@ -117,6 +123,9 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
       course_name: metadata.course_name || '',
       campus_branch: metadata.campus_branch || '',
       contact_number: metadata.contact_number || '',
+      year_of_study: metadata.year_of_study || '',
+      trimester: metadata.trimester || '',
+      mode_of_study: metadata.mode_of_study || '',
     });
   };
 
@@ -128,17 +137,20 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
     try {
       // Get fresh auth token from Supabase session
       const token = await getAuthToken();
-      
+
       if (!token) {
         throw new Error('No authentication token found. Please sign in again.');
       }
-      
+
       // Update profile data
       const profileData = {
         full_name: formData.full_name,
         course_name: formData.course_name,
         campus_branch: formData.campus_branch,
         contact_number: formData.contact_number,
+        year_of_study: formData.year_of_study,
+        trimester: formData.trimester,
+        mode_of_study: formData.mode_of_study,
       };
 
       await updateUserProfile(token, profileData);
@@ -158,7 +170,7 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
             avatar_url: newAvatarUrl
           }
         }));
-        
+
         // Call the callback to update avatar in parent component
         if (onAvatarUpdate) {
           onAvatarUpdate(newAvatarUrl);
@@ -167,13 +179,13 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
 
       // Refresh user data from context
       await refreshUserFromContext();
-      
+
       setSuccess('Profile updated successfully!');
       setTimeout(() => {
         setIsEditing(false);
         setSuccess(null);
       }, 1500);
-      
+
     } catch (err) {
       setError(err.message || 'Failed to update profile');
     } finally {
@@ -221,9 +233,9 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
             <div className="flex flex-col items-center justify-center">
               <div className="relative">
                 {avatarPreview || currentUser?.user_metadata?.avatar_url ? (
-                  <img 
-                    src={avatarPreview || currentUser.user_metadata.avatar_url} 
-                    alt="Profile" 
+                  <img
+                    src={avatarPreview || currentUser.user_metadata.avatar_url}
+                    alt="Profile"
                     className="w-28 h-28 rounded-full object-cover border-4 border-indigo-200 shadow-md cursor-pointer hover:opacity-90 transition-opacity"
                     onClick={() => setShowFullAvatar(true)}
                   />
@@ -232,15 +244,15 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
                     {initials}
                   </div>
                 )}
-                
+
                 {isEditing && (
                   <label className="absolute bottom-0 right-0 w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-indigo-700 transition-colors">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    <input 
-                      type="file" 
+                    <input
+                      type="file"
                       accept="image/*"
                       onChange={handleAvatarChange}
                       className="hidden"
@@ -248,7 +260,7 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
                   </label>
                 )}
               </div>
-              
+
               {isEditing && (avatarPreview || currentUser?.user_metadata?.avatar_url) && (
                 <button
                   onClick={handleRemoveAvatar}
@@ -257,7 +269,7 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
                   Remove photo
                 </button>
               )}
-              
+
               {isEditing && avatarFile && (
                 <p className="mt-1 text-xs text-text-secondary truncate max-w-24">
                   {avatarFile.name}
@@ -328,6 +340,54 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
                       placeholder="e.g., +254 700 000 000"
                     />
                   </div>
+
+                  {/* New Fields */}
+                  <div>
+                    <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Year of Study</label>
+                    <select
+                      name="year_of_study"
+                      value={formData.year_of_study || ''}
+                      onChange={handleInputChange}
+                      className="w-full p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">Select Year</option>
+                      <option value="Year 1">Year 1</option>
+                      <option value="Year 2">Year 2</option>
+                      <option value="Year 3">Year 3</option>
+                      <option value="Year 4">Year 4</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Trimester</label>
+                    <select
+                      name="trimester"
+                      value={formData.trimester || ''}
+                      onChange={handleInputChange}
+                      className="w-full p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">Select Trimester</option>
+                      <option value="Trimester 1">Trimester 1</option>
+                      <option value="Trimester 2">Trimester 2</option>
+                      <option value="Trimester 3">Trimester 3</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Mode of Study</label>
+                    <select
+                      name="mode_of_study"
+                      value={formData.mode_of_study || ''}
+                      onChange={handleInputChange}
+                      className="w-full p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="">Select Mode</option>
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Distance Learning">Distance Learning</option>
+                    </select>
+                  </div>
+
                 </>
               ) : (
                 // View Mode
@@ -364,6 +424,27 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
                     <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Contact Number</label>
                     <div className="p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary">
                       {currentUser?.user_metadata?.contact_number || '-'}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Year of Study</label>
+                    <div className="p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary">
+                      {currentUser?.user_metadata?.year_of_study || '-'}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Trimester</label>
+                    <div className="p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary">
+                      {currentUser?.user_metadata?.trimester || '-'}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs uppercase tracking-wide text-text-secondary mb-1">Mode of Study</label>
+                    <div className="p-3 rounded-lg bg-bg-primary border border-border-primary text-text-primary">
+                      {currentUser?.user_metadata?.mode_of_study || '-'}
                     </div>
                   </div>
                 </>
@@ -412,13 +493,13 @@ const ProfileModal = ({ isOpen, onClose, onAvatarUpdate }) => {
 
       {/* Full Size Avatar Lightbox */}
       {showFullAvatar && (avatarPreview || currentUser?.user_metadata?.avatar_url) && (
-        <div 
+        <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80"
           onClick={() => setShowFullAvatar(false)}
         >
-          <img 
-            src={avatarPreview || currentUser.user_metadata.avatar_url} 
-            alt="Full Profile" 
+          <img
+            src={avatarPreview || currentUser.user_metadata.avatar_url}
+            alt="Full Profile"
             className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
           />
           <button

@@ -9,6 +9,7 @@ from app.services.web_search_service import web_search_service
 import logging
 import asyncio
 import re
+from flashrank import Ranker, RerankRequest
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,14 @@ class RagService:
         )
         
         self.llm = self._initialize_llm()
+        
+        # Initialize FlashRank for reranking
+        # Uses a lightweight model (e.g., ms-marco-TinyBERT-L-2-v2)
+        try:
+            self.ranker = Ranker()
+        except Exception as e:
+            logger.warning(f"Failed to initialize FlashRank: {e}. Reranking will be disabled.")
+            self.ranker = None
 
         # Create custom prompt template
         self.system_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. Use the following context from documents, web search results, and conversation history to answer the student's question.
@@ -68,7 +77,14 @@ Instructions:
 8. GREETING ETIQUETTE: 
    - Only greet with "Hello" at the START of a NEW conversation (when there is no conversation history)
    - If the user has already greeted you or there is prior conversation, do NOT start with "Hello" - just answer their question directly
-   - Be conversational but concise - continue from where the conversation left off"""
+   - Be conversational but concise - continue from where the conversation left off
+9. FORMATTING RULES:
+   - Use Markdown for clear structure
+   - Use bold (**text**) for key terms and important concepts
+   - Use bullet points or numbered lists for steps or multiple items
+   - Use headings (###) to separate different topics
+   - Ensure there is proper spacing between sections
+   - IMPORTANT: Always start a new line before a heading (###) or a list item (- or 1.)"""
 
     def _initialize_llm(self):
         """Initialize the preferred LLM based on configuration and preference"""
@@ -124,114 +140,54 @@ Instructions:
             logger.error(f"Error during vector search: {e}")
             return []
 
-    def search(self, query: str, k: int = 5):
-        """Retrieve relevant documents from vector store with enhanced name search"""
+    def hybrid_search(self, query: str, k: int = 5, fetch_k: int = 20):
+        """
+        Perform hybrid search with reranking.
+        1. Retrieve a larger set of candidates (fetch_k) using vector search.
+        2. Rerank the candidates using FlashRank.
+        3. Return the top k results.
+        """
         try:
-            # Check if query looks like a name search (capitalized words, common name patterns)
-            # Convert to title case for matching (handle cases like "clive onsomu" -> "Clive Onsomu")
-            query_title = query.strip().title()
-            is_name_search = bool(re.match(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query_title))
+            # 1. Retrieve candidates
+            candidates = self.search_with_scores(query, k=fetch_k)
+            if not candidates:
+                return []
             
-            # Check if query looks like a unit/course search
-            # Course names often have patterns like "Xxxx Yyyy" (title case with multiple words)
-            # or are all uppercase like "EXPERT SYSTEMS"
-            is_course_search = (
-                bool(re.search(r'\b(systems?|course|unit|class|timetable|lecture)\b', query, re.IGNORECASE)) or
-                # Or if query is multiple capitalized words (likely a course name)
-                (len(query.split()) >= 2 and bool(re.match(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip()))) or
-                # Or if query is all uppercase (like course codes)
-                (query.isupper() and len(query.split()) >= 2)
-            )
+            if not self.ranker:
+                # Fallback to standard vector search if ranker not available
+                return [doc for doc, score in candidates[:k]]
+
+            # 2. Prepare for reranking
+            passages = [
+                {"id": str(i), "text": doc.page_content, "meta": doc.metadata} 
+                for i, (doc, score) in enumerate(candidates)
+            ]
             
-            results = []
-            seen_contents = set()
+            rerank_request = RerankRequest(query=query, passages=passages)
             
-            # Primary search with original query
-            primary_results = self.search_with_scores(query, k=k)
-            for doc, score in primary_results:
-                content_hash = hash(doc.page_content[:100])
-                if content_hash not in seen_contents:
-                    results.append((doc, score))
-                    seen_contents.add(content_hash)
+            # 3. Rerank
+            reranked_results = self.ranker.rerank(rerank_request)
             
-            # For course/unit searches, also search with key terms extracted
-            if is_course_search and len(results) < k:
-                # Extract key terms from query (last 2-3 words are usually the course name)
-                query_words = query.strip().split()
-                if len(query_words) >= 2:
-                    # Search with last few words (the actual course name)
-                    search_terms = [" ".join(query_words[-2:]), " ".join(query_words[-3:])]
-                    # Also try just the last word if it's a single word course
-                    if len(query_words) == 1:
-                        search_terms.append(query_words[0])
-                    for term in search_terms:
-                        if len(results) >= k * 2:
-                            break
-                        try:
-                            term_results = self.search_with_scores(term, k=3)
-                            for doc, score in term_results:
-                                content_hash = hash(doc.page_content[:100])
-                                if content_hash not in seen_contents:
-                                    results.append((doc, score))
-                                    seen_contents.add(content_hash)
-                        except:
-                            continue
+            # 4. Format results
+            final_results = []
+            for result in reranked_results[:k]:
+                # Reconstruct document
+                from langchain_core.documents import Document
+                doc = Document(page_content=result['text'], metadata=result['meta'])
+                final_results.append(doc)
             
-            # Fallback: If still no results, try broader searches with timetable-related terms
-            if len(results) == 0:
-                fallback_terms = ["timetable", "unit", "course", query.split()[-1] if query.split() else query]
-                for term in fallback_terms:
-                    try:
-                        fallback_results = self.search_with_scores(term, k=3)
-                        for doc, score in fallback_results:
-                            content_hash = hash(doc.page_content[:100])
-                            if content_hash not in seen_contents:
-                                results.append((doc, score))
-                                seen_contents.add(content_hash)
-                    except:
-                        continue
-            
-            # If it looks like a name search, also search with "contact" and variations
-            if is_name_search:
-                # Also search directly with title case version
-                try:
-                    title_results = self.search_with_scores(query_title, k=k)
-                    for doc, score in title_results:
-                        content_hash = hash(doc.page_content[:100])
-                        if content_hash not in seen_contents:
-                            results.append((doc, score))
-                            seen_contents.add(content_hash)
-                except:
-                    pass
-                
-                # Use title case for name variations
-                name_variations = [
-                    f"contact {query_title}",
-                    f"{query_title} contact info",
-                    f"phone {query_title}",
-                    f"email {query_title}",
-                    f"faculty {query_title}",
-                    f"staff {query_title}",
-                ]
-                
-                for variation in name_variations:
-                    if len(results) >= k * 2:  # Limit total results
-                        break
-                    try:
-                        var_results = self.search_with_scores(variation, k=3)
-                        for doc, score in var_results:
-                            content_hash = hash(doc.page_content[:100])
-                            if content_hash not in seen_contents:
-                                results.append((doc, score))
-                                seen_contents.add(content_hash)
-                    except:
-                        continue
-            
-            logger.info(f"Search for '{query}' returned {len(results)} unique documents")
-            return [doc for doc, score in results]
+            logger.info(f"Hybrid search returned {len(final_results)} reranked documents")
+            return final_results
+
         except Exception as e:
-            logger.error(f"Error during vector search: {e}")
-            return []
+            logger.error(f"Error during hybrid search: {e}")
+            # Fallback
+            return [doc for doc, score in self.search_with_scores(query, k=k)]
+
+    def search(self, query: str, k: int = 5):
+        """Retrieve relevant documents using hybrid search"""
+        # We can now use hybrid search as the default
+        return self.hybrid_search(query, k=k)
 
     def should_use_rag(self, query: str, relevance_threshold: float = 0.3) -> bool:
         """Check if query should use RAG based on document relevance scores"""
@@ -246,7 +202,7 @@ Instructions:
             
             # Check if any of the top results have acceptable relevance
             for doc, score in results:
-                logger.info(f"Relevance score for query '{query}': {score}")
+                # logger.info(f"Relevance score for query '{query}': {score}")
                 if score >= threshold:
                     return True
             
@@ -419,6 +375,44 @@ Instructions:
         
         return query
 
+    async def _evaluate_answer(self, question: str, answer: str, context: str) -> dict:
+        """
+        Self-reflection: Evaluate the answer quality using the LLM.
+        Returns a score (0-1) and feedback.
+        """
+        if not self.llm:
+            return {"score": 1.0, "feedback": "LLM not available for evaluation."}
+
+        try:
+            prompt = f"""Evaluate the quality of the following answer to the user's question, based on the provided context.
+            
+            Question: {question}
+            Context: {context[:2000]}... (truncated)
+            Answer: {answer}
+            
+            Rate the answer on a scale from 0 to 1 (1 being perfect). Consider:
+            1. Accuracy: Does it answer the question using the context?
+            2. Groundedness: Is it supported by the context?
+            3. Completeness: Does it address the full question?
+            
+            Return ONLY a valid JSON object: {{"score": float, "feedback": "string", "needs_rewrite": bool}}
+            """
+            
+            response = await self.llm.ainvoke(prompt)
+            content = response.content if hasattr(response, 'content') else str(response)
+            
+            # Extract JSON
+            import json
+            json_match = re.search(r'\{.*\}', content, re.DOTALL)
+            if json_match:
+                return json.loads(json_match.group(0))
+            else:
+                return {"score": 0.5, "feedback": "Could not parse evaluation", "needs_rewrite": False}
+                
+        except Exception as e:
+            logger.error(f"Error during self-reflection: {e}")
+            return {"score": 1.0, "feedback": "Evaluation failed", "needs_rewrite": False}
+
     def get_answer(self, query: str, history: list = None):
         """Get answer using RAG pipeline with conversation context"""
         try:
@@ -481,6 +475,7 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                 else:
                     return "I couldn't find any relevant information."
             
+            # Use Hybrid Search
             docs = self.search(query)
             context = _format_document_context(docs)
             
@@ -494,10 +489,14 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                     )
                     response = self.llm.invoke(prompt)
                     
-                    if hasattr(response, 'content'):
-                        return response.content
-                    else:
-                        return str(response)
+                    answer_text = response.content if hasattr(response, 'content') else str(response)
+                    
+                    # Self-Reflection Check (Synchronous wrapper for async method not ideal but acceptable for "get_answer")
+                    # For production, we should async/await properly, but here we might just skip or do a light check.
+                    # Or we can just return the answer for now to keep latency low.
+                    
+                    return answer_text
+
                 except Exception as e:
                     logger.error(f"Error calling LLM provider: {e}")
                     if isinstance(self.llm, ChatGoogleGenerativeAI) and ("RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)):
@@ -566,7 +565,7 @@ Instructions:
                                 
                                 for char in text:
                                     yield char
-                                    await asyncio.sleep(0.03)
+                                    await asyncio.sleep(0.01) # Faster streaming
                         else:
                             contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI.
 
@@ -579,7 +578,7 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                                 
                                 for char in text:
                                     yield char
-                                    await asyncio.sleep(0.03)
+                                    await asyncio.sleep(0.01)
                         return
                     except Exception as e:
                         logger.error(f"Error calling LLM for general question: {e}")
@@ -589,6 +588,7 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                     yield "I couldn't find any relevant information."
                     return
             
+            # Use Hybrid Search
             docs = self.search(query)
             context = _format_document_context(docs)
             
@@ -601,15 +601,23 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                         question=original_query
                     )
                     
+                    full_answer = ""
                     async for chunk in self.llm.astream(prompt):
                         if hasattr(chunk, 'content'):
                             text = chunk.content
                         else:
                             text = str(chunk)
                         
+                        full_answer += text
                         for char in text:
                             yield char
-                            await asyncio.sleep(0.03)
+                            await asyncio.sleep(0.01)
+                            
+                    # Self-Reflective (Post-generation check)
+                    # Note: We can't retract the stream, but we can append a correction if needed.
+                    # Or log it for future improvement.
+                    # For now, we'll keep it simple to ensure low latency.
+
                 except Exception as e:
                     logger.error(f"Error calling LLM provider: {e}")
                     if isinstance(self.llm, ChatGoogleGenerativeAI) and ("RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)):
@@ -620,11 +628,10 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                 fallback_text = f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
                 for char in fallback_text:
                     yield char
-                    await asyncio.sleep(0.03)
+                    await asyncio.sleep(0.01)
                 
         except Exception as e:
             logger.error(f"Error generating streaming answer: {e}")
             yield "I encountered an error while processing your question. Please try again later."
 
 rag_service = RagService()
-

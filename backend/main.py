@@ -35,8 +35,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.routes import admin, documents
+
+# ... existing code ...
+
 # Include admin routes
 app.include_router(admin.router)
+app.include_router(documents.router)
 
 async def get_current_user(authorization: str = Header(None)):
     """Dependency to verify Supabase JWT token"""
@@ -131,7 +136,7 @@ def chat(request: ChatRequest, user=Depends(get_current_user)):
             detail=f"An error occurred while processing your request: {str(e)}"
         )
 
-async def stream_answer_generator(message: str, user, history=None):
+async def stream_answer_generator(message: str, user, history=None, user_metadata: Optional[dict] = None):
     """Generator function for streaming responses"""
     try:
         msg_snippet = str(message)
@@ -148,7 +153,7 @@ async def stream_answer_generator(message: str, user, history=None):
         yield f"data: ERROR: I encountered an error while processing your question. Please try again later.\n\n"
 
 @app.get("/chat/stream")
-async def chat_stream(message: str, history: str = "[]", user=Depends(get_current_user)):
+async def chat_stream(message: str, history: str = "[]", user_metadata: str = "", user=Depends(get_current_user)):
     """Streaming chat endpoint using Server-Sent Events (SSE)"""
     try:
         if not message or not message.strip():
@@ -161,8 +166,16 @@ async def chat_stream(message: str, history: str = "[]", user=Depends(get_curren
         except json.JSONDecodeError:
             history_list = []
         
+        # Parse user_metadata from JSON string
+        user_metadata_dict = {}
+        if user_metadata:
+            try:
+                user_metadata_dict = json.loads(user_metadata) if user_metadata else {}
+            except json.JSONDecodeError:
+                user_metadata_dict = {}
+        
         return StreamingResponse(
-            stream_answer_generator(message, user, history=history_list),
+            stream_answer_generator(message, user, history=history_list, user_metadata=user_metadata_dict),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
@@ -627,6 +640,9 @@ class UpdateProfileRequest(BaseModel):
     course_name: Optional[str] = None
     campus_branch: Optional[str] = None
     contact_number: Optional[str] = None
+    year_of_study: Optional[str] = None
+    trimester: Optional[str] = None
+    mode_of_study: Optional[str] = None
 
 @app.put("/user/profile")
 def update_user_profile(request: UpdateProfileRequest, user=Depends(get_current_user), authorization: str = Header(None)):
@@ -658,6 +674,15 @@ def update_user_profile(request: UpdateProfileRequest, user=Depends(get_current_
         
         if request.contact_number is not None:
             update_data["contact_number"] = request.contact_number
+
+        if request.year_of_study is not None:
+            update_data["year_of_study"] = request.year_of_study
+
+        if request.trimester is not None:
+            update_data["trimester"] = request.trimester
+
+        if request.mode_of_study is not None:
+            update_data["mode_of_study"] = request.mode_of_study
         
         # Update user metadata in Supabase using user-specific client
         result = user_supabase.auth.update_user({

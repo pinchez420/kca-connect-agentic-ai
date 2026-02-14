@@ -1,0 +1,48 @@
+# KCA UNIVERSITY (KCAU) MOODLE LMS USER GUIDE
+
+## 1. Introduction to Moodle LMS
+- **Purpose:** Moodle is the official Learning Management System (LMS) used at KCA University to supplement classroom learning.
+- **Functionality:** Students use Moodle to access learning resources (notes, videos, audio), participate in discussion forums, and complete assessments (Assignments, Quizzes, CATs, Term papers).
+- **Requirement:** All students are required to actively engage on Moodle as guided by their lecturers.
+
+## 2. Moodle Access Requirements
+To have an active Moodle account, a student must meet the following three conditions:
+1. **Bonafide Status:** Must be a KCA University student with an official student number (e.g., 21/02345).
+2. **Active Student Email:** Must have a KCA student email (e.g., 2102345@students.kcau.ac.ke). Accounts are activated within 24 hours of registration.
+3. **Financial Clearance:** Must be registered for the current trimester and have paid at least the **1st fee installment**.
+- **Deactivation Warning:** Accounts may be deactivated mid-trimester if a student defaults on fee payment obligations.
+
+## 3. Moodle Login Procedure
+**Goal: How to log in to the KCAU Moodle platform.**
+- **Step 1:** Open a web browser and visit the university website: `www.kca.ac.ke`.
+- **Step 2:** Locate the top ribbon, click on **Quick Links**, and select **Moodle** from the dropdown menu.
+- **Step 3:** On the On-Campus eLearning Portal, enter your **Username** (your full student email address) and **Password** (shared via your student email).
+- **Step 4:** Click the **LOG IN** button.
+- **Step 5 (Troubleshooting):** If login fails despite correct credentials, click the **"Forgotten your username or password?"** link to reset.
+
+## 4. Enrolling in Moodle Units (Courses)
+**Goal: How to add a unit/course to your Moodle dashboard.**
+- **Requirement:** You must only enroll in units you are already registered for in the student portal and have paid fees for.
+- **Requirement:** You need an **Enrolment Key** provided by your unit lecturer.
+- **Step 1:** Login to Moodle.
+- **Step 2:** Locate the **Search Courses** section. Enter the specific **Unit Code** (e.g., `ICT 2104`). 
+- **Note on Search:** Ensure there is a single space between the letters and numbers (e.g., use "ICT 2104", not "ICT2104").
+- **Step 3:** Click **GO** or press Enter.
+- **Step 4:** Click the specific **Unit Name** link that matches your unit and lecturer (e.g., `ICT 2104: E-COMMERCE PT BCOM SAT 800 - Lecturer: Joshua Omanyo`).
+- **Step 5:** Enter the **Enrolment Key** provided by the lecturer in the field and click **ENROL ME**.
+
+## 5. Unenrolling from Moodle Units
+**Goal: How to remove a unit you are no longer taking or joined by mistake.**
+- **Step 1:** Login to Moodle and click on the Unit you wish to drop.
+- **Step 2:** Once the Unit Page displays, locate the **Gear / Cog icon** in the top right area of the page.
+- **Step 3:** Click the icon and select the link: **Unenrol me from [Unit Code]**.
+- **Step 4:** Click **CONTINUE** on the confirmation prompt.
+- **Important:** Do not stay enrolled in units you are not undertaking, as this may have financial or disciplinary implications.
+
+## 6. Moodle Support and Technical Contacts
+If you encounter issues, contact the following departments via email:
+1. **Moodle Technical Issues:** `moodle_support@kca.ac.ke`
+2. **Portal or Registration Issues:** `sysadmin@kca.ac.ke`
+3. **Student Email Issues:** `tech_support@kca.ac.ke`
+4. **Fee/Billing Issues:** `billing@kca.ac.ke`
+- **Physical Support:** Visit the Distance Learning Office at the Main Campus or the ICT Office at your respective campus.

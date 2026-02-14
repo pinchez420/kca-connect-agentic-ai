@@ -1,0 +1,213 @@
+KCA UNIVERSITY: SOFTWARE DEVELOPMENT & INFORMATION SYSTEMS TIMETABLE (JAN–APR 2026)
+1. DOCUMENT METADATA
+Document Title: Software Development & Information Systems Timetable January – April 2026 Trimester.
+Coordinator: Charles B. Malungu, Timetable Coordinator – School of Technology.
+Approvals: Dr. Paul Abuonji (CoD SD & IS) and Dr. Simon Mwendia (Dean, School of Technology).
+Date Prepared: December 21–22, 2025.
+2. BACHELOR OF SCIENCE IN SOFTWARE DEVELOPMENT (BSD) - FULL-TIME (MAIN CAMPUS)
+BSD Year 1 Trimester 1 (FT 1.1)
+Program: BSD FT 1.1 | Day: Monday | Time: 0800-1100 HRS | Venue: LAB (TC 0-5/0-6) | Unit: STU 1103 COMPUTER APPLICATIONS
+Program: BSD FT 1.1 | Day: Monday | Time: 1400-1700 HRS | Venue: PHYSICAL (LT 1-1) | Unit: MAT 1102 DISCRETE MATHEMATICS
+Program: BSD FT 1.1 | Day: Tuesday | Time: 0800-1100 HRS | Venue: LAB (TC 0-1/0-2) | Unit: CUU 1102 FUNDAMENTALS OF COMPUTER SYSTEMS
+Program: BSD FT 1.1 | Day: Thursday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1103 COMMUNICATION SKILLS
+Program: BSD FT 1.1 | Day: Thursday | Time: 1400-1800 HRS | Venue: PHYSICAL (TC 3-1) | Unit: STU 1102 COMPUTING MATHEMATICS
+Program: BSD FT 1.1 | Day: Thursday | Time: 1500-1900 HRS | Venue: LAB (TC 0-5/0-6) | Unit: CSN 1101 WEB TECHNOLOGIES AND INTERNET APPLICATIONS
+Program: BSD FT 1.1 | Day: Friday | Time: 0800-1200 HRS | Venue: PHYSICAL (TC 1-5) | Unit: ISS 1104 COMPUTER ORGANIZATION & ARCHITECTURE
+Program: BSD FT 1.1 | Day: Friday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1101 OPERATING SYSTEMS
+BSD Year 1 Trimester 2 (FT 1.2)
+Program: BSD FT 1.2 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1201 HEALTH AWARENESS & LIFE SKILLS
+Program: BSD FT 1.2 | Day: Monday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1203 SYSTEMS ANALYSIS AND DESIGN
+Program: BSD FT 1.2 | Day: Tuesday | Time: 0800-1100 HRS | Venue: PHYSICAL (TC 2-8) | Unit: STA 1203 PROBABILITY AND STATISTICS I
+Program: BSD FT 1.2 | Day: Tuesday | Time: 1400-1700 HRS | Venue: PHYSICAL (TC 3-3) | Unit: DSA 1201 COMPUTATIONAL THINKING THEORY
+Program: BSD FT 1.2 | Day: Tuesday | Time: 1500-1900 HRS | Venue: LAB (TC 0-5/0-6) | Unit: STU 1202 WEB DESIGN AND DEVELOPMENT
+Program: BSD FT 1.2 | Day: Wednesday | Time: 1100-1400 HRS | Venue: LAB (TC 0-5/0-6) | Unit: STU 1204 PRINCIPLES OF DATABASE SYSTEMS
+Program: BSD FT 1.2 | Day: Friday | Time: 0700-1100 HRS | Venue: LAB (TC 0-5/0-6) | Unit: STU 1201 INTRODUCTION TO PROGRAMMING
+Program: BSD FT 1.2 | Day: Friday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1202 FOUNDATIONS OF CRITICAL AND CREATIVE THINKING
+BSD Year 1 Trimester 3 (FT 1.3)
+Program: BSD FT 1.3 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 2102 COMPUTING RESEARCH SKILLS AND DESIGN
+Program: BSD FT 1.3 | Day: Monday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2103 ETHICS AND LEADERSHIP
+Program: BSD FT 1.3 | Day: Monday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 2103 NETWORKING ESSENTIALS
+Program: BSD FT 1.3 | Day: Tuesday | Time: 1500-1900 HRS | Venue: LAB (TC 0-3) | Unit: STU 2101 DATABASE SYSTEMS DESIGN AND DEVELOPMENT
+Program: BSD FT 1.3 | Day: Wednesday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 2101 MANAGEMENT INFORMATION SYSTEMS
+Program: BSD FT 1.3 | Day: Thursday | Time: 0700-1100 HRS | Venue: LAB (DA LAB) | Unit: CPP 2101 ASSEMBLY LANGUAGE PROGRAMMING
+Program: BSD FT 1.3 | Day: Thursday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 2101 SOFTWARE ENGINEERING PRINCIPLES
+Program: BSD FT 1.3 | Day: Thursday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2102 INFORMATION LITERACY AND ACADEMIC WRITING
+BSD Year 2 Trimester 1 (FT 2.1)
+Program: BSD FT 2.1 | Day: Monday | Time: 1100-1400 HRS | Venue: PHYSICAL (TC 3-1) | Unit: FIN 2105 FINANCIAL ACCOUNTING AND MANAGEMENT
+Program: BSD FT 2.1 | Day: Tuesday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 2201 HUMAN-COMPUTER INTERACTION
+Program: BSD FT 2.1 | Day: Tuesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CPP 2203 ELECTRONIC BUSINESS SYSTEMS
+Program: BSD FT 2.1 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 2203 SYSTEMS DEVELOPMENT METHODOLOGY
+Program: BSD FT 2.1 | Day: Wednesday | Time: 1400-1800 HRS | Venue: LAB (TC 0-1/0-2) | Unit: STU 2201 DATA STRUCTURES AND ALGORITHMS
+Program: BSD FT 2.1 | Day: Thursday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2201 ENTREPRENEURSHIP PRINCIPLES AND PRACTICE
+Program: BSD FT 2.1 | Day: Friday | Time: 0700-1100 HRS | Venue: LAB (TC 2-3-2) | Unit: CPP 2202 APPLICATION PROGRAMMING WITH VB.NET
+Program: BSD FT 2.1 | Day: Friday | Time: 1400-1700 HRS | Venue: LAB (TC 0-1/0-2) | Unit: CPP 2201 OBJECT ORIENTED PROGRAMMING WITH C++
+BSD Year 2 Trimester 2 (FT 2.2)
+Program: BSD FT 2.2 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 3101 COMPUTING PROJECT MANAGEMENT
+Program: BSD FT 2.2 | Day: Tuesday | Time: 0700-1100 HRS | Venue: LAB (TC 2-3-2) | Unit: CPP 3102 CLOUD APPLICATION DEVELOPMENT
+Program: BSD FT 2.2 | Day: Tuesday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: DSA 3105 NETWORK SCIENCE THEORY
+Program: BSD FT 2.2 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 2202 INFORMATION SYSTEMS SECURITY AND CRYPTOGRAPHY
+Program: BSD FT 2.2 | Day: Thursday | Time: 0700-1100 HRS | Venue: LAB (TC 0-1/0-2) | Unit: CPP 3101 OBJECT ORIENTED PROGRAMMING WITH JAVA
+Program: BSD FT 2.2 | Day: Thursday | Time: 1100-1500 HRS | Venue: LAB (TC 0-1/0-2) | Unit: STU 3102 MOBILE APPLICATIONS DEVELOPMENT
+Program: BSD FT 2.2 | Day: Friday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 3102 EXPERT SYSTEMS
+BSD Year 2 Trimester 3 (FT 2.3)
+Program: BSD FT 2.3 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 3101 COMPUTING PROJECT MANAGEMENT
+Program: BSD FT 2.3 | Day: Tuesday | Time: 0700-1100 HRS | Venue: LAB (DA LAB) | Unit: CPP 3202 ADVANCED JAVA PROGRAMMING
+Program: BSD FT 2.3 | Day: Wednesday | Time: 1100-1500 HRS | Venue: PHYSICAL (AMPHITHEATRE) | Unit: MAT 3201 LINEAR PROGRAMMING
+Program: BSD FT 2.3 | Day: Wednesday | Time: 1500-1900 HRS | Venue: LAB (TC 2-3-1) | Unit: CPP 3204 NETWORK PROGRAMMING
+Program: BSD FT 2.3 | Day: Thursday | Time: 1500-1900 HRS | Venue: PHYSICAL (TC 1-5) | Unit: CPU 3203 MOBILE GAMING PROGRAMMING
+Program: BSD FT 2.3 | Day: Friday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 4104 DISTRIBUTED SYSTEMS
+Program: BSD FT 2.3 | Day: Friday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: MKT 1201 PRINCIPLES OF MARKETING
+Program: BSD FT 2.3 | Day: Friday | Time: 1400-1800 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 3102 EXPERT SYSTEMS
+BSD Year 3 Trimester 1 (FT 3.1)
+Program: BSD FT 3.1 | Day: Monday | Time: 0700-1100 HRS | Venue: LAB (DA LAB) | Unit: CPP 4103 ARTIFICIAL INTELLIGENCE PROGRAMMING
+Program: BSD FT 3.1 | Day: Monday | Time: 1400-1800 HRS | Venue: LAB (TC 0-3) | Unit: DSA 1101 PRINCIPLES OF DATA SCIENCE
+Program: BSD FT 3.1 | Day: Tuesday | Time: 0800-1200 HRS | Venue: VIRTUAL (ZOOM) | Unit: CPP 4102 MULTIMEDIA PROGRAMMING
+Program: BSD FT 3.1 | Day: Wednesday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 4101 SOFTWARE TESTING TOOLS AND TECHNIQUES
+Program: BSD FT 3.1 | Day: Wednesday | Time: 1400-1800 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1202 WEB DESIGN AND DEVELOPMENT
+Program: BSD FT 3.1 | Day: Thursday | Time: 1400-1800 HRS | Venue: VIRTUAL (ZOOM) | Unit: DBS 4101 ADVANCED DATABASES
+Program: BSD FT 3.1 | Day: Friday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 4206 INFORMATION SYSTEM AUDIT
+Program: BSD FT 3.1 | Day: Saturday | Time: 1200-1500 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 4206 INFORMATION SYSTEM AUDIT
+BSD Year 3 Trimester 2 (FT 3.2)
+Program: BSD FT 3.2 | Day: Monday | Time: 0700-1100 HRS | Venue: PHYSICAL (TC 3-8) | Unit: ISS 4201 EMBEDDED SYSTEMS
+Program: BSD FT 3.2 | Day: Wednesday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 4102 GEOGRAPHICAL INFORMATION SYSTEMS
+Program: BSD FT 3.2 | Day: Wednesday | Time: 1100-1500 HRS | Venue: LAB (TC 0-7/0-8) | Unit: CPP 4202 ADVANCED APPLICATION PROGRAMMING
+Program: BSD FT 3.2 | Day: Thursday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: DSA 3202 AMBIENT INTELLIGENCE
+Program: BSD FT 3.2 | Day: Thursday | Time: 1100-1500 HRS | Venue: LAB (TC 1-8) | Unit: DSA 3101 MACHINE LEARNING
+Program: BSD FT 3.2 | Day: Thursday | Time: 1730-2030 HRS | Venue: VIRTUAL (ZOOM) | Unit: DSA 3202 AMBIENT INTELLIGENCE
+Program: BSD FT 3.2 | Day: Friday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 4201 ADVANCED SOFTWARE ENGINEERING
+Program: BSD FT 3.2 | Day: Friday | Time: 1500-1900 HRS | Venue: LAB (TC 2-3-1) | Unit: DSA 4202 PROGRAMMING FOR DATA SCIENCE
+BSD Part-Time & Distance Learning (PT & DL 1.1)
+Program: BSD PT & DL 1.1 | Day: Monday | Time: 1730-2030 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1103 COMMUNICATION SKILLS
+Program: BSD PT & DL 1.1 | Day: Monday | Time: 1730-2030 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 1104 COMPUTER ORGANIZATION AND ARCHITECTURE
+Program: BSD PT & DL 1.1 | Day: Wednesday | Time: 1730-2030 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1101 OPERATING SYSTEMS
+Program: BSD PT & DL 1.1 | Day: Thursday | Time: 1730-2030 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1102 FUNDAMENTALS OF COMPUTER SYSTEMS
+Program: BSD PT & DL 1.1 | Day: Friday | Time: 1730-2030 HRS | Venue: VIRTUAL (ZOOM) | Unit: MAT 1102 DISCRETE MATHEMATICS
+Program: BSD PT & DL 1.1 | Day: Saturday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1102 COMPUTING MATHEMATICS
+Program: BSD PT & DL 1.1 | Day: Saturday | Time: 1100-1500 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1103 COMPUTER APPLICATIONS
+Program: BSD PT & DL 1.1 | Day: Saturday | Time: 1500-1900 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 1101 WEB TECHNOLOGIES AND INTERNET APPLICATIONS
+3. BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY (BIT) - FULL-TIME (MAIN CAMPUS)
+BIT Year 1 Trimester 1 (FT 1.1)
+Program: BIT FT 1.1 | Day: Monday | Time: 0800-1100 HRS | Venue: LAB (TC 0-7/0-8) | Unit: STU 1103 COMPUTER APPLICATIONS
+Program: BIT FT 1.1 | Day: Monday | Time: 1400-1700 HRS | Venue: PHYSICAL (LT 1-1) | Unit: MAT 1102 DISCRETE MATHEMATICS
+Program: BIT FT 1.1 | Day: Tuesday | Time: 1100-1400 HRS | Venue: LAB (TC 0-1/0-2) | Unit: CUU 1102 FUNDAMENTALS OF COMPUTER SYSTEMS
+Program: BIT FT 1.1 | Day: Wednesday | Time: 1400-1700 HRS | Venue: PHYSICAL (TC 3-4) | Unit: STU 1102 COMPUTING MATHEMATICS
+Program: BIT FT 1.1 | Day: Thursday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1103 COMMUNICATION SKILLS
+Program: BIT FT 1.1 | Day: Friday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1101 OPERATING SYSTEMS
+BIT Year 1 Trimester 2 (FT 1.2)
+Program: BIT FT 1.2 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1201 HEALTH AWARENESS & LIFE SKILLS
+Program: BIT FT 1.2 | Day: Monday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 1203 SYSTEMS ANALYSIS AND DESIGN
+Program: BIT FT 1.2 | Day: Tuesday | Time: 1100-1500 HRS | Venue: LAB (TC 0-5/0-6) | Unit: ACC 1304 WEB DESIGN AND DEVELOPMENT
+Program: BIT FT 1.2 | Day: Tuesday | Time: 1100-1500 HRS | Venue: LAB (TC 0-7/0-8) | Unit: STU 1202 WEB DESIGN AND DEVELOPMENT
+Program: BIT FT 1.2 | Day: Wednesday | Time: 1100-1400 HRS | Venue: LAB (TC 0-5/0-6) | Unit: STU 1204 PRINCIPLES OF DATABASE SYSTEMS
+Program: BIT FT 1.2 | Day: Wednesday | Time: 1100-1400 HRS | Venue: LAB (TC 1-8) | Unit: STU 1204 PRINCIPLES OF DATABASE SYSTEMS
+Program: BIT FT 1.2 | Day: Friday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 1202 FOUNDATIONS OF CRITICAL AND CREATIVE THINKING
+Program: BIT FT 1.2 | Day: Friday | Time: 1400-1800 HRS | Venue: LAB (TC 0-1/0-2) | Unit: STU 1201 INTRODUCTION TO PROGRAMMING
+Program: BIT FT 1.2 | Day: Friday | Time: 1400-1800 HRS | Venue: LAB (TC 1-8) | Unit: STU 1201 INTRODUCTION TO PROGRAMMING
+BIT Year 1 Trimester 3 (FT 1.3)
+Program: BIT FT 1.3 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 2102 COMPUTING RESEARCH SKILLS AND DESIGN
+Program: BIT FT 1.3 | Day: Monday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2103 ETHICS AND LEADERSHIP
+Program: BIT FT 1.3 | Day: Monday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 2103 NETWORKING ESSENTIALS
+Program: BIT FT 1.3 | Day: Tuesday | Time: 1500-1900 HRS | Venue: LAB (TC 0-7/0-8) | Unit: STU 2101 DATABASE SYSTEMS DESIGN AND DEVELOPMENT
+Program: BIT FT 1.3 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CPP 2104 OBJECT-ORIENTED TECHNOLOGIES
+Program: BIT FT 1.3 | Day: Wednesday | Time: 1400-1800 HRS | Venue: LAB (TC 0-5/0-6) | Unit: STU 2201 DATA STRUCTURES AND ALGORITHMS
+Program: BIT FT 1.3 | Day: Thursday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2102 INFORMATION LITERACY AND ACADEMIC WRITING
+BIT Year 2 Trimester 1 (FT 2.1)
+Program: BIT FT 2.1 | Day: Monday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: STU 2103 NETWORKING ESSENTIALS
+Program: BIT FT 2.1 | Day: Tuesday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 2201 HUMAN-COMPUTER INTERACTION
+Program: BIT FT 2.1 | Day: Thursday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 2101 SOFTWARE ENGINEERING PRINCIPLES
+Program: BIT FT 2.1 | Day: Thursday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2201 ENTREPRENEURSHIP PRINCIPLES AND PRACTICE
+Program: BIT FT 2.1 | Day: Thursday | Time: 1400-1800 HRS | Venue: LAB (DA LAB) | Unit: CPP 2202 APPLICATION PROGRAMMING WITH VB.NET
+Program: BIT FT 2.1 | Day: Thursday | Time: 1400-1800 HRS | Venue: LAB (TC 0-3) | Unit: CPP 2202 APPLICATION PROGRAMMING WITH VB.NET
+Program: BIT FT 2.1 | Day: Friday | Time: 0700-1100 HRS | Venue: LAB (TC 0-1/0-2) | Unit: CPP 2202 APPLICATION PROGRAMMING WITH VB.NET
+Program: BIT FT 2.1 | Day: Friday | Time: 1400-1800 HRS | Venue: VIRTUAL (ZOOM) | Unit: DSA 2204 ARTIFICIAL INTELLIGENCE
+BIT Year 2 Trimester 2 (FT 2.2)
+Program: BIT FT 2.2 | Day: Monday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 3101 COMPUTING PROJECT MANAGEMENT
+Program: BIT FT 2.2 | Day: Tuesday | Time: 0800-1100 HRS | Venue: PHYSICAL (LT 1-1) | Unit: STA 1203 PROBABILITY AND STATISTICS I
+Program: BIT FT 2.2 | Day: Thursday | Time: 0700-1100 HRS | Venue: LAB (TC 0-3) | Unit: CPP 3101 OBJECT ORIENTED PROGRAMMING WITH JAVA
+Program: BIT FT 2.2 | Day: Thursday | Time: 1100-1500 HRS | Venue: LAB (TC 0-7/0-8) | Unit: STU 3102 MOBILE APPLICATIONS DEVELOPMENT
+Program: BIT FT 2.2 | Day: Friday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 3102 EXPERT SYSTEMS
+BIT Year 2 Trimester 3 (FT 2.3)
+Program: BIT FT 2.3 | Day: Tuesday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 3208 COMMUNICATION SYSTEMS AND TECHNOLOGIES
+Program: BIT FT 2.3 | Day: Wednesday | Time: 0800-1200 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 4102 GEOGRAPHICAL INFORMATION SYSTEMS
+Program: BIT FT 2.3 | Day: Thursday | Time: 0700-1100 HRS | Venue: LAB (TC 0-5/0-6) | Unit: CSN 3201 NETWORK SYSTEMS DESIGN AND MANAGEMENT
+Program: BIT FT 2.3 | Day: Thursday | Time: 1100-1500 HRS | Venue: LAB (C-1) | Unit: STU 3102 MOBILE APPLICATIONS DEVELOPMENT
+Program: BIT FT 2.3 | Day: Friday | Time: 0800-1200 HRS | Venue: VIRTUAL (ZOOM) | Unit: DSA 2204 ARTIFICIAL INTELLIGENCE
+Program: BIT FT 2.3 | Day: Friday | Time: 1100-1500 HRS | Venue: LAB (TC 0-7/0-8) | Unit: CPP 3204 NETWORK PROGRAMMING
+BIT Year 3 Trimester 1 (FT 3.1)
+Program: BIT FT 3.1 | Day: Tuesday | Time: 0800-1100 HRS | Venue: PHYSICAL (TC 3-4) | Unit: ISS 4202 SIMULATION AND MODELLING
+Program: BIT FT 3.1 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 2202 INFORMATION SYSTEMS SECURITY AND CRYPTOGRAPHY
+Program: BIT FT 3.1 | Day: Wednesday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: SEN 4107 KNOWLEDGE MANAGEMENT
+Program: BIT FT 3.1 | Day: Thursday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: CSN 4104 BLOCKCHAIN TECHNOLOGIES AND APPLICATIONS
+Program: BIT FT 3.1 | Day: Friday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 4101 STRATEGIC INFORMATION SYSTEMS MANAGEMENT
+BIT Year 3 Trimester 2 (FT 3.2)
+Program: BIT FT 3.2 | Day: Monday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: CUU 2101 ETHICS AND LEADERSHIP
+Program: BIT FT 3.2 | Day: Tuesday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: DSA 3206 DATA WAREHOUSING AND DATA MINING
+Program: BIT FT 3.2 | Day: Tuesday | Time: 1400-1800 HRS | Venue: VIRTUAL (ZOOM) | Unit: CPP 4101 INTERNET APPLICATION PROGRAMMING
+Program: BIT FT 3.2 | Day: Friday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: DBS 4203 DISTRIBUTED MULTIMEDIA SYSTEMS
+Program: BIT FT 3.2 | Day: Friday | Time: 1400-1800 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 3102 EXPERT SYSTEMS
+4. POSTGRADUATE PROGRAMMES
+MSc in Information Systems Management (MISM)
+Program: MISM 1.1 | Day: Thursday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Edwin Omol | Unit: CPP 6101 OBJECT-ORIENTED TECHNOLOGIES
+Program: MISM 1.1 | Day: Friday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Rachael Kibuku | Unit: DBS 6102 ELECTRONIC BUSINESS SYSTEMS
+Program: MISM 1.1 | Day: Saturday | Time: 0800-1100 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Simon Mwendia | Unit: DSA 6101 PRINCIPLES OF DATA SCIENCE
+Program: MISM 1.1 | Day: Saturday | Time: 1100-1400 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Abraham Matheka | Unit: DBS 6101 DATA STORAGE MANAGEMENT
+Program: MISM 1.1 | Day: Saturday | Time: 1500-1800 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Edwin Omol | Unit: ISS 6101 BUSINESS PROCESS MODELLING
+Program: MISM 1.2 | Day: Thursday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Prof. Lucy Mburu | Unit: SEN 6201 SYSTEM DYNAMICS MODELLING
+Program: MISM 1.2 | Day: Friday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Paul Abuonji | Unit: CSN 6202 WIRELESS TECHNOLOGIES
+Program: MISM 1.2 | Day: Saturday | Time: 0800-1100 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Kaimenyi | Unit: DBS 6201 DATA MINING AND DATA WAREHOUSING
+Program: MISM 1.2 | Day: Saturday | Time: 1100-1400 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Rachael Kibuku | Unit: ISS 6201 DECISION SUPPORT SYSTEMS
+Program: MISM 1.2 | Day: Saturday | Time: 1500-1800 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Paul Abuonji | Unit: CSN 6203 INFORMATION SYSTEMS SECURITY
+Program: MISM 2.1 | Day: Thursday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Rachael Kibuku | Unit: STU 7101 RESEARCH METHODOLOGY
+Program: MISM 2.1 | Day: Friday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Paul Abuonji | Unit: CSN 7101 CYBER SECURITY AND FORENSICS
+Program: MISM 2.1 | Day: Saturday | Time: 0800-1100 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Rufus Gikera | Unit: DSA 7101 DATA ANALYTICS AND KNOWLEDGE ENGINEERING
+Program: MISM 2.1 | Day: Saturday | Time: 1100-1400 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Joy Kibor | Unit: ISS 7102 STRATEGIC MANAGEMENT INFORMATION SYSTEMS
+Program: MISM 2.1 | Day: Saturday | Time: 1500-1800 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Rachael Kibuku | Unit: ISS 7101 ICT POLICY
+PhD in Information Systems
+Program: PhD IS Year 1 | Day: Monday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Rachael Kibuku | Unit: STU 8201 RESEARCH AND INNOVATION DESIGN WORKSHOPS
+Program: PhD IS Year 1 | Day: Thursday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Prof. Lucy Mburu | Unit: ISS 8201 ADVANCES IN EMERGING BUSINESS APPLICATIONS AND TECHNOLOGY
+Program: PhD IS Year 1 | Day: Friday | Time: 1730-2030 HRS | Venue: PG (ZOOM) | Lecturer: Dr. Simon Mwendia | Unit: ISS 8202 PROBLEM SOLVING PARADIGMS IN INFORMATION SYSTEMS
+5. DIPLOMA & CERTIFICATE PROGRAMMES (MAIN CAMPUS)
+Diploma in Information Technology (DIT FT 1)
+Program: DIT FT Trimester 1 | Day: Monday | Time: 1100-1400 HRS | Venue: LAB (TC 2-3-1) | Unit: CDU 302 FUNDAMENTALS OF COMPUTER SYSTEMS
+Program: DIT FT Trimester 1 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CDU 301 COMMUNICATION SKILLS
+Program: DIT FT Trimester 1 | Day: Thursday | Time: 0800-1100 HRS | Venue: PHYSICAL (TC 3-1) | Unit: STU 301 COMPUTING MATHEMATICS
+Program: DIT FT Trimester 1 | Day: Thursday | Time: 1100-1400 HRS | Venue: PHYSICAL (TC 3-8) | Unit: STU 302 COMPUTER ORGANIZATION & ARCHITECTURE
+Program: DIT FT Trimester 1 | Day: Friday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: MGT 101 PRINCIPLES OF MANAGEMENT
+Certificate in Information Technology (CIT FT)
+Program: CIT FT Trimester 1 | Day: Monday | Time: 1400-1700 HRS | Venue: LAB (TC 2-3-2) | Unit: STU 101 INTERNET AND THE WEB
+Program: CIT FT Trimester 1 | Day: Tuesday | Time: 0800-1100 HRS | Venue: PHYSICAL (TC 2-3-3) | Unit: ISS 102 FOUNDATION PHYSICS AND ELECTRICITY FOR IT
+Program: CIT FT Trimester 1 | Day: Tuesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 103 INTRODUCTION TO INFORMATION SYSTEMS
+Program: CIT FT Trimester 1 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: MKT 401 CUSTOMER RELATIONSHIP MARKETING
+Program: CIT FT Trimester 1 | Day: Wednesday | Time: 1400-1700 HRS | Venue: VIRTUAL (ZOOM) | Unit: ISS 101 COMPUTERS AND SOCIETY
+Program: CIT FT Trimester 2 | Day: Monday | Time: 1100-1400 HRS | Venue: LAB (TC 0-3) | Unit: CDU 302 FUNDAMENTALS OF COMPUTER SYSTEMS
+Program: CIT FT Trimester 2 | Day: Wednesday | Time: 1100-1400 HRS | Venue: VIRTUAL (ZOOM) | Unit: CDU 301 COMMUNICATION SKILLS
+Program: CIT FT Trimester 2 | Day: Thursday | Time: 0800-1100 HRS | Venue: PHYSICAL (TC 3-1) | Unit: STU 301 COMPUTING MATHEMATICS
+Program: CIT FT Trimester 2 | Day: Thursday | Time: 1100-1400 HRS | Venue: PHYSICAL (TC 3-5) | Unit: STU 302 COMPUTER ORGANIZATION & ARCHITECTURE
+Program: CIT FT Trimester 2 | Day: Friday | Time: 0800-1100 HRS | Venue: VIRTUAL (ZOOM) | Unit: MGT 101 PRINCIPLES OF MANAGEMENT
+6. REFERENCE KEYS & APPENDIX
+Room Type Legend
+PHYSICAL: Physical classroom/lecture hall session.
+LAB: Hands-on Computer laboratory session.
+VIRTUAL: Online session held via ZOOM.
+PG: Special session for Postgraduate students.
+Venue Code Legend
+TC X-Y: Teaching Complex Building, Floor X, Room Y.
+LT X-Y: Lecture Theatre Building, Level X, Room Y.
+DA LAB: Data Analytics Laboratory.
+AMPHITHEATRE: Main University Amphitheatre.
+C-X: Classroom X.
+RM X-Y / LAB 1-3: Specific rooms and labs for Western and Kitengela campuses.
+Unit Prefix Legend
+STU: Core Computing and Programming courses.
+MAT / STA: Mathematics and Statistics courses.
+CUU: University-wide Core Units.
+ISS: Information Systems and Security courses.
+CPP: Specific Programming languages (C++, Java, VB.NET).
+CSN: Computer Systems and Networking courses.
+DSA: Data Science and Analytics courses.
+SEN: Software Engineering courses.
+DBS: Database Systems courses.
+FIN / ACC: Finance and Accounting courses.
+MKT / MGT / SBU: Marketing, Management, and Small Business courses.
+CDU: Communication and Development courses.
+CPU: Specialized Gaming and Graphics Programming courses.

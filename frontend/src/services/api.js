@@ -23,11 +23,62 @@ export const chatWithAgent = async (message, token, history = []) => {
     }
 };
 
-export const chatWithAgentStream = async (message, token, onChunk, onComplete, onError, history = [], abortSignal = null, onAbort = null) => {
+export const extractFileText = async (token, file) => {
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(`${API_URL}/documents/extract`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to extract text");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error extracting text:", error);
+        throw error;
+    }
+};
+
+export const uploadDocument = async (token, file) => {
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const response = await fetch(`${API_URL}/documents/upload`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || "Failed to upload document");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error uploading document:", error);
+        throw error;
+    }
+};
+
+export const chatWithAgentStream = async (message, token, onChunk, onComplete, onError, history = [], abortSignal = null, onAbort = null, userMetadata = null) => {
     try {
         const historyParam = history.length > 0 ? `&history=${encodeURIComponent(JSON.stringify(history))}` : "";
-        
-        const response = await fetch(`${API_URL}/chat/stream?message=${encodeURIComponent(message)}${historyParam}`, {
+        const userMetadataParam = userMetadata ? `&user_metadata=${encodeURIComponent(JSON.stringify(userMetadata))}` : "";
+
+        const response = await fetch(`${API_URL}/chat/stream?message=${encodeURIComponent(message)}${historyParam}${userMetadataParam}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -55,7 +106,7 @@ export const chatWithAgentStream = async (message, token, onChunk, onComplete, o
             for (const line of lines) {
                 if (line.startsWith("data: ")) {
                     const data = line.slice(6);
-                    
+
                     if (data === "[DONE]") {
                         doneReceived = true;
                         if (onComplete) onComplete();
@@ -69,7 +120,7 @@ export const chatWithAgentStream = async (message, token, onChunk, onComplete, o
                 }
             }
         }
-        
+
         if (onComplete && !doneReceived) {
             onComplete();
         }
@@ -92,7 +143,7 @@ export const getChats = async (token, limit = 50, offset = 0, savedOnly = false)
             offset: offset.toString(),
             saved_only: savedOnly.toString()
         });
-        
+
         const response = await fetch(`${API_URL}/chats?${params}`, {
             method: "GET",
             headers: {
