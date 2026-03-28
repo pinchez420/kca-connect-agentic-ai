@@ -10,6 +10,7 @@ import logging
 import asyncio
 import re
 from flashrank import Ranker, RerankRequest
+from app.core.prompts import RAG_SYSTEM_PROMPT, FALLBACK_PROMPT, CONTACT_INFO_RULES
 
 logger = logging.getLogger(__name__)
 
@@ -53,20 +54,12 @@ def _clean_markdown_headers(text: str) -> str:
     # ## Header -> **Header** (bold without colon)
     # # Header -> **Header** (bold without colon)
     
-    # Replace #####+ headers (least important) with bold + colon
-    text = re.sub(r'^#{5,}\s*(.+?)$', r'**\1:**', text, flags=re.MULTILINE)
+    # Completely remove lines that look like a Markdown header (likely redundant names/titles)
+    # This prevents the LLM from seeing "Header" then "Body" with the same name.
+    text = re.sub(r'^#{1,6}\s*(.+?)$', r'', text, flags=re.MULTILINE)
     
-    # Replace #### headers with bold + colon
-    text = re.sub(r'^####\s*(.+?)$', r'**\1:**', text, flags=re.MULTILINE)
-    
-    # Replace ### headers with bold (no colon for sub-headers)
-    text = re.sub(r'^###\s*(.+?)$', r'**\1**', text, flags=re.MULTILINE)
-    
-    # Replace ## headers with bold (main sections)
-    text = re.sub(r'^##\s*(.+?)$', r'**\1**', text, flags=re.MULTILINE)
-    
-    # Replace # headers with bold (top level)
-    text = re.sub(r'^#\s*(.+?)$', r'**\1**', text, flags=re.MULTILINE)
+    # Remove leading/trailing whitespace after removing headers
+    text = text.strip()
     
     return text
 
@@ -122,50 +115,8 @@ class RagService:
             logger.warning(f"Failed to initialize FlashRank: {e}. Reranking will be disabled.")
             self.ranker = None
 
-        # Create custom prompt template
-        self.system_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. Use the following context from documents, web search results, and conversation history to answer the student's question.
-
-Context from documents:
-{context}
-
-Web Search Results:
-{web_context}
-
-Conversation History:
-{history}
-
-Current Question: {question}
-
-Instructions:
-1. You are KCA Connect AI, the official AI assistant of KCA University
-2. If asked about your name, identify yourself as "KCA Connect AI"
-3. Use the context above to provide accurate information about KCA University
-4. If the question refers to previous topics (using words like "it", "its", "they", "them", "this", "that"), use the conversation history to understand what is being referred to
-5. If you cannot find the answer in the context, say so honestly and suggest they contact the university administration
-6. For current events or real-time information, use the web search results provided
-7. Always maintain context from the conversation history when answering follow-up questions
-8. GREETING ETIQUETTE: 
-   - Only greet with "Hello" at the START of a NEW conversation (when there is no conversation history)
-   - If the user has already greeted you or there is prior conversation, do NOT start with "Hello" - just answer their question directly
-   - Be conversational but concise - continue from where the conversation left off
-9. FORMATTING RULES:
-   - Use Markdown for clear structure
-   - Use bold (**text**) for key terms and important concepts
-   - Use bullet points or numbered lists for steps or multiple items
-   - Use headings (###) to separate different topics
-   - Ensure there is proper spacing between sections
-   - IMPORTANT: Always start a new line before a heading (###) or a list item (- or 1.)
-   - IMPORTANT: Do NOT use #### (4 hash marks) for headings - use ### (3 hash marks) or less instead
-10. CONTACT INFORMATION HANDLING:
-   - ONLY include contact fields (Phone, Email, Office, Role) if the information is explicitly found in the context.
-   - DO NOT include a field if the information is missing. NEVER say "Not available" or "N/A" for these fields.
-   - If NO contact information is found for a person at all, simply say: "The contact information for this person is not available in our records."
-   - FORMATTING:
-     - Place each available field on its own separate bullet point line.
-     - NEVER combine multiple fields on the same line or use dashes (-) to separate them on one line.
-     - Always put a blank line between the introductory sentence and the bulleted list.
-     - NEVER concatenate an email address with a following sentence — ensure a newline after the email.
-     - Do NOT use headings like "Contacting [Name]"; use a simple introductory sentence."""
+        # Use centralized prompt from prompts.py
+        self.system_prompt = RAG_SYSTEM_PROMPT
 
     def _initialize_llm(self):
         """Initialize the preferred LLM based on configuration and preference"""
@@ -274,8 +225,10 @@ Instructions:
         """Check if query should use RAG based on document relevance scores"""
         try:
             # Check if query looks like a name search - be more lenient for name queries
-            is_name_search = bool(re.match(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip()))
-            threshold = 0.15 if is_name_search else relevance_threshold
+            # Matches names like "Griffin Kenga" or queries containing "contact" + a name
+            is_name_search = bool(re.search(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip())) or \
+                             bool(re.search(r'\bcontact\b|\bphone\b|\bemail\b', query.lower()))
+            threshold = 0.10 if is_name_search else relevance_threshold
             
             results = self.search_with_scores(query, k=5)
             if not results:
@@ -285,6 +238,8 @@ Instructions:
             for doc, score in results:
                 # logger.info(f"Relevance score for query '{query}': {score}")
                 if score >= threshold:
+                    if is_name_search:
+                        logger.info(f"Name-based match found with score {score}")
                     return True
             
             # For name searches, always use RAG if we have any results
@@ -380,11 +335,33 @@ Instructions:
         text_lower = text.lower()
         found_topics = []
         
+        # 1. Check for predefined keywords
         for keyword in kca_keywords:
             if keyword in text_lower:
                 found_topics.append(keyword)
         
-        return found_topics
+        # 2. Extract specific subjects from user queries in history
+        # Look for patterns like "about [Subject]", "is [Subject]", "for [Subject]"
+        # We use a more inclusive regex and prioritize these over generic keywords
+        subject_patterns = [
+            r'about\s+([a-z0-9\s\-]+?)(?:\s+info|\s+information|\?|$)',
+            r'is\s+([a-z0-9\s\-]+?)(?:\?|$)',
+            r'for\s+([a-z0-9\s\-]+?)(?:\?|$)',
+            r'date\s+of\s+([a-z0-9\s\-]+?)(?:\?|$)',
+            r'who\s+is\s+([a-z\s]+?)(?:\?|$)'
+        ]
+        
+        specific_subjects = []
+        for pattern in subject_patterns:
+            matches = re.finditer(pattern, text_lower)
+            for match in matches:
+                subject = match.group(1).strip()
+                # Avoid very long strings or generic keywords or very short ones
+                if 3 < len(subject) < 50 and subject not in kca_keywords:
+                    specific_subjects.append(subject)
+        
+        # Combine topics, prioritizing specific subjects at the end (for key_topics[-1])
+        return found_topics + specific_subjects
 
     def _contextualize_query(self, query: str, history: list) -> str:
         """Enhance query with context from conversation history"""
@@ -449,9 +426,10 @@ Instructions:
             
             # For other ambiguous queries, prepend key topics
             if key_topics and is_short_query:
-                main_topic = key_topics[-1]  # Most recent topic
+                # Prioritize the most recent topic found in the history
+                main_topic = key_topics[-1]
                 expanded = f"{main_topic} {query}"
-                logger.info(f"Contextualized query: '{query}' -> '{expanded}'")
+                logger.info(f"Contextualized query: '{query}' -> '{expanded}' using topic '{main_topic}'")
                 return expanded
         
         return query
@@ -525,25 +503,19 @@ Instructions:
                     try:
                         # Include history and web context in the prompt
                         if history_text or web_context:
-                            contextual_prompt = f"""You are KCA Connect AI, the official AI assistant of KCA University.
-
-Conversation History:
-{history_text}
-
-Web Search Results:
-{web_context if web_context else 'No web search results available.'}
-
-Current Question: {original_query}
-
-Instructions:
-- Answer based on the conversation context and web search results above
-- If there is prior conversation history, do NOT start with "Hello" - just answer directly
-- Only greet with "Hello" at the very start of a completely new conversation with no history"""
+                            contextual_prompt = FALLBACK_PROMPT.format(
+                                history=history_text,
+                                web_context=web_context if web_context else 'No web search results available.',
+                                question=original_query
+                            )
                             response = self.llm.invoke(contextual_prompt)
                         else:
-                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI.
-
-Important: Only greet with "Hello" if this is the very first message. Otherwise, just answer directly."""
+                            # Basic prompt using standardized fallback
+                            contextual_prompt = FALLBACK_PROMPT.format(
+                                history="",
+                                web_context="No web search results available.",
+                                question=original_query
+                            )
                             response = self.llm.invoke(contextual_prompt)
                         
                         if hasattr(response, 'content'):
@@ -556,8 +528,11 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                 else:
                     return "I couldn't find any relevant information."
             
+            # Increase k for name searches to ensure we get both role and contact info
+            k = 8 if "how to contact" in original_query.lower() or "phone" in original_query.lower() or "email" in original_query.lower() else 5
+            
             # Use Hybrid Search
-            docs = self.search(query)
+            docs = self.search(query, k=k)
             context = _format_document_context(docs)
             
             if self.llm:
@@ -624,20 +599,11 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                     try:
                         # Include history and web context in the prompt
                         if history_text or web_context:
-                            contextual_prompt = f"""You are KCA Connect AI, the official AI assistant of KCA University.
-
-Conversation History:
-{history_text}
-
-Web Search Results:
-{web_context if web_context else 'No web search results available.'}
-
-Current Question: {original_query}
-
-Instructions:
-- Answer based on the conversation context and web search results above
-- If there is prior conversation history, do NOT start with "Hello" - just answer directly
-- Only greet with "Hello" at the very start of a completely new conversation with no history"""
+                            contextual_prompt = FALLBACK_PROMPT.format(
+                                history=history_text,
+                                web_context=web_context if web_context else 'No web search results available.',
+                                question=original_query
+                            )
                             async for chunk in self.llm.astream(contextual_prompt):
                                 if hasattr(chunk, 'content'):
                                     text = chunk.content
@@ -648,9 +614,12 @@ Instructions:
                                     yield char
                                     await asyncio.sleep(0.01) # Faster streaming
                         else:
-                            contextual_prompt = """You are KCA Connect AI, the official AI assistant of KCA University. If asked about your name, identify yourself as KCA Connect AI.
-
-Important: Only greet with "Hello" if this is the very first message. Otherwise, just answer directly."""
+                            # Basic prompt using standardized fallback
+                            contextual_prompt = FALLBACK_PROMPT.format(
+                                history="",
+                                web_context="No web search results available.",
+                                question=original_query
+                            )
                             async for chunk in self.llm.astream(contextual_prompt):
                                 if hasattr(chunk, 'content'):
                                     text = chunk.content
@@ -669,8 +638,11 @@ Important: Only greet with "Hello" if this is the very first message. Otherwise,
                     yield "I couldn't find any relevant information."
                     return
             
+            # Increase k for name searches to ensure we get both role and contact info
+            k = 8 if "how to contact" in original_query.lower() or "phone" in original_query.lower() or "email" in original_query.lower() else 5
+
             # Use Hybrid Search
-            docs = self.search(query)
+            docs = self.search(query, k=k)
             context = _format_document_context(docs)
             
             if self.llm:
