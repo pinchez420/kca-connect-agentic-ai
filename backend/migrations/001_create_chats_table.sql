@@ -1,5 +1,5 @@
 -- Migration script for creating the chats table in Supabase
--- Run this in Supabase SQL Editor
+
 
 -- Create the chats table
 CREATE TABLE IF NOT EXISTS public.chats (

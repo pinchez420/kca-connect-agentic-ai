@@ -1,5 +1,5 @@
--- Run this SQL to make your account an admin
--- Execute this in Supabase SQL Editor
+-- SQL to make account an admin
+
 
 UPDATE auth.users 
 SET raw_user_meta_data = raw_user_meta_data || '{"_admin": true}'::jsonb

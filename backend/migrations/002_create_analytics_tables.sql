@@ -1,5 +1,5 @@
 -- Migration script for Admin Analytics Dashboard
--- Run this in Supabase SQL Editor
+
 
 -- ============ User Sessions Table ============
 -- Tracks user login/logout for engagement metrics
