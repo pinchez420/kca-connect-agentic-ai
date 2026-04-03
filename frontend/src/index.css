@@ -2,7 +2,7 @@
 
 html,
 body {
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     padding: 0;
     /* Prevent body scrolling on mobile */
@@ -10,7 +10,7 @@ body {
 }
 
 #root {
-    height: 100%;
+    min-height: 100%;
 }
 
 @theme {

@@ -52,7 +52,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <Router>
-          <div className="App h-full bg-bg-primary text-text-primary transition-colors duration-300">
+          <div className="App min-h-screen bg-bg-primary text-text-primary transition-colors duration-300">
             <AppRoutes />
           </div>
         </Router>
