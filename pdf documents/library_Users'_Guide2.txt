@@ -1,0 +1,334 @@
+
+**Steps to Locate:**
+1. 🔍 Search OPAC for desired item
+2. 📝 Note the Call Number
+3. 🗂️ Navigate to corresponding LC section
+4. 📚 Browse shelves using alphanumeric code
+5. ✅ Verify title/author matches your search
+
+---
+
+## 🌐 Accessing E-Resources
+
+### E-Resources Portal: MyLOFT (My Library On Finger Tips)
+
+> Remote access platform for world-class collection of e-books and e-journals.
+
+#### Setup Instructions
+
+**For Laptop/Desktop:**
+1. 🌐 Use **Chrome** or **Microsoft Edge** browser
+2. ⬇️ Download MyLOFT app from [https://app.myloft.xyz/](https://app.myloft.xyz/)
+3. 💾 Save to your computer
+
+**For Smartphone:**
+1. 📱 Go to Google Play Store (Android) or App Store (iPhone)
+2. ⬇️ Download **MyLOFT app**
+3. ⚙️ Accept VPN Config request when prompted
+4. 🔧 Disable Private DNS in phone settings *(required for remote/off-campus access)*
+5. ✅ Works on: Android 10+; iPhone 13+
+
+#### Login Process
+
+1. 🔓 Open MyLOFT app on your device
+2. 🏫 Type **"KCA"** and select from available institutions
+3. 👤 Login with your **KCAU email** as username
+   - *New users*: Click "Sign-up" and enter personal details
+   - ⚠️ Requests using non-KCAU email will be rejected
+4. ✉️ Account activation approved within 24 hours; confirmation sent to KCAU email
+5. 🔐 Use confirmation link for first-time login; update credentials as needed
+6. ➕ Accept MyLOFT "Add-on extension" when prompted by browser
+
+#### Accessing Content
+
+| Content Type | Navigation Path |
+|-------------|----------------|
+| 📚 All E-Resources | Menu → E-resources → Select category |
+| 📖 E-Books | E-resources → All Databases → ProQuest eBooks Central / Taylor & Francis / DOAB |
+| 📰 E-Journals | E-resources → All Databases → JSTOR / EBSCO / Emerald / Taylor & Francis / Wiley / IEEE |
+| 📝 Past Exam Papers | E-resources → Past Papers Bank → Filter by unit/unit code |
+
+#### Downloading E-Books
+
+> Some e-books (e.g., ProQuest eBooks Central) are for **online viewing only** to control illegal sharing and copyright violations.
+
+**For Offline Reading:**
+1. 📥 Publishers may require **Adobe Digital Editions (ADE)** software
+2. 👤 Create personal account on specific database if required
+3. 🔄 Follow database-specific prompts for download authorization
+
+---
+
+## ⚖️ Electronic Services Regulations
+
+Users of KCAU Networks and services must adhere to:
+
+| Regulation | Detail |
+|-----------|--------|
+| ©️ Copyright Compliance | Adhere to ethical and copyright regulations governing e-resource access and usage |
+| 🚫 Prohibited Content | No obscene, pornographic, or derogatory material viewing/distribution |
+| 🛡️ Anti-Cyberbullying | All forms of harassment, intimidation, or hurtful messaging via digital platforms unacceptable |
+| 📊 Bandwidth Usage | No streaming/downloading large media files for non-instructional use during school hours on University network |
+| ⚖️ Legal Responsibility | Users personally responsible for compliance with Kenyan copyright law |
+| 💼 No Commercial Use | Library internet may not be used for private gain or political activities |
+| 🔐 Data Liability | KCAU Library not responsible for loss of personal data |
+| 🔍 Monitoring Rights | Library reserves right to monitor/investigate data when ethical violation complaints are made |
+| 👥 Access Priority | Library computers/ICT infrastructure open to current students and staff; first-come, first-served |
+| 🔐 Account Activation | Must comply with University Network Access Control and Cyber Security Policies |
+
+---
+
+## 🗄️ Subscribed Databases
+
+### Academic Databases
+
+| Database | Subject Strength |
+|----------|-----------------|
+| **Academic Journals** | Peer-reviewed open access journals: Art & Humanities, Engineering, Medical Science, Social Sciences, Biological Sciences, Physical Sciences, Agricultural Sciences |
+| **DOAB** (Directory of Open Access Books) | Discovery service for open access peer-reviewed monographs and edited collections |
+| **DOAJ** (Directory of Open Access Journals) | Extensive index of diverse open access journals; all services free of charge |
+| **Duke University Press** | African Studies, Anthropology, Art & Art History, Asian Studies, Cultural Studies, Economics, Education, Environmental Humanities, Gender & Sexuality Studies, Literary Studies, Film & Media Studies |
+| **EBSCOhost** | 16,500+ abstracted/indexed journals across Science, Technology, Medicine, Social Sciences, Humanities |
+| **Emerald Publishing** | Management, Library & Information Services, Marketing, Business Disciplines, Engineering, Materials Science |
+| **IEEE Xplore Digital Library** | Electrical Engineering, Telecommunications, Computer Science, Robotics, Biomedical Engineering, AI, Software Engineering, Remote Sensing |
+| **IMF eLibrary** | Economics, International Finance, Statistics, Globalization, Development Studies, Trade & Aid, Poverty Reduction, Emerging Markets |
+| **IWA Publishing** | Water, Wastewater, and related Environmental fields (15 peer-reviewed Open Access journals) |
+| **JSTOR** | Humanities, Social Sciences, Language & Literature, Mathematics & Statistics, Education, Law, Political Science, Biology, Architecture |
+| **Mary Ann Liebert Inc.** | Biotechnology, Regenerative Medicine, Biomedical Research, Public Health Policy, Technology & Engineering, Environmental Research |
+| **OECD iLibrary** | OECD books, papers, statistics; gateway to economic analysis and data |
+| **OATD** (Open Access Theses and Dissertations) | 6.6M+ graduate theses and dissertations from 1,100+ institutions worldwide |
+| **OpenDissertations (EBSCO)** | Free portal for electronic theses and dissertations (ETDs) discovery |
+| **Oxford Academic Journals** | 291 Impact Factor titles: Medicine & Health, Arts & Humanities, Sciences & Mathematics, Social Sciences, Law |
+| **Project Euclid** | Applied Mathematics, Statistics, Theoretical Mathematics |
+| **Project MUSE** | International Relations, Language & Linguistics, Library Science, Cultural Studies, Economics, Education, Philosophy, Religion, Sociology |
+| **ProQuest eBooks Central** | Business & Economics, Computers & IT, Education, Fine Arts, History, Language & Literature, Law, Psychology, Social Sciences, Technology |
+| **SAGE Journals Online** | Humanities, Social Sciences, Scientific disciplines |
+| **SAGE Research Methods** | Research Methods: Qualitative, Quantitative, Cases, Videos, Datasets |
+| **Taylor & Francis Online** | Behavioral Science, Business, Management, Economics, Criminology & Law, Education, Engineering, Computing, Media, International Relations, Sociology |
+| **Taylor & Francis eBooks** | 5,000+ titles: Humanities, Social Sciences, Behavioural Sciences, Built Environment, STM, Law |
+| **University of California Press** | Social Sciences, Humanities, Education, Biological & Medical Sciences, Physical Sciences, Area Studies, History of Science, Law, Musicology, Literature, Religion, Anthropology |
+| **Wiley Online Library** | Business, Computer Science, Education, Engineering, Law, Mathematics & Statistics, Medicine, Physics & Astronomy, Psychology, Social Sciences |
+
+### Other Useful Open Access Repositories
+
+| Repository | Link | Focus Area |
+|-----------|------|-----------|
+| **Africa Information Highway (AIH)** | [afdb.org](https://www.afdb.org/en/knowledge/statistics/africa-information-highway-aih) | Live open data platforms linking African countries and regional organizations |
+| **World Bank Open Knowledge Repository** | [openknowledge.worldbank.org](https://openknowledge.worldbank.org/home) | Education, Finance, Gender, Governance, ICT, Infrastructure, International Economics, Law, Macroeconomics, Science & Technology |
+| **World Bank Data Catalog** | [datacatalog.worldbank.org](https://datacatalog.worldbank.org/home) | "One-Stop Shop" for development data produced/acquired/used by World Bank |
+| **Google Scholar** | [scholar.google.com](https://scholar.google.com/) | Scholarly literature search across all knowledge disciplines |
+| **ResearchGate** | [researchgate.net](https://www.researchgate.net/) | Professional network for scientists; platform for sharing published/unpublished work |
+| **PDF Drive** | [pdfdrive.to](https://pdfdrive.to/) | Free books: Business, Art, Environment, Health, Lifestyle, Biographies, Computer Science, Electronics, Science, Medical |
+| **Kenya Law (National Council for Law Reporting)** | [kenyalaw.org](http://www.kenyalaw.org/kl/index.php) | All Kenyan laws; systematic development, integration, unification, and codification |
+| **Freebook Center** | [freebookcentre.net](http://www.freebookcentre.net) | Thousands of free online technical books; downloadable or viewable online |
+| **E-Books Directory** | [e-booksdirectory.com](http://www.e-booksdirectory.com/) | 9,810+ free e-books in 672 categories; technical papers, documents, user-contributed content |
+| **Free Management Books** | [free-management-ebooks.com](http://www.free-management-ebooks.com) | 500+ free eBooks, templates, checklists for managers and leaders |
+| **Bookboon** | [bookboon.com](http://bookboon.com) | 1,000+ free textbooks for students; downloadable in PDF format |
+| **Encyclopedia Britannica** | [britannica.com](https://www.britannica.com/) | Authoritative reference content across all disciplines |
+| **Oxford English Dictionary** | [oxfordlearnersdictionaries.com](https://www.oxfordlearnersdictionaries.com/) | Comprehensive English language reference |
+
+---
+
+## 🔄 Circulation Procedures
+
+### Eligibility
+
+| Requirement | Detail |
+|-------------|--------|
+| 👤 Account Registration | Users must register for Borrower's Account with Library Management System |
+| 🆔 Identification | Valid Student or Staff ID required for borrowing |
+| 💰 Professional Programs | Proof of caution fee payment required (refundable at course end) |
+| ✅ Cost | Accounts created free of charge for qualified University community members |
+
+### Borrowing Privileges
+
+- 🎫 Privileges granted upon presentation of valid ID
+- 🔒 Privileges **not transferable**; subject to withdrawal if abused
+- 📦 Borrower responsible for materials until returned in good condition
+
+### Suspended Accounts
+
+Accounts blocked under these conditions:
+
+| Condition | Description |
+|-----------|-------------|
+| 💰 Outstanding Fines | Unpaid overdue penalties |
+| ✅ Clearance Submitted | User has presented clearance forms and been cleared by Head of Library Services |
+| 📚 Unreturned Items | Items from previous semester/trimester not returned |
+| 📋 Registration Lapse | User has not registered for new semester/trimester |
+| 💸 Caution Fee Withdrawn | User has withdrawn their caution fee deposit |
+| ⚠️ Pending Cases | Unresolved issues with the Librarian |
+
+### Checking-Out Items: Step-by-Step
+
+1. 🔍 **Search**: Use OPAC to retrieve desired material from collection
+2. 🪪 **Present ID**: Bring ID (acts as borrower card) + item to Loans/Return desk
+3. 📡 **Scan ID**: Librarian scans ID barcode to access your account via Circulation Module
+4. 📦 **Check Out**: Librarian scans item barcode; system verifies match with presented item
+5. ⏰ **Loan Period Set**: System auto-sets loan period based on item type + user category; sends email alert
+6. 🏷️ **Due Date Stamp**: Librarian stamps system-generated due date on book label
+7. ✅ **Complete**: Item legitimately borrowed; user may exit library with material
+
+### Checking-In Loaned Items
+
+1. 📦 **Present Item**: User brings material to Loans/Return desk
+2. 📡 **Scan Barcode**: Librarian scans item barcode to CHECK IN via Circulation Module
+3. ✅ **Verify Match**: System records checked against presented item; verbal acknowledgement given
+4. 📧 **Confirmation**: Email alert sent to user; due date cancelled on returned item
+5. 🗂️ **Sorting**: Item placed in sorting bay awaiting shelving
+
+> ⏰ Borrowing/Return open until **5 minutes before library closing time**
+
+### Borrowing/Check-Out Criteria
+
+| Borrower Category | No. of Items | Main Long | Short Loan | Special Short Loan | UNISA | ML Renewals | SL Renewals | SSL Renewals |
+|------------------|--------------|-----------|------------|-------------------|-------|-------------|-------------|--------------|
+| 👔 Admin Staff | 5 | 30 days | 14 days | 3 days | 3 days | 1 | 2 | 2 |
+| 👨‍🏫 Teaching Staff | 5 | 30 days | 14 days | 3 days | 3 days | 1 | 2 | 2 |
+| 🎓 Postgraduate | 5 | 14 days | 7 days | 3 days | 3 days | 1 | 2 | 2 |
+| 🎓 Diploma/Undergraduate | 3 | 14 days | 7 days | 3 days | 3 days | 1 | 2 | 2 |
+| 💼 Professional Programs | 1 | 14 days | 7 days | 3 days | 3 days | 1 | 2 | 2 |
+| 👨‍🏫 Teaching Part-Time | 3 | 30 days | 14 days | 3 days | 3 days | 1 | 2 | 2 |
+| 👨‍⚕️ Professors/Doctors | 10 | 30 days | 14 days | 3 days | 3 days | 1 | 2 | 2 |
+| 👨‍⚕️ Part-Time Professors/Doctors | 6 | 30 days | 14 days | 3 days | 3 days | 1 | 2 | 2 |
+| 📊 ICPAK Staff | 1 | 30 days | 14 days | 3 days | 3 days | 1 | 2 | 2 |
+
+> 📧 Courtesy notices (reminders) emailed when items are due. Ensure correct email provided at registration.
+
+### Renewals/Loan Extension
+
+**Methods:**
+
+| Method | Process |
+|--------|---------|
+| 🌐 Online Self-Service (OPAC) | Login → Select items → Click Renew/Renew All → System generates new due date |
+| 📧 Email Request | Email Library with Title, Author, Call Number; must be sent on/before due date |
+| 🗣️ Face-to-Face | Visit circulation desk with ID; librarian extends loan period |
+
+**OPAC Renewal Steps:**
+1. Visit [http://opac.kcau.ac.ke](http://opac.kcau.ac.ke)
+2. Login: Username = University ID (without slash, e.g., 1700540); Password = National ID
+3. View checked-out items with Title, Author, Due Date, Renew Options
+4. Tick items to renew → Click "Renew" or "Renew All"
+5. System auto-generates new return date(s)
+
+**System Will NOT Renew If:**
+- ❌ Another user has placed the item on hold
+- ❌ Item is already overdue
+- ❌ User has exhausted renewal chances for that item
+
+### Recalls
+
+> Library may recall loaned items before due date if:
+- 🎯 Another user has reserved the item
+- ⚡ Item required immediately for urgent academic need
+
+### Reservations/Holds
+
+**To Place a Hold:**
+1. 🔐 Login to OPAC account at [http://opac.kcau.ac.ke](http://opac.kcau.ac.ke)
+2. 🔍 Search for item title in "Search for items" box
+3. 🎯 Click "Hold" option on right side of retrieved item page
+4. ✅ Receive system confirmation prompt
+
+**After Return:**
+- 📧 Email notification sent when reservation is filled
+- 🕐 Reserved items held at Loan/Return desk for **maximum 48 hours**
+- 🔄 After 48 hours: item re-shelved or circulated to next waiting customer
+
+### Returning Items
+
+| Method | Detail |
+|--------|--------|
+| 🏢 In-Person | Return directly to Loan/Return desk |
+| 📦 Book Chute (Main Campus) | Use chute on right side of main entrance *(when library closed)* |
+| ⏰ Responsibility | Borrower must ensure items returned/renewed on or before due date |
+
+### Overdue Notices and Fines
+
+| Policy | Detail |
+|--------|--------|
+| 💰 Fine Rate | **Ksh. 5 per item per overdue day** |
+| 🔒 Account Block | Automatic block if fines exceed **Ksh. 100** |
+| 💳 Payment | Pay via University Cash Office; present official receipt at Loan/Return desk for clearance |
+| ⚖️ Contested Fines | Must be resolved with Librarian before payment |
+| 📧 Notices | Overdue, recall, and availability notices sent via email or phone call |
+| 📞 Contact Updates | User responsibility to keep library informed of contact detail changes |
+
+### Replacement Policy
+
+| Scenario | Action Required |
+|----------|----------------|
+| 📚 Damaged/Lost Items | User must cover cost of damage or loss |
+| 🧩 Lost Set Item | May be required to pay for entire new set if replacement of single part not possible |
+| 🔍 Lost Item Replacement | Purchase similar item; for CD-ROMs, undergraduate projects, or hard-to-replace items, seek guidance from Head of Library Services |
+
+---
+
+## ⚖️ General Rules and Code of Conduct
+
+### Library Rules (All Users Must Observe)
+
+| Rule | Detail |
+|------|--------|
+| 🪪 ID Presentation | Present Student/Staff ID at Security desk AND Loan/Return desk; impersonation attracts penalty/disciplinary action |
+| 📦 Item Care | Take care of borrowed items; marking, defacing, or mutilation strictly prohibited; inspect books before borrowing |
+| ⏰ Timely Returns | Return borrowed materials on time to avoid overdue penalties |
+| 📢 Loss Reporting | Report loss of library books/items to Library staff immediately |
+| ©️ Copyright Compliance | Comply with Kenya Copyright Act CAP 130; reference copy available at Library |
+| 🤝 Courtesy | Treat staff and other users with courtesy; disciplinary action for disorderly behavior |
+| 💰 Replacement Costs | Users who lose or vandalize materials must pay replacement costs |
+| 📚 External Library Items | Items from other libraries may be allowed; overdue or improperly removed items will be confiscated and forwarded |
+| 🪑 Unattended Items | Books left unattended at carrels >15 minutes will be withdrawn and held at Issue desk |
+| 📱 Mobile Phones | **DO NOT USE** in library; librarians/security may confiscate phones used in library; use designated areas for discussions |
+| 🍽️ Food & Drink | Eating, drinking, littering, loitering, smoking **NOT PERMITTED**; food/drinks not allowed in library |
+| 🔐 Book Detection System | System detects un-issued library materials; attempts to remove un-issued items attract **DISCIPLINARY ACTIONS** |
+| ✏️ Vandalism | Writing, marking, drawing, or defacing tables, chairs, books, or walls **HIGHLY PROHIBITED** |
+| 🪑 Seat Reservation | Do not reserve seats by placing books/bags on study tables/chairs |
+| 🔒 Non-Transferable Loans | Borrowed items NOT TRANSFERABLE; no borrowing on behalf of others |
+| 🎒 Personal Property | Library/University **NOT LIABLE** for loss of personal property through negligence |
+| 🌐 Personal Laptop Use | Use Wi-Fi, NOT network cables, for internet access |
+| 📚 In-Library Use | Books used within library should be left on tables; **DO NOT re-shelve** |
+| 🧘 Order & Manners | Order and good mannerism must be observed at all times |
+| 🔍 Exit Check | All persons leaving library must show possessions to security official at exit door |
+
+### Library Clearance
+
+| Requirement | Detail |
+|-------------|--------|
+| ✅ Before Departure | Users must clear with library and pay any overdue fines before leaving University |
+| 📚 Lost Books | Must be replaced before clearance; all accumulated fines relating to loss must be settled |
+
+### Library Use Safety
+
+> All library users must ensure personal safety at all times.
+
+**In Case of Emergency:**
+- 🚪 Use library emergency exits
+- 📍 Converge at designated Assembly Point on campus
+
+### Withdrawal of Privileges
+
+| Authority | Action |
+|-----------|--------|
+| 📚 Head of Library Services | May withdraw privileges from any user disregarding library regulations; matter referred to University Library Committee for confirmation |
+| ⏱️ Temporary Withdrawal | Head of Library Services may temporarily withdraw facilities from members disregarding regulations |
+
+---
+
+## 📞 Contacts
+
+### Martin Oduor-Otieno Library
+
+| Contact Method | Details |
+|---------------|---------|
+| 📬 Postal Address | P.O. Box 56808-00200, Nairobi |
+| 📞 Telephone | (+254)(020) 61803/8 or 8561045 |
+| 📧 Email | [library@kcau.ac.ke](mailto:library@kcau.ac.ke) or [librarian@kcau.ac.ke](mailto:librarian@kcau.ac.ke) |
+| 🌐 Website | [library.kcau.ac.ke](http://library.kcau.ac.ke) |
+
+> ℹ️ For more information, contact the **Head of Library Services**.
+
+---
+
+> 📋 *This guide is subject to updates. Notice of modifications will be posted on the library notice board and website.*
