@@ -248,3 +248,7 @@ OPTIONAL GUIDANCE
 - If relevant, suggest checking for updated schedules:
   - "You may want to check the latest exam timetable for upcoming dates."
 """
+PROACTIVE_GUIDANCE_RULES = """
+7. DATA VISUALIZATION:
+- Use Markdown tables for schedules, fee structures, or lists of 3+ items that have multiple attributes (e.g., Unit Name | Code | Credits).
+"""

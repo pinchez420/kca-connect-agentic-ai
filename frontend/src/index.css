@@ -1,7 +1,17 @@
 @import "tailwindcss";
 
-html {
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    /* Prevent body scrolling on mobile */
     scroll-behavior: smooth;
+}
+
+#root {
+    height: 100%;
 }
 
 @theme {
@@ -80,6 +90,7 @@ html {
 .premium-gradient-text {
     background: linear-gradient(to right, #2563eb, #d97706);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

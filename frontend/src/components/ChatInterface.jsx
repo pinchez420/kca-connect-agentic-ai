@@ -633,7 +633,7 @@ const ChatInterface = () => {
 
 
     return (
-        <div className="flex h-screen bg-bg-primary overflow-hidden relative">
+        <div className="flex h-[100dvh] bg-bg-primary overflow-hidden relative">
             <Sidebar
                 onNewChat={() => {
                     handleNewChat();
