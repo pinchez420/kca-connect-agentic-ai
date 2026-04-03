@@ -103,6 +103,127 @@ class IngestService:
         
         return text.strip()
 
+    async def process_text(self, text: str, source: str, user_id: str = "system", metadata: dict = None):
+        """
+        Process raw text: clean, split, and ingest.
+        """
+        try:
+            if not text or not text.strip():
+                return {"success": False, "message": "No content to process."}
+
+            from langchain_core.documents import Document
+            
+            cleaned_text = self._clean_text(text)
+            doc_metadata = {
+                "source": source,
+                "user_id": user_id,
+                "type": "scraped"
+            }
+            if metadata:
+                doc_metadata.update(metadata)
+                
+            doc = Document(page_content=cleaned_text, metadata=doc_metadata)
+            
+            # Split text
+            texts = self.text_splitter.split_documents([doc])
+            
+            if not texts:
+                 return {"success": False, "message": "Could not split content."}
+
+            # Ingest into Qdrant
+            logger.info(f"Adding {len(texts)} documents to vector store from {source}...")
+            self.vector_store.add_documents(texts)
+            
+            return {
+                "success": True, 
+                "chunks": len(texts),
+                "source": source
+            }
+
+        except Exception as e:
+            logger.error(f"Error processing text from {source}: {e}")
+            return {"success": False, "message": str(e)}
+
+    async def delete_by_source(self, source: str):
+        """
+        Delete all points from Qdrant with the given source metadata.
+        """
+        try:
+            logger.info(f"Deleting all points with source: {source} from {settings.COLLECTION_NAME}")
+            
+            # Create a filter for the source metadata
+            delete_filter = models.Filter(
+                must=[
+                    models.FieldCondition(
+                        key="metadata.source",
+                        match=models.MatchValue(value=source),
+                    )
+                ]
+            )
+            
+            # Execute deletion
+            self.client.delete(
+                collection_name=settings.COLLECTION_NAME,
+                points_selector=delete_filter
+            )
+            
+            return {"success": True, "message": f"Deleted all points for source: {source}"}
+        except Exception as e:
+            logger.error(f"Error deleting source {source}: {e}")
+            return {"success": False, "message": str(e)}
+
+        except Exception as e:
+            logger.error(f"Error deleting source {source}: {e}")
+            return {"success": False, "message": str(e)}
+
+    async def get_stats(self):
+        """
+        Get collection statistics.
+        """
+        try:
+            collection_info = self.client.get_collection(collection_name=settings.COLLECTION_NAME)
+            return {
+                "success": True,
+                "points_count": collection_info.points_count,
+                "status": collection_info.status
+            }
+        except Exception as e:
+            logger.error(f"Error getting stats: {e}")
+            return {"success": False, "message": str(e)}
+
+    async def get_unique_sources(self):
+        """
+        Get all unique source metadata values from the collection.
+        """
+        try:
+            # We use scroll to get points and then extract unique sources
+            # This might be slow for massive collections but works well for most
+            all_sources = set()
+            offset = None
+            
+            while True:
+                response = self.client.scroll(
+                    collection_name=settings.COLLECTION_NAME,
+                    limit=100,
+                    with_payload=True,
+                    with_vectors=False,
+                    offset=offset
+                )
+                points, offset = response
+                
+                for point in points:
+                    source = point.payload.get("metadata", {}).get("source")
+                    if source:
+                        all_sources.add(source)
+                
+                if offset is None:
+                    break
+                    
+            return {"success": True, "sources": list(all_sources)}
+        except Exception as e:
+            logger.error(f"Error getting unique sources: {e}")
+            return {"success": False, "message": str(e)}
+
     async def process_file(self, file: UploadFile, user_id: str):
         """
         Process an uploaded file: save to temp, load, split, and ingest.

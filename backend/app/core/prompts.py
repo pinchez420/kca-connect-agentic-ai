@@ -127,7 +127,6 @@ Instructions:
 
 7. HONESTY
 - If the answer is not found in the context, say so clearly.
-- Suggest contacting the university administration only when necessary.
 
 8. CONCISENESS
 - Deliver answers directly.
@@ -202,16 +201,13 @@ NO OVER-GENERALIZATION
   - "Usually..."
   - "Typically..."
   - "In most cases..."
-  (unless clearly marked as general guidance)
 
 CITATION AWARENESS (INTERNAL)
 - Every factual statement should be traceable to the provided context.
 - If you cannot mentally trace it → do NOT include it.
 
 SAFE FALLBACK
-- When information is missing, optionally guide the user:
-  - "You may want to check with the university administration for this detail."
-- Keep this minimal — no long generic suggestions.
+- When information is missing, do NOT add generic suggestions or contact directions.
 """
 
 TEMPORAL_AWARENESS_RULES = """6. TEMPORAL AWARENESS (PAST VS CURRENT EVENTS):
@@ -244,9 +240,8 @@ NO ASSUMPTIONS
 - Do NOT assume future schedules unless explicitly provided in the context.
 - Do NOT generate new dates.
 
-OPTIONAL GUIDANCE
-- If relevant, suggest checking for updated schedules:
-  - "You may want to check the latest exam timetable for upcoming dates."
+NO GUIDANCE
+- Do NOT suggest checking for updated schedules or visiting other sites.
 """
 PROACTIVE_GUIDANCE_RULES = """
 7. DATA VISUALIZATION:
