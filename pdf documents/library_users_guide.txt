@@ -1,0 +1,166 @@
+# KCA UNIVERSITY LIBRARY: USERS' GUIDE
+
+## 1. MISSION AND MANDATE
+The KCAU Library is a modern, user-focused learning resource center designed to support the teaching, research, and outreach mission of KCA University.
+
+### 1.1. Core Mandate
+To collect, manage, and cure world-class information resources with respect to the mandate, vision, and mission of KCA University.
+
+### 1.2. Vision and Mission
+* **Vision:** To be a world-class modern academic research library enabling KCA University to become the Business University of choice.
+* **Mission:** To provide world-class and innovative service and learning space that will empower KCA University to carry out its core activities of teaching, learning, research and outreach.
+
+### 1.3. Core Values
+* Customer Service: We value our users (customers).
+* Courtesy: Respect and treat every user with courtesy.
+* Diversity: Embrace diversity in all its forms.
+* Legitimacy: Observe intellectual property rights, copyright laws, and conventions.
+* Access: Provide fair access to resources.
+
+## 2. LIBRARY HOURS
+
+### 2.1. Main Campus Library
+* Monday to Friday: 7.30 am - 8.30 pm
+* Saturday: 8.00 am - 6.00 pm
+* Sundays: 9.00 am – 5.0 pm
+* Public holidays: CLOSED
+
+### 2.2. Town Campus Library
+* Monday to Friday: 7.30 am - 8.30 pm
+* Saturday: 8.00 am - 4.00 pm
+* Sundays & Public holidays: CLOSED
+
+### 2.3. Kitengela Campus Library
+* Monday to Friday: 8.00 am - 8.00 pm
+* Saturday: 8.00 am - 4.00 pm
+* Sundays: 8.00 am – 4.00 pm
+* Public holidays: CLOSED
+
+### 2.4. Western Campus Library (Kisumu)
+* Monday to Friday: 8.00 am - 8.00 pm
+* Saturday: 8.00 am - 5.00 pm
+* Sundays & Public holidays: CLOSED
+
+## 3. USER SERVICES AND MEMBERSHIP
+
+### 3.1. Membership Eligibility
+Library membership is open to:
+* All current students
+* All members of staff
+* Governing Council members of the University
+* Board of Trustees of the University
+* ICPAK Council members (with introduction by ICPAK librarian)
+
+### 3.2. Reference and Computer Services
+The library provides both in-person and virtual reference services including "Ask-a-librarian" and live support.
+Computer-based services include:
+* E-resources access
+* Wi-fi and internet access
+* Use of designated computers at the E-center
+* Downloading and sharing of research materials
+
+### 3.3. Distance Learning Support
+Distance learners access resources via the internet. Access is normally provided via a student’s email account. Distance learners visiting the library in person may borrow materials using a valid student ID card.
+
+## 4. COLLECTIONS AND ORGANIZATION
+
+### 4.1. Library of Congress (LC) Classification Scheme
+Information materials are arranged by subject using the following LC classes:
+* A: GENERAL WORKS
+* B: PHILOSOPHY, PSYCHOLOGY, RELIGION
+* C: AUXILIARY SCIENCES OF HISTORY
+* D: WORLD HISTORY (EUROPE, ASIA, AFRICA, ETC.)
+* E: HISTORY OF THE AMERICAS
+* G: GEOGRAPHY
+* H: SOCIAL SCIENCES
+* J: POLITICAL SCIENCE
+* K: LAW
+* L: EDUCATION
+* P: LANGUAGE AND LITERATURE
+* Q: SCIENCE
+* R: MEDICINE
+* S: AGRICULTURE
+* T: TECHNOLOGY
+* Z: BIBLIOGRAPHY
+
+### 4.2. Finding Books
+Books are located using alphanumeric "Call Numbers" found on the spine of the book. These numbers denote the subject division, author, and year of publication.
+
+## 5. ACCESSING E-RESOURCES (MyLOFT)
+
+### 5.1. Setup and Login
+KCAU uses the MyLOFT (My Library on Finger Tips) platform for remote access to eBooks and journals.
+* **Computers:** Use Chrome or Microsoft Edge and download the MyLOFT app/extension from https://app.myloft.xyz/
+* **Mobile:** Download MyLOFT from Google Play Store or Apple App Store. (Requires Android 10+ or iOS 13+).
+* **VPN:** For mobile, users must accept the VPN configuration and disable private DNS in phone settings.
+* **Credentials:** Login using the official KCAU University email. New accounts are usually approved within 24 hours.
+
+### 5.2. Downloading E-Books
+Some E-books (specifically from ProQuest) require "Adobe Digital Editions (ADE)" software to view offline. This software monitors usage and manages copyright restrictions.
+
+## 6. SUBSCRIBED DATABASES AND REPOSITORIES
+
+### 6.1. Academic and Research Databases
+* **Academic Journals:** Peer-reviewed open access journals covering humanities, engineering, medical, and social sciences.
+* **DOAB (Directory of Open Access Books):** Searchable index to peer-reviewed monographs.
+* **DOAJ (Directory of Open Access Journals):** Diverse index of global open access journals.
+* **Duke University Press:** African studies, cultural studies, and gender studies.
+* **EBSCOhost:** Over 16,500 journals across science, technology, and medicine.
+* **Emerald Publishing:** Marketing, business, and engineering.
+* **IEEE Xplore:** Electrical engineering, computer science, and robotics.
+* **IMF eLibrary:** Economics, international finance, and statistics.
+* **JSTOR:** Humanities, social sciences, and mathematics.
+* **Mary Ann Liebert Inc.:** Biotechnology, regenerative medicine, and public health.
+* **SAGE:** Humanities, social sciences, and research methods.
+* **Taylor & Francis:** Behavioral science, law, and environment (5,000+ titles).
+* **Wiley Online Library:** Business, law, and physics.
+
+### 6.2. Open Access Repositories
+* **University Institutional Repository:** https://repository.kcau.ac.ke (Theses and Dissertations).
+* **Africa Information Highway (AIH):** Official and other statistics across Africa.
+* **World Bank Open Knowledge Repository:** International economics and governance.
+* **Kenya Law:** http://www.kenyalaw.org (Review and reform of Kenyan laws).
+
+## 7. CIRCULATION SERVICES (BORROWING RULES)
+
+### 7.1. Borrowing Eligibility
+Users must have a Borrower's account. Professional program students must provide proof of caution fee payment. Borrowing privileges are non-transferable.
+
+### 7.2. Borrowing Criteria (Loan Periods)
+| Borrower Category | Max Items | Main Long Loan | Short Loan | Special Short Loan | Renewals |
+| :--- | :---: | :--- | :--- | :--- | :--- |
+| Admin Staff | 5 | 30 Days | 14 Days | 3 Days | 1-2 Times |
+| Teaching Staff | 5 | 30 Days | 14 Days | 3 Days | 1-2 Times |
+| Postgraduate | 5 | 14 Days | 7 Days | 3 Days | 1-2 Times |
+| Undergraduate | 3 | 14 Days | 7 Days | 3 Days | 1-2 Times |
+| Professional | 1 | 14 Days | 7 Days | 3 Days | 1-2 Times |
+| Part-time Profs | 6 | 30 Days | 14 Days | 3 Days | 1-2 Times |
+| ICPAK Staff | 1 | 30 Days | 14 Days | 3 Days | 1-2 Times |
+
+### 7.3. Fines and Penalties
+* **Overdue Fines:** Ksh. 5 per item per day.
+* **Blocked Accounts:** Accounts are automatically blocked if fines exceed KES 100/=.
+* **Suspension:** Occurs for outstanding fines, failure to register for the current semester, or failure to return items from the previous semester.
+
+### 7.4. Renewal Process
+Renewals can be done on or before the due date via:
+1. **Online (OPAC):** Login to http://opac.kcau.ac.ke with Student ID (username) and National ID (password).
+2. **Email:** Write to the library with the Item Title and Call Number.
+3. **In-Person:** Visit the circulation desk with the ID card.
+*Note: Items cannot be renewed if they are overdue or placed on hold by another user.*
+
+### 7.5. Lost or Damaged Items
+Users must pay the replacement cost for lost or damaged items. For lost items, the borrower must purchase a similar item or seek guidance from the Head of Library Services.
+
+## 8. CODE OF CONDUCT
+* **ID Cards:** Must be presented at the security desk and the loan desk. Impersonation results in disciplinary action.
+* **Prohibited Acts:** Smoking, eating, drinking, littering, and loitering.
+* **Noise:** Cell phones must not be used in the library. Consultation and discussions are restricted to DESIGNATED AREAS.
+* **Theft Prevention:** Any attempt to remove un-issued material triggers the Book Detection System and disciplinary action.
+* **Personal Property:** The Library is NOT liable for the loss of personal property through negligence.
+
+## 9. CONTACT INFORMATION
+* **Address:** P.O. Box 56808 - 00200, Nairobi. 
+* **Telephone:** (+254) (020) 61803/8 or 8561045
+* **Email:** library@kcau.ac.ke or librarian@kcau.ac.ke
+* **Website:** library.kcau.ac.ke

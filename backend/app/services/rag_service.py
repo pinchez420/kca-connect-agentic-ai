@@ -110,7 +110,10 @@ class RagService:
             embedding=self.embeddings,
         )
         
-        self.llm = self._initialize_llm()
+        # Initialize LLMs in order of priority
+        self.llms = self._initialize_llms()
+        # Primary LLM for quick access
+        self.llm = self.llms[0] if self.llms else None
         
         # Initialize FlashRank for reranking
         # Uses a lightweight model (e.g., ms-marco-TinyBERT-L-2-v2)
@@ -123,46 +126,46 @@ class RagService:
         # Use centralized prompt from prompts.py
         self.system_prompt = RAG_SYSTEM_PROMPT
 
-    def _initialize_llm(self):
-        """Initialize the preferred LLM based on configuration and preference"""
-        # 1. Try Groq if configured OR if it's the default preference
-        if settings.GROQ_API_KEY and (settings.DEFAULT_LLM == "groq" or not settings.CEREBRAS_API_KEY):
-            try:
-                logger.info("Initializing Groq LLM (llama-3.3-70b-versatile)")
-                return ChatGroq(
-                    model="llama-3.3-70b-versatile",
-                    groq_api_key=settings.GROQ_API_KEY,
-                    temperature=0.3,
-                )
-            except Exception as e:
-                logger.error(f"Failed to initialize Groq LLM: {e}")
+    def _initialize_llms(self) -> List[Any]:
+        """Initialize all configured LLMs and return them in priority order"""
+        llms = []
         
-        # 2. Try Cerebras only if it's the configured default AND Groq failed
-        if settings.DEFAULT_LLM == "cerebras" and settings.CEREBRAS_API_KEY:
-            try:
-                logger.info("Initializing Cerebras LLM (llama-3.3-70b)")
-                return ChatCerebras(
-                    model="llama-3.3-70b",
-                    cerebras_api_key=settings.CEREBRAS_API_KEY,
-                    temperature=0.3,
-                )
-            except Exception as e:
-                logger.error(f"Failed to initialize Cerebras LLM: {e}")
-
-        # 3. Try Gemini only if it's the configured default AND Groq/Cerebras failed
-        if settings.DEFAULT_LLM == "gemini" and settings.GOOGLE_API_KEY:
-            try:
-                logger.info("Initializing Gemini LLM (gemini-2.0-flash)")
-                return ChatGoogleGenerativeAI(
-                    model="gemini-2.0-flash",
-                    google_api_key=settings.GOOGLE_API_KEY,
-                    temperature=0.3,
-                )
-            except Exception as e:
-                logger.error(f"Failed to initialize Gemini LLM: {e}")
+        # Priority order based on user preference or availability
+        providers = ["groq", "cerebras", "gemini"]
         
-        logger.warning("No LLM provider available or configured. Operating in retrieval-only mode.")
-        return None
+        # Reorder if a default is set
+        default = settings.DEFAULT_LLM.lower()
+        if default in providers:
+            providers.remove(default)
+            providers.insert(0, default)
+            
+        for provider in providers:
+            try:
+                if provider == "groq" and settings.GROQ_API_KEY:
+                    logger.info("Initializing Groq LLM (llama-3.3-70b-versatile)")
+                    llms.append(ChatGroq(
+                        model="llama-3.3-70b-versatile",
+                        groq_api_key=settings.GROQ_API_KEY,
+                        temperature=0.3,
+                    ))
+                elif provider == "cerebras" and settings.CEREBRAS_API_KEY:
+                    logger.info("Initializing Cerebras LLM (llama3.1-8b)")
+                    llms.append(ChatCerebras(
+                        model="llama3.1-8b",
+                        cerebras_api_key=settings.CEREBRAS_API_KEY,
+                        temperature=0.3,
+                    ))
+                elif provider == "gemini" and settings.GOOGLE_API_KEY:
+                    logger.info("Initializing Gemini LLM (gemini-1.5-flash)")
+                    llms.append(ChatGoogleGenerativeAI(
+                        model="gemini-1.5-flash",
+                        google_api_key=settings.GOOGLE_API_KEY,
+                        temperature=0.3,
+                    ))
+            except Exception as e:
+                logger.error(f"Failed to initialize {provider} LLM: {e}")
+                
+        return llms
 
     def search_with_scores(self, query: str, k: int = 4):
         """Retrieve relevant documents from vector store with similarity scores"""
@@ -510,16 +513,28 @@ class RagService:
                 if not web_context:
                     web_context = self.search_web(query)
                 
-                if self.llm:
-                    prompt = FALLBACK_PROMPT.format(
-                        history=history_text,
-                        web_context=web_context if web_context else 'No web search results available.',
-                        question=original_query
-                    )
-                    response = self.llm.invoke(prompt)
-                    if hasattr(response, 'content'):
-                        return response.content
-                    return str(response)
+                # Fallback mechanism for LLM calls
+                for i, current_llm in enumerate(self.llms):
+                    try:
+                        prompt = FALLBACK_PROMPT.format(
+                            history=history_text,
+                            web_context=web_context if web_context else 'No web search results available.',
+                            question=original_query
+                        )
+                        response = current_llm.invoke(prompt)
+                        if hasattr(response, 'content'):
+                            return response.content
+                        return str(response)
+                    except Exception as e:
+                        # Fallback if quota exceeded OR if this is a secondary LLM that failed for any reason
+                        if i < len(self.llms) - 1:
+                            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                                logger.warning(f"LLM {i} quota exceeded, trying fallback...")
+                                continue
+                            else:
+                                logger.error(f"LLM {i} failed with error: {e}. Trying fallback...")
+                                continue
+                        raise e
                 return "I couldn't find any relevant information."
 
             # 2. Proceed with RAG using hybrid search (reuse candidates if possible, but hybrid_search does fetch_k)
@@ -529,19 +544,32 @@ class RagService:
             docs = self.hybrid_search(query, k=k)
             context = _format_document_context(docs)
             
-            if self.llm:
-                prompt = self.system_prompt.format(
-                    context=context,
-                    web_context=web_context if web_context else "No web search results available.",
-                    history=history_text,
-                    question=original_query
-                )
-                response = self.llm.invoke(prompt)
-                if hasattr(response, 'content'):
-                    return response.content
-                return str(response)
-            else:
-                return f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
+            # Fallback mechanism for RAG LLM calls
+            for i, current_llm in enumerate(self.llms):
+                try:
+                    prompt = self.system_prompt.format(
+                        context=context,
+                        web_context=web_context if web_context else "No web search results available.",
+                        history=history_text,
+                        question=original_query
+                    )
+                    response = current_llm.invoke(prompt)
+                    if hasattr(response, 'content'):
+                        return response.content
+                    return str(response)
+                except Exception as e:
+                    # Fallback if quota exceeded OR if this is a secondary LLM that failed for any reason
+                    if i < len(self.llms) - 1:
+                        if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                            logger.warning(f"LLM {i} quota exceeded, trying fallback...")
+                            continue
+                        else:
+                            logger.error(f"LLM {i} failed with error: {e}. Trying fallback...")
+                            continue
+                    raise e
+            
+            # If all LLMs fail, but we have context, show context as a fallback
+            return f"Based on the available information from your documents:\n\n{context}\n\n(Note: AI is currently at its limit, showing raw info.)"
                 
         except Exception as e:
             logger.error(f"Error generating answer: {e}")
@@ -579,13 +607,54 @@ class RagService:
                 if not web_context:
                     web_context = self.search_web(query)
                 
-                if self.llm:
-                    prompt = FALLBACK_PROMPT.format(
+                # Fallback mechanism for streaming
+                for i, current_llm in enumerate(self.llms):
+                    try:
+                        prompt = FALLBACK_PROMPT.format(
+                            history=history_text,
+                            web_context=web_context if web_context else 'No web search results available.',
+                            question=original_query
+                        )
+                        async for chunk in current_llm.astream(prompt):
+                            content = ""
+                            if hasattr(chunk, 'content'):
+                                content = chunk.content
+                            elif isinstance(chunk, str):
+                                content = chunk
+                            else:
+                                content = str(chunk)
+                            
+                            for char in content:
+                                yield char
+                                await asyncio.sleep(0.01)
+                        return # Successfully streamed
+                    except Exception as e:
+                        if i < len(self.llms) - 1:
+                            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                                logger.warning(f"LLM {i} quota exceeded, trying fallback for stream...")
+                                continue
+                            else:
+                                logger.error(f"LLM {i} failed with error: {e}. Trying fallback for stream...")
+                                continue
+                        raise e
+                yield "I couldn't find any relevant information."
+                return
+
+            k = 8 if any(word in original_query.lower() for word in ["contact", "phone", "email"]) else 5
+            docs = self.hybrid_search(query, k=k)
+            context = _format_document_context(docs)
+            
+            # Fallback mechanism for RAG streaming
+            for i, current_llm in enumerate(self.llms):
+                try:
+                    prompt = self.system_prompt.format(
+                        context=context,
+                        web_context=web_context if web_context else "No web search results available.",
                         history=history_text,
-                        web_context=web_context if web_context else 'No web search results available.',
                         question=original_query
                     )
-                    async for chunk in self.llm.astream(prompt):
+                    
+                    async for chunk in current_llm.astream(prompt):
                         content = ""
                         if hasattr(chunk, 'content'):
                             content = chunk.content
@@ -597,39 +666,22 @@ class RagService:
                         for char in content:
                             yield char
                             await asyncio.sleep(0.01)
-                else:
-                    yield "I couldn't find any relevant information."
-                return
-
-            k = 8 if any(word in original_query.lower() for word in ["contact", "phone", "email"]) else 5
-            docs = self.hybrid_search(query, k=k)
-            context = _format_document_context(docs)
+                    return # Successfully streamed
+                except Exception as e:
+                    if i < len(self.llms) - 1:
+                        if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                            logger.warning(f"LLM {i} quota exceeded, trying fallback for RAG stream...")
+                            continue
+                        else:
+                            logger.error(f"LLM {i} failed with error: {e}. Trying fallback for RAG stream...")
+                            continue
+                    raise e
             
-            if self.llm:
-                prompt = self.system_prompt.format(
-                    context=context,
-                    web_context=web_context if web_context else "No web search results available.",
-                    history=history_text,
-                    question=original_query
-                )
-                
-                async for chunk in self.llm.astream(prompt):
-                    content = ""
-                    if hasattr(chunk, 'content'):
-                        content = chunk.content
-                    elif isinstance(chunk, str):
-                        content = chunk
-                    else:
-                        content = str(chunk)
-                    
-                    for char in content:
-                        yield char
-                        await asyncio.sleep(0.01)
-            else:
-                fallback_text = f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
-                for char in fallback_text:
-                    yield char
-                    await asyncio.sleep(0.01)
+            # Final fallback
+            fallback_text = f"Based on the available information from your documents:\n\n{context}\n\n(Note: AI is currently at its limit, showing raw info.)"
+            for char in fallback_text:
+                yield char
+                await asyncio.sleep(0.01)
                 
         except Exception as e:
             logger.error(f"Error generating streaming answer: {e}")

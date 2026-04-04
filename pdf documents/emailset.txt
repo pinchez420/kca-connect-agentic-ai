@@ -1,0 +1,31 @@
+# KCA UNIVERSITY (KCAU) STUDENT EMAIL SETUP GUIDE
+
+## 1. Student Email Address Format
+- **Platform:** Google / Gmail (www.gmail.com).
+- **Username Format:** Your full registration number followed by `@students.kcau.ac.ke`.
+- **Formatting Rule:** Remove any slashes (`/`) from your registration number when typing the email.
+- **Example:** If your Student Registration number is **23/00095**, your email address will be **2300095@students.kcau.ac.ke**.
+
+## 2. Default Password and First-Time Login
+- **Initial Password:** Your default password is your **Date of Birth**.
+- **Password Format:** Must be entered as **DD/MM/YYYY** (including the forward slashes).
+- **Format Examples:** 
+    - If born on Dec 1st, 2000, use: `01/12/2000`
+    - If born on July 26th, 2003, use: `26/07/2003`
+- **Login Steps:** 
+    1. Go to `gmail.com`.
+    2. Enter your student email address.
+    3. Enter the default Date of Birth password.
+    4. Read and click **ACCEPT** on the Organization's Policy page.
+
+## 3. Mandatory Security Updates
+- **Password Change:** Upon your first successful login, the system will require you to create a new, strong password. Click **Change Password** to save your new credentials.
+- **Account Recovery:** You are encouraged to add a **recovery email** address. Click **Update** to add one or **Confirm** to proceed to your inbox. This helps you regain access if you forget your password in the future.
+
+## 4. Frequently Asked Questions (FAQ)
+- **Q: Where do I log in to my KCAU student email?**
+  A: You log in via Gmail at gmail.com.
+- **Q: My registration number has a slash (e.g., 22/01234), how do I type it?**
+  A: Drop the slash. It becomes 2201234@students.kcau.ac.ke.
+- **Q: What is the format for the default KCAU email password?**
+  A: The format is Day/Month/Year (DD/MM/YYYY).
