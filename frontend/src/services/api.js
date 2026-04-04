@@ -609,3 +609,47 @@ export const deleteUser = async (token, userId) => {
         throw error;
     }
 };
+
+// ============ Knowledge Base API ============
+
+export const getKBSources = async (token) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/kb/sources`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch KB sources");
+        }
+
+        const data = await response.json();
+        return data.sources || [];
+    } catch (error) {
+        console.error("Error fetching KB sources:", error);
+        return [];
+    }
+};
+
+export const deleteKBSource = async (token, source) => {
+    try {
+        const response = await fetch(`${API_URL}/admin/kb/sources?source=${encodeURIComponent(source)}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(error.detail || "Failed to delete KB source");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error deleting KB source:", error);
+        throw error;
+    }
+};

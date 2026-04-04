@@ -15,6 +15,8 @@ import {
     removeUserAdmin,
     updateUser as updateUserApi,
     deleteUser as deleteUserApi,
+    getKBSources,
+    deleteKBSource,
 } from '../services/api';
 
 // Icons
@@ -98,6 +100,11 @@ const AdminDashboard = () => {
     const [uploading, setUploading] = useState(false);
     const [uploadStatus, setUploadStatus] = useState(null); // { type: 'success' | 'error', message: '' }
 
+    // KB Management State
+    const [kbSources, setKbSources] = useState([]);
+    const [kbLoading, setKbLoading] = useState(false);
+    const [kbActionLoading, setKbActionLoading] = useState(null); // source being deleted
+
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             setUploadFile(e.target.files[0]);
@@ -121,10 +128,42 @@ const AdminDashboard = () => {
 
             // Refresh stats to show new vector counts
             loadAnalytics();
+            loadKBSources();
         } catch (error) {
             setUploadStatus({ type: 'error', message: error.message || 'Failed to upload document' });
         } finally {
             setUploading(false);
+        }
+    };
+
+    const loadKBSources = async () => {
+        if (!session?.access_token) return;
+        setKbLoading(true);
+        try {
+            const sources = await getKBSources(session.access_token);
+            setKbSources(sources);
+        } catch (error) {
+            console.error('Error loading KB sources:', error);
+        } finally {
+            setKbLoading(false);
+        }
+    };
+
+    const handleDeleteKBSource = async (source) => {
+        if (!session?.access_token) return;
+        if (!confirm(`Delete all records for source: ${source}? This cannot be undone.`)) return;
+
+        setKbActionLoading(source);
+        try {
+            await deleteKBSource(session.access_token, source);
+            showSuccess(`Successfully deleted ${source}`);
+            loadKBSources();
+            // Also refresh health to show updated vector count
+            loadAnalytics();
+        } catch (error) {
+            setErrorMsg(error.message || 'Failed to delete source');
+        } finally {
+            setKbActionLoading(null);
         }
     };
 
@@ -134,6 +173,7 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         loadUsers();
+        loadKBSources();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [session, usersLimit, usersOffset]);
 
@@ -731,6 +771,54 @@ const AdminDashboard = () => {
                         {uploadStatus.message}
                     </div>
                 )}
+
+                {/* KB Sources List */}
+                <div className="mt-8">
+                    <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-md font-semibold text-text-primary">Current Knowledge Base Sources</h4>
+                        <button
+                            onClick={loadKBSources}
+                            className="text-xs text-accent-primary hover:underline"
+                        >
+                            Refresh List
+                        </button>
+                    </div>
+
+                    <div className="bg-bg-primary rounded-lg border border-border-primary overflow-hidden">
+                        <table className="min-w-full text-sm">
+                            <thead>
+                                <tr className="text-left text-text-secondary border-b border-border-primary bg-bg-secondary/50">
+                                    <th className="py-2 px-4 font-medium">Source Name / URL</th>
+                                    <th className="py-2 px-4 font-medium text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {kbLoading ? (
+                                    <tr><td className="py-4 px-4 text-text-secondary" colSpan={2}>Loading sources...</td></tr>
+                                ) : kbSources.length === 0 ? (
+                                    <tr><td className="py-4 px-4 text-text-secondary" colSpan={2}>No documents found in knowledge base.</td></tr>
+                                ) : (
+                                    kbSources.map((source, index) => (
+                                        <tr key={index} className="border-b border-border-primary last:border-0">
+                                            <td className="py-2 px-4 text-text-primary truncate max-w-md" title={source}>
+                                                {source}
+                                            </td>
+                                            <td className="py-2 px-4 text-right">
+                                                <button
+                                                    onClick={() => handleDeleteKBSource(source)}
+                                                    disabled={kbActionLoading === source}
+                                                    className={`text-red-500 hover:text-red-400 text-xs font-medium ${kbActionLoading === source ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                >
+                                                    {kbActionLoading === source ? 'Deleting...' : 'Delete'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     );

@@ -5,6 +5,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from app.core.config import settings
+from app.services.ingest_service import ingest_service
 from supabase import create_client, Client
 import logging
 
@@ -705,4 +706,32 @@ def delete_user(user_id: str, admin=Depends(get_admin_user)):
     except Exception as e:
         logger.error(f"Error deleting user: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to delete user: {str(e)}")
+
+
+# ============ Knowledge Base Management Endpoints ============
+
+@router.get("/kb/sources")
+async def get_kb_sources(admin=Depends(get_admin_user)):
+    """
+    Get all unique sources in the knowledge base
+    """
+    logger.info("Getting all unique KB sources")
+    try:
+        return await ingest_service.get_unique_sources()
+    except Exception as e:
+        logger.error(f"Error getting KB sources: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get KB sources: {str(e)}")
+
+
+@router.delete("/kb/sources")
+async def delete_kb_source(source: str, admin=Depends(get_admin_user)):
+    """
+    Delete a source and all its related points from the knowledge base
+    """
+    logger.info(f"Deleting KB source: {source}")
+    try:
+        return await ingest_service.delete_by_source(source)
+    except Exception as e:
+        logger.error(f"Error deleting KB source: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete KB source: {str(e)}")
 
