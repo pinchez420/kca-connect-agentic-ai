@@ -1,16 +1,22 @@
+import logging
+import asyncio
+import re
+import json
+from typing import List, Optional, Dict, Any, Tuple
+
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_cerebras import ChatCerebras
 from langchain_groq import ChatGroq
+from langchain_core.documents import Document
 from qdrant_client import QdrantClient
+from flashrank import Ranker, RerankRequest
+
 from app.core.config import settings
 from app.services.web_search_service import web_search_service
-import logging
-import asyncio
-import re
-from flashrank import Ranker, RerankRequest
-from app.core.prompts import RAG_SYSTEM_PROMPT, FALLBACK_PROMPT, CONTACT_INFO_RULES
+from app.services.qdrant_service import qdrant_service
+from app.core.prompts import RAG_SYSTEM_PROMPT, FALLBACK_PROMPT
 
 logger = logging.getLogger(__name__)
 
@@ -91,9 +97,8 @@ class RagService:
         self.embeddings = HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL)
         self.client = QdrantClient(url=settings.QDRANT_URL)
         
-        # Ensure collection exists before creating vector_store
+        # Ensure collection exists
         try:
-            from app.services.qdrant_service import qdrant_service
             # all-MiniLM-L6-v2 uses 384 dimensions
             qdrant_service.create_collection_if_not_exists(vector_size=384)
         except Exception as e:
@@ -204,7 +209,6 @@ class RagService:
             final_results = []
             for result in reranked_results[:k]:
                 # Reconstruct document
-                from langchain_core.documents import Document
                 doc = Document(page_content=result['text'], metadata=result['meta'])
                 final_results.append(doc)
             
@@ -221,39 +225,39 @@ class RagService:
         # We can now use hybrid search as the default
         return self.hybrid_search(query, k=k)
 
+    def _evaluate_relevance(self, query: str, search_results: List[Tuple[Document, float]], threshold: float = 0.3) -> bool:
+        """Internal helper to determine if search results are relevant enough for RAG"""
+        if not search_results:
+            return False
+            
+        # Check if query looks like a name search - be more lenient
+        is_name_search = bool(re.search(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip())) or \
+                         bool(re.search(r'\bcontact\b|\bphone\b|\bemail\b', query.lower()))
+        
+        effective_threshold = 0.10 if is_name_search else threshold
+        
+        # Check top result score
+        best_score = search_results[0][1]
+        
+        if best_score >= effective_threshold:
+            if is_name_search:
+                logger.info(f"Name-based match found with score {best_score}")
+            return True
+            
+        # For name searches, always use RAG if we have any results
+        if is_name_search:
+            logger.info(f"Name search '{query}' - using RAG with best effort")
+            return True
+            
+        # If no results meet threshold, but we have some, still use RAG as best effort
+        logger.info(f"Using RAG with best effort - best score: {best_score}")
+        return True
+
     def should_use_rag(self, query: str, relevance_threshold: float = 0.3) -> bool:
         """Check if query should use RAG based on document relevance scores"""
         try:
-            # Check if query looks like a name search - be more lenient for name queries
-            # Matches names like "Griffin Kenga" or queries containing "contact" + a name
-            is_name_search = bool(re.search(r'^[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+$', query.strip())) or \
-                             bool(re.search(r'\bcontact\b|\bphone\b|\bemail\b', query.lower()))
-            threshold = 0.10 if is_name_search else relevance_threshold
-            
             results = self.search_with_scores(query, k=5)
-            if not results:
-                return False
-            
-            # Check if any of the top results have acceptable relevance
-            for doc, score in results:
-                # logger.info(f"Relevance score for query '{query}': {score}")
-                if score >= threshold:
-                    if is_name_search:
-                        logger.info(f"Name-based match found with score {score}")
-                    return True
-            
-            # For name searches, always use RAG if we have any results
-            if is_name_search and results:
-                logger.info(f"Name search '{query}' - using RAG with best effort")
-                return True
-            
-            # If no results meet threshold, still use RAG if we have any documents
-            # This ensures we use document content even with lower similarity
-            if results:
-                logger.info(f"Using RAG with best effort - best score: {results[0][1]}")
-                return True
-            
-            return False
+            return self._evaluate_relevance(query, results, relevance_threshold)
         except Exception as e:
             logger.error(f"Error checking relevance: {e}")
             return False
@@ -461,7 +465,6 @@ class RagService:
             content = response.content if hasattr(response, 'content') else str(response)
             
             # Extract JSON
-            import json
             json_match = re.search(r'\{.*\}', content, re.DOTALL)
             if json_match:
                 return json.loads(json_match.group(0))
@@ -472,211 +475,156 @@ class RagService:
             logger.error(f"Error during self-reflection: {e}")
             return {"score": 1.0, "feedback": "Evaluation failed", "needs_rewrite": False}
 
-    def get_answer(self, query: str, history: list = None):
+    def get_answer(self, query: str, history: Optional[List[Dict[str, str]]] = None) -> str:
         """Get answer using RAG pipeline with conversation context"""
         try:
             # Contextualize the query using conversation history
             original_query = query
             if history:
                 query = self._contextualize_query(query, history)
-                if query != original_query:
-                    logger.info(f"Query enhanced from '{original_query}' to '{query}'")
             
             # Format history for the prompt
             history_text = ""
             if history:
                 history_text = "\n".join([
                     f"{'User' if msg.get('role') == 'user' else 'Assistant'}: {msg.get('content', '')}"
-                    for msg in history[-6:]  # Last 6 messages
+                    for msg in history[-6:]
                 ])
             
             # Check if we should search the web
-            should_search = self._should_search_web(original_query)
+            should_search_web = self._should_search_web(original_query)
             web_context = ""
-            
-            if not self.should_use_rag(query) or should_search:
-                logger.info(f"Query '{query}' doesn't match documents well. Searching the web...")
+            if should_search_web:
                 web_context = self.search_web(query)
             
-            if not self.should_use_rag(query):
-                if self.llm:
-                    try:
-                        # Include history and web context in the prompt
-                        if history_text or web_context:
-                            contextual_prompt = FALLBACK_PROMPT.format(
-                                history=history_text,
-                                web_context=web_context if web_context else 'No web search results available.',
-                                question=original_query
-                            )
-                            response = self.llm.invoke(contextual_prompt)
-                        else:
-                            # Basic prompt using standardized fallback
-                            contextual_prompt = FALLBACK_PROMPT.format(
-                                history="",
-                                web_context="No web search results available.",
-                                question=original_query
-                            )
-                            response = self.llm.invoke(contextual_prompt)
-                        
-                        if hasattr(response, 'content'):
-                            return response.content
-                        else:
-                            return str(response)
-                    except Exception as e:
-                        logger.error(f"Error calling LLM for general question: {e}")
-                        return "I encountered an error while processing your question. Please try again later."
-                else:
-                    return "I couldn't find any relevant information."
-            
+            # 1. Fetch documents for RAG (Search once)
             # Increase k for name searches to ensure we get both role and contact info
-            k = 8 if "how to contact" in original_query.lower() or "phone" in original_query.lower() or "email" in original_query.lower() else 5
+            k = 8 if any(word in original_query.lower() for word in ["contact", "phone", "email"]) else 5
             
-            # Use Hybrid Search
-            docs = self.search(query, k=k)
-            context = _format_document_context(docs)
+            # Get candidates with scores to evaluate relevance
+            candidates_with_scores = self.search_with_scores(query, k=max(k, 5))
+            use_rag = self._evaluate_relevance(query, candidates_with_scores)
             
-            if self.llm:
-                try:
-                    prompt = self.system_prompt.format(
-                        context=context,
-                        web_context=web_context if web_context else "No web search results available.",
+            # If not relevant enough and we have web context, use that instead
+            if not use_rag:
+                if not web_context:
+                    web_context = self.search_web(query)
+                
+                if self.llm:
+                    prompt = FALLBACK_PROMPT.format(
                         history=history_text,
+                        web_context=web_context if web_context else 'No web search results available.',
                         question=original_query
                     )
                     response = self.llm.invoke(prompt)
-                    
-                    answer_text = response.content if hasattr(response, 'content') else str(response)
-                    
-                    # Self-Reflection Check (Synchronous wrapper for async method not ideal but acceptable for "get_answer")
-                    # For production, we should async/await properly, but here we might just skip or do a light check.
-                    # Or we can just return the answer for now to keep latency low.
-                    
-                    return answer_text
+                    if hasattr(response, 'content'):
+                        return response.content
+                    return str(response)
+                return "I couldn't find any relevant information."
 
-                except Exception as e:
-                    logger.error(f"Error calling LLM provider: {e}")
-                    if isinstance(self.llm, ChatGoogleGenerativeAI) and ("RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)):
-                        return f"The AI is currently at its limit (Quota Exceeded). Here is the relevant information retrieved from our documents:\n\n{context}"
-                    return f"I had trouble summarizing the information, but here is what I found in our records:\n\n{context}"
+            # 2. Proceed with RAG using hybrid search (reuse candidates if possible, but hybrid_search does fetch_k)
+            # Actually, hybrid_search calls search_with_scores internally. 
+            # To be truly efficient, we should refactor hybrid_search to accept candidates.
+            # For now, let's just use the hybrid search which is already better than multiple separate searches.
+            docs = self.hybrid_search(query, k=k)
+            context = _format_document_context(docs)
+            
+            if self.llm:
+                prompt = self.system_prompt.format(
+                    context=context,
+                    web_context=web_context if web_context else "No web search results available.",
+                    history=history_text,
+                    question=original_query
+                )
+                response = self.llm.invoke(prompt)
+                if hasattr(response, 'content'):
+                    return response.content
+                return str(response)
             else:
                 return f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
                 
         except Exception as e:
             logger.error(f"Error generating answer: {e}")
+            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                return "The AI is currently at its limit (Quota Exceeded). Please try again in a moment."
             return "I encountered an error while processing your question. Please try again later."
 
-    async def get_answer_stream(self, query: str, history: list = None):
+    async def get_answer_stream(self, query: str, history: Optional[List[Dict[str, str]]] = None):
         """Get answer using RAG pipeline with streaming support and conversation context"""
         try:
             # Contextualize the query using conversation history
             original_query = query
             if history:
                 query = self._contextualize_query(query, history)
-                if query != original_query:
-                    logger.info(f"Query enhanced from '{original_query}' to '{query}'")
             
             # Format history for the prompt
             history_text = ""
             if history:
                 history_text = "\n".join([
                     f"{'User' if msg.get('role') == 'user' else 'Assistant'}: {msg.get('content', '')}"
-                    for msg in history[-6:]  # Last 6 messages
+                    for msg in history[-6:]
                 ])
             
             # Check if we should search the web
-            should_search = self._should_search_web(original_query)
+            should_search_web = self._should_search_web(original_query)
             web_context = ""
-            
-            if not self.should_use_rag(query) or should_search:
-                logger.info(f"Query '{query}' doesn't match documents well. Searching the web...")
+            if should_search_web:
                 web_context = self.search_web(query)
-                
-                if web_context:
-                    logger.info(f"Web search found results, enriching context")
             
-            if not self.should_use_rag(query):
+            # Fetch for relevance check
+            candidates_with_scores = self.search_with_scores(query, k=5)
+            use_rag = self._evaluate_relevance(query, candidates_with_scores)
+            
+            if not use_rag:
+                if not web_context:
+                    web_context = self.search_web(query)
+                
                 if self.llm:
-                    try:
-                        # Include history and web context in the prompt
-                        if history_text or web_context:
-                            contextual_prompt = FALLBACK_PROMPT.format(
-                                history=history_text,
-                                web_context=web_context if web_context else 'No web search results available.',
-                                question=original_query
-                            )
-                            async for chunk in self.llm.astream(contextual_prompt):
-                                if hasattr(chunk, 'content'):
-                                    text = chunk.content
-                                else:
-                                    text = str(chunk)
-                                
-                                for char in text:
-                                    yield char
-                                    await asyncio.sleep(0.01) # Faster streaming
+                    prompt = FALLBACK_PROMPT.format(
+                        history=history_text,
+                        web_context=web_context if web_context else 'No web search results available.',
+                        question=original_query
+                    )
+                    async for chunk in self.llm.astream(prompt):
+                        content = ""
+                        if hasattr(chunk, 'content'):
+                            content = chunk.content
+                        elif isinstance(chunk, str):
+                            content = chunk
                         else:
-                            # Basic prompt using standardized fallback
-                            contextual_prompt = FALLBACK_PROMPT.format(
-                                history="",
-                                web_context="No web search results available.",
-                                question=original_query
-                            )
-                            async for chunk in self.llm.astream(contextual_prompt):
-                                if hasattr(chunk, 'content'):
-                                    text = chunk.content
-                                else:
-                                    text = str(chunk)
-                                
-                                for char in text:
-                                    yield char
-                                    await asyncio.sleep(0.01)
-                        return
-                    except Exception as e:
-                        logger.error(f"Error calling LLM for general question: {e}")
-                        yield "I encountered an error while processing your question. Please try again later."
-                        return
+                            content = str(chunk)
+                        
+                        for char in content:
+                            yield char
+                            await asyncio.sleep(0.01)
                 else:
                     yield "I couldn't find any relevant information."
-                    return
-            
-            # Increase k for name searches to ensure we get both role and contact info
-            k = 8 if "how to contact" in original_query.lower() or "phone" in original_query.lower() or "email" in original_query.lower() else 5
+                return
 
-            # Use Hybrid Search
-            docs = self.search(query, k=k)
+            k = 8 if any(word in original_query.lower() for word in ["contact", "phone", "email"]) else 5
+            docs = self.hybrid_search(query, k=k)
             context = _format_document_context(docs)
             
             if self.llm:
-                try:
-                    prompt = self.system_prompt.format(
-                        context=context,
-                        web_context=web_context if web_context else "No web search results available.",
-                        history=history_text,
-                        question=original_query
-                    )
-                    
-                    full_answer = ""
-                    async for chunk in self.llm.astream(prompt):
-                        if hasattr(chunk, 'content'):
-                            text = chunk.content
-                        else:
-                            text = str(chunk)
-                        
-                        full_answer += text
-                        for char in text:
-                            yield char
-                            await asyncio.sleep(0.01)
-                            
-                    # Self-Reflective (Post-generation check)
-                    # Note: We can't retract the stream, but we can append a correction if needed.
-                    # Or log it for future improvement.
-                    # For now, we'll keep it simple to ensure low latency.
-
-                except Exception as e:
-                    logger.error(f"Error calling LLM provider: {e}")
-                    if isinstance(self.llm, ChatGoogleGenerativeAI) and ("RESOURCE_EXHAUSTED" in str(e) or "429" in str(e)):
-                        yield f"The AI is currently at its limit (Quota Exceeded). Here is the relevant information retrieved from our documents:\n\n{context}"
+                prompt = self.system_prompt.format(
+                    context=context,
+                    web_context=web_context if web_context else "No web search results available.",
+                    history=history_text,
+                    question=original_query
+                )
+                
+                async for chunk in self.llm.astream(prompt):
+                    content = ""
+                    if hasattr(chunk, 'content'):
+                        content = chunk.content
+                    elif isinstance(chunk, str):
+                        content = chunk
                     else:
-                        yield f"I had trouble summarizing the information, but here is what I found in our records:\n\n{context}"
+                        content = str(chunk)
+                    
+                    for char in content:
+                        yield char
+                        await asyncio.sleep(0.01)
             else:
                 fallback_text = f"Based on the available information from your documents:\n\n{context}\n\n(Note: LLM is currently disabled for summarizing.)"
                 for char in fallback_text:
@@ -685,6 +633,30 @@ class RagService:
                 
         except Exception as e:
             logger.error(f"Error generating streaming answer: {e}")
-            yield "I encountered an error while processing your question. Please try again later."
+            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                yield "The AI is currently at its limit (Quota Exceeded). Please try again in a moment."
+            else:
+                yield "I encountered an error while processing your question. Please try again later."
+                
+def _enforce_formatting(text: str) -> str:
+    """
+    Force clean spacing and prevent block paragraphs
+    """
+    if not text:
+        return text
+
+    # Ensure space after headings
+    text = re.sub(r'([A-Za-z])\n-', r'\1\n\n-', text)
+
+    # Break long paragraphs (3+ lines)
+    # text = re.sub(r'(.{200,})', lambda m: m.group(0) + "\n\n", text)
+
+    # Fix merged list items
+    text = re.sub(r'-\s*([^\n-]+)-', r'- \1\n-', text)
+
+    # Ensure newline before lists
+    text = re.sub(r'([^\n])\n-', r'\1\n\n-', text)
+
+    return text.strip()
 
 rag_service = RagService()
