@@ -116,7 +116,7 @@ export const chatWithAgentStream = async (message, token, onChunk, onComplete, o
                         if (onError) onError(data.slice(6));
                         return;
                     }
-                    if (onChunk) onChunk(data);
+                    if (onChunk) onChunk(data.replace(/\\n/g, '\n'));
                 }
             }
         }

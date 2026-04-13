@@ -2,17 +2,17 @@
 
 An intelligent AI-powered chat interface for KCA University students and staff to access information about timetables, fees, exams, and more through natural language conversations.
 
-## ✨ Features
+##  Features
 
-- 🤖 **Smart RAG System**: Retrieval-Augmented Generation using LangChain and Qdrant
-- 🎨 **Modern UI**: Beautiful gradient design with glassmorphism effects
-- 💬 **Conversational Interface**: Natural language Q&A powered by Google Gemini
-- 📚 **Document Knowledge Base**: Automatically ingests and processes PDF documents
-- 🔍 **Semantic Search**: Intelligent document retrieval using HuggingFace embeddings
-- ⚡ **Real-time Responses**: Fast, context-aware answers
-- 🎯 **Health Monitoring**: Built-in health checks for all services
+- **Smart RAG System**: Retrieval-Augmented Generation using LangChain and Qdrant
+- **Modern UI**: Beautiful gradient design with glassmorphism effects
+- **Conversational Interface**: Natural language Q&A powered by Google Gemini
+- **Document Knowledge Base**: Automatically ingests and processes PDF documents
+- **Semantic Search**: Intelligent document retrieval using HuggingFace embeddings
+- **Real-time Responses**: Fast, context-aware answers
+- **Health Monitoring**: Built-in health checks for all services
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 .
@@ -24,14 +24,14 @@ An intelligent AI-powered chat interface for KCA University students and staff t
 └── Proposal.pdf      # Project proposal (for ingestion)
 ```
 
-## 🔧 Prerequisites
+## Prerequisites
 
 - **Docker** and **Docker Compose**
 - **Node.js** (v18+) - for local frontend development
 - **Python** (v3.11+) - for local backend development
 - **Google API Key** - for Gemini LLM integration
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Get Your Google API Key
 
@@ -86,7 +86,7 @@ This will:
 - Generate embeddings
 - Store them in Qdrant for semantic search
 
-## 💻 Local Development
+## Local Development
 
 ### Frontend Setup
 
@@ -116,7 +116,7 @@ uvicorn main:app --reload
 
 The backend API will be available at http://localhost:8000
 
-## 📡 API Endpoints
+## API Endpoints
 
 - `GET /` - Service status
 - `GET /health` - Detailed health check (Qdrant, LLM, collections)
@@ -128,7 +128,7 @@ The backend API will be available at http://localhost:8000
   }
   ```
 
-## 🎯 Usage
+## Usage
 
 1. **Access the Application**: Open http://localhost:5173
 2. **Ask Questions**: Type your question about KCA University
@@ -140,7 +140,7 @@ The backend API will be available at http://localhost:8000
    - Use context to generate accurate answers
    - Cite information from the knowledge base
 
-## 🔍 Architecture
+## Architecture
 
 ```
 User Query → Frontend (React)
@@ -156,7 +156,7 @@ RAG Pipeline:
 Response → Frontend → User
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React 18
@@ -172,7 +172,7 @@ Response → Frontend → User
 - Qdrant Vector Database
 - PyPDF2 for document processing
 
-## 📝 Environment Variables
+## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -181,7 +181,7 @@ Response → Frontend → User
 | `EMBEDDING_MODEL` | HuggingFace model | `all-MiniLM-L6-v2` |
 | `GOOGLE_API_KEY` | Google Gemini API key | *(required)* |
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Backend won't start
 - Ensure all dependencies are installed: `pip install -r requirements.txt`
@@ -198,7 +198,7 @@ Response → Frontend → User
 - Check CORS settings in `main.py`
 - Verify API_URL in `frontend/src/services/api.js`
 
-## 📚 Adding More Documents
+## Adding More Documents
 
 To add more documents to the knowledge base:
 
@@ -209,14 +209,14 @@ To add more documents to the knowledge base:
    python ingest.py
    ```
 
-## 🤝 Contributing
+## Contributing
 
 This project is part of a final year university project. Feel free to suggest improvements!
 
-## 📄 License
+## License
 
 Educational project for KCA University
 
 ---
 
-**Made with ❤️ for KCA University**
+**Made for KCA University**

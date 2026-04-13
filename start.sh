@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🚀 KCA Connect AI - Quick Start"
+echo " KCA Connect AI - Quick Start"
 echo "================================"
 echo ""
 
@@ -17,11 +17,11 @@ if ! docker-compose ps | grep -q "Up"; then
     sleep 10
 fi
 
-echo "✅ Services are running"
+echo "Services are running"
 echo ""
 
 # Check if we're in a virtual environment for ingestion
-echo "📚 Ingesting documents..."
+echo "Ingesting documents..."
 cd backend
 
 if [ -f ingest.py ]; then
@@ -34,7 +34,7 @@ if [ -f ingest.py ]; then
         echo "⚠️  Virtual environment not found. Using system Python..."
         python3 ingest.py
     fi
-    echo "✅ Documents ingested successfully!"
+    echo "Documents ingested successfully!"
 else
     echo "⚠️  ingest.py not found. Skipping document ingestion."
 fi
@@ -42,7 +42,7 @@ fi
 cd ..
 
 echo ""
-echo "🎉 All set! Opening application..."
+echo " All set! Opening application..."
 echo ""
 echo "Frontend: http://localhost:5173"
 echo "Backend:  http://localhost:8000"
@@ -55,4 +55,4 @@ elif command -v gnome-open &> /dev/null; then
     gnome-open http://localhost:5173 2>/dev/null || true
 fi
 
-echo "Happy chatting! 🎓"
+echo "Happy chatting! "

@@ -157,7 +157,10 @@ async def stream_answer_generator(message: str, user, history=None, user_metadat
         logger.info(f"Streaming response for user {user.id} - query: {msg_snippet}")
         
         async for chunk in rag_service.get_answer_stream(message, history=history):
-            yield f"data: {chunk}\n\n"
+            # Encode newlines so they survive SSE transport
+            # (bare newlines in SSE data fields are treated as message boundaries)
+            safe_chunk = chunk.replace('\n', '\\n')
+            yield f"data: {safe_chunk}\n\n"
         
         yield "data: [DONE]\n\n"
     except Exception as e:
